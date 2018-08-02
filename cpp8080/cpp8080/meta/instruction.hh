@@ -41,7 +41,7 @@ step(instructions<Instructions...>, std::uint8_t opcode, State& state)
     throw std::runtime_error{"Invalid opcode"};
   }
   
-  using fun_ptr_type = void (*) (specific::state&);
+  using fun_ptr_type = void (*) (State&);
   static constexpr fun_ptr_type jump_table[] = {&execute<State, Instructions>...};
   jump_table[opcode](state);
 }
@@ -57,7 +57,7 @@ step(instructions<Instructions...>, std::uint8_t opcode, State& state, std::ostr
     throw std::runtime_error{"Invalid opcode"};
   }
   
-  using fun_ptr_type = void (*) (specific::state&, std::ostream&);
+  using fun_ptr_type = void (*) (State&, std::ostream&);
   static constexpr fun_ptr_type jump_table[] = {&execute_verbose<State, Instructions>...};
   jump_table[opcode](state, os);
 }
