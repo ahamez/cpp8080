@@ -14,7 +14,7 @@ class emulate
 {
 public:
 
-  emulate(std::istream& rom_file);
+  emulate(std::istream& rom);
 
   void
   operator()();

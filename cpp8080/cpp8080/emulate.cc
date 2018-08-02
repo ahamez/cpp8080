@@ -7,8 +7,8 @@ namespace cpp8080 {
 
 /*------------------------------------------------------------------------------------------------*/
 
-emulate::emulate(std::istream& rom_file)
-  : state_{std::istreambuf_iterator<char>{rom_file}, std::istreambuf_iterator<char>{}}
+emulate::emulate(std::istream& rom)
+  : state_{std::istreambuf_iterator<char>{rom}, std::istreambuf_iterator<char>{}}
 {}
 
 /*------------------------------------------------------------------------------------------------*/
