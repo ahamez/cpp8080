@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "cpp8080/specific/state.hh"
+#include "cpp8080/space_invaders_machine.hh"
 
 namespace cpp8080
 {
@@ -21,7 +22,7 @@ public:
 
 private:
 
-  specific::state state_;
+  specific::state<spache_invaders_machine> state_;
 };
  
 /*------------------------------------------------------------------------------------------------*/

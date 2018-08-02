@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		2BA3FCE921124253008F1B96 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BA3FCE221124253008F1B96 /* main.cc */; };
 		2BA3FCF921124348008F1B96 /* emulate.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BA3FCF221124304008F1B96 /* emulate.cc */; };
-		2BA3FD0B211250E4008F1B96 /* state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BA3FD0A21124FAE008F1B96 /* state.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,11 +30,11 @@
 		2BA3FD0621124F45008F1B96 /* instruction.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instruction.hh; sourceTree = "<group>"; };
 		2BA3FD0821124FAE008F1B96 /* state.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = state.hh; sourceTree = "<group>"; };
 		2BA3FD0921124FAE008F1B96 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
-		2BA3FD0A21124FAE008F1B96 /* state.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = state.cc; sourceTree = "<group>"; };
 		2BA3FD0C2112518C008F1B96 /* disassemble.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = disassemble.hh; sourceTree = "<group>"; };
 		2BA3FD0D21125203008F1B96 /* unimplemented.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = unimplemented.hh; sourceTree = "<group>"; };
-		2BA3FD0E2112538A008F1B96 /* cpp8080 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = cpp8080; path = /Users/hal/code/cpp8080/build/Debug/cpp8080; sourceTree = "<absolute>"; };
 		2BA3FD10211260D9008F1B96 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
+		2BA3FD112112625C008F1B96 /* cpp8080 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cpp8080; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BA3FD132113752A008F1B96 /* space_invaders_machine.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders_machine.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				2BA3FCDF21124253008F1B96 /* cpp8080 */,
+				2BA3FD112112625C008F1B96 /* cpp8080 */,
 			);
 			sourceTree = "<group>";
 		};
@@ -72,6 +72,7 @@
 				2BA3FD0721124FAE008F1B96 /* specific */,
 				2BA3FCEF21124304008F1B96 /* emulate.hh */,
 				2BA3FCF221124304008F1B96 /* emulate.cc */,
+				2BA3FD132113752A008F1B96 /* space_invaders_machine.hh */,
 			);
 			path = cpp8080;
 			sourceTree = "<group>";
@@ -92,7 +93,6 @@
 			children = (
 				2BA3FD0921124FAE008F1B96 /* instructions.hh */,
 				2BA3FD0821124FAE008F1B96 /* state.hh */,
-				2BA3FD0A21124FAE008F1B96 /* state.cc */,
 			);
 			path = specific;
 			sourceTree = "<group>";
@@ -114,7 +114,7 @@
 			);
 			name = cpp8080;
 			productName = invaders;
-			productReference = 2BA3FD0E2112538A008F1B96 /* cpp8080 */;
+			productReference = 2BA3FD112112625C008F1B96 /* cpp8080 */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -153,7 +153,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BA3FD0B211250E4008F1B96 /* state.cc in Sources */,
 				2BA3FCF921124348008F1B96 /* emulate.cc in Sources */,
 				2BA3FCE921124253008F1B96 /* main.cc in Sources */,
 			);

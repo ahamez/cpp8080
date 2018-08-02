@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "cpp8080/emulate.hh"
 #include "cpp8080/specific/instructions.hh"
@@ -8,30 +9,38 @@ namespace cpp8080 {
 /*------------------------------------------------------------------------------------------------*/
 
 emulate::emulate(std::istream& rom)
-  : state_{std::istreambuf_iterator<char>{rom}, std::istreambuf_iterator<char>{}}
+  : state_{
+      std::istreambuf_iterator<char>{rom},
+      std::istreambuf_iterator<char>{},
+      std::make_shared<spache_invaders_machine>()
+  }
 {}
-
+  
 /*------------------------------------------------------------------------------------------------*/
-
-struct in_override : meta::describe_instruction<0xdb, 10, 2>
+  
+struct in_override : meta::describe_instruction<0xdb, 3, 2>
 {
   static constexpr auto name = "in";
 
-  void operator()(specific::state&) const
+  void operator()(specific::state<spache_invaders_machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xdb"};
+    const auto port = state.op1();
+    state.a = state.machine().in(port);
+    state.pc += 2;
   }
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct out_override : meta::describe_instruction<0xd3, 10, 2>
+struct out_override : meta::describe_instruction<0xd3, 3, 2>
 {
   static constexpr auto name = "out";
 
-  void operator()(specific::state&) const
+  void operator()(specific::state<spache_invaders_machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xdb"};
+    const auto port = state.op1();
+    state.machine().out(port, state.a);
+    state.pc += 2;
   }
 };
 
