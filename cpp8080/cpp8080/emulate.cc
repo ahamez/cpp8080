@@ -15,7 +15,7 @@ emulate::emulate(std::istream& rom_file)
 
 struct in_override : meta::describe_instruction<0xdb, 10, 2>
 {
-  static constexpr auto name = "in_d8";
+  static constexpr auto name = "in";
 
   void operator()(specific::state&) const
   {
@@ -41,7 +41,18 @@ using instructions = meta::override_instructions<specific::instructions_8080,
   meta::instruction<in_override>,
   meta::instruction<out_override>
 >::type;
-  
+
+/*------------------------------------------------------------------------------------------------*/
+
+//struct foo : meta::describe_instruction<0, 10, 2> {};
+//struct bar : meta::describe_instruction<1, 10, 2> {};
+//struct baz : meta::describe_instruction<2, 10, 2> {};
+//using is = meta::instructions<foo, bar>;
+//
+//struct o : meta::describe_instruction<1, 10, 2> {};
+//
+//using is2 = meta::override_instructions<is, o>::type;
+
 /*------------------------------------------------------------------------------------------------*/
 
 void
