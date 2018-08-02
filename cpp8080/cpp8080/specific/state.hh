@@ -6,6 +6,8 @@
 #include <ostream>
 #include <vector>
 
+#include "cpp8080/util.hh"
+
 namespace cpp8080::specific {
 
 /*------------------------------------------------------------------------------------------------*/
@@ -168,19 +170,6 @@ public:
   const noexcept
   {
     return *machine_ptr;
-  }
-
-private:
-  
-  [[nodiscard]]
-  static bool
-  even_parity(std::uint8_t x)
-  noexcept
-  {
-    x ^= x >> 4;
-    x ^= x >> 2;
-    x ^= x >> 1;
-    return (~x) & 1;
   }
 
 public:
