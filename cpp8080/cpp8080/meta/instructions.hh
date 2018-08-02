@@ -13,10 +13,10 @@ struct instructions
 /*------------------------------------------------------------------------------------------------*/
 
 template <typename...>
-struct cat;
+struct prepend_instruction;
 
 template <typename T, typename... Us>
-struct cat<T, instructions<Us...>>
+struct prepend_instruction<T, instructions<Us...>>
 {
   using type = instructions<T, Us...>;
 };
@@ -47,7 +47,7 @@ struct override_instruction_impl<false, Override, instructions<I, Is...>>
     instructions<Is...>
   >::type;
 
-  using type = typename cat<I, next>::type;
+  using type = typename prepend_instruction<I, next>::type;
 };
 
 template <typename Override, typename I, typename... Is>
