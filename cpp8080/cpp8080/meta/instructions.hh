@@ -23,6 +23,7 @@ struct prepend_instruction<T, instructions<Us...>>
 
 /*------------------------------------------------------------------------------------------------*/
   
+// If overridden opcode is not found, a compilation error will occurs.
 template <bool SameOpcode, typename Override, typename... Is>
 struct override_instruction_impl;
 

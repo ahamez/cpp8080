@@ -22,6 +22,7 @@ public:
 
 private:
 
+  // TODO: make `emulate` generic to the machine
   specific::state<spache_invaders_machine> state_;
 };
  
