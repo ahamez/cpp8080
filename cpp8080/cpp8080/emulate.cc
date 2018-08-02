@@ -44,17 +44,6 @@ using instructions = meta::override_instructions<specific::instructions_8080,
 
 /*------------------------------------------------------------------------------------------------*/
 
-//struct foo : meta::describe_instruction<0, 10, 2> {};
-//struct bar : meta::describe_instruction<1, 10, 2> {};
-//struct baz : meta::describe_instruction<2, 10, 2> {};
-//using is = meta::instructions<foo, bar>;
-//
-//struct o : meta::describe_instruction<1, 10, 2> {};
-//
-//using is2 = meta::override_instructions<is, o>::type;
-
-/*------------------------------------------------------------------------------------------------*/
-
 void
 emulate::operator()()
 {

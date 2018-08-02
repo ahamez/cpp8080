@@ -79,8 +79,6 @@ struct override_instructions<instructions<Is...>, Override, Overrides...>
 
   // Now apply next override.
   using type = typename override_instructions<overrided, Overrides...>::type;
-
-//  using type = instructions<Is...>;
 };
 
 /*------------------------------------------------------------------------------------------------*/
