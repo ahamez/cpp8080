@@ -6,7 +6,7 @@ namespace cpp8080 {
 
 /*------------------------------------------------------------------------------------------------*/
 
-class spache_invaders_machine
+class space_invaders_machine
 {
 public:
 

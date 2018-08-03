@@ -12,7 +12,7 @@ emulate::emulate(std::istream& rom)
   : state_{
       std::istreambuf_iterator<char>{rom},
       std::istreambuf_iterator<char>{},
-      std::make_shared<spache_invaders_machine>()
+      std::make_shared<space_invaders_machine>()
   }
 {}
   
@@ -22,7 +22,7 @@ struct in_override : meta::describe_instruction<0xdb, 3, 2>
 {
   static constexpr auto name = "in";
 
-  void operator()(specific::state<spache_invaders_machine>& state) const
+  void operator()(specific::state<space_invaders_machine>& state) const
   {
     const auto port = state.op1();
     state.a = state.machine().in(port);
@@ -36,7 +36,7 @@ struct out_override : meta::describe_instruction<0xd3, 3, 2>
 {
   static constexpr auto name = "out";
 
-  void operator()(specific::state<spache_invaders_machine>& state) const
+  void operator()(specific::state<space_invaders_machine>& state) const
   {
     const auto port = state.op1();
     state.machine().out(port, state.a);
@@ -60,8 +60,8 @@ emulate::operator()()
   {
     const auto opcode = state_.read_memory(state_.pc);
     state_.pc += 1;
-//    step(instructions{}, opcode, state_);
-    step(instructions{}, opcode, state_, std::cout);
+    step(instructions{}, opcode, state_);
+//    step(instructions{}, opcode, state_, std::cout);
   }
 }
   
