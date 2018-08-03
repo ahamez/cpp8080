@@ -1,14 +1,14 @@
 #include <iostream>
 #include <memory>
 
-#include "cpp8080/emulate.hh"
+#include "cpp8080/emulator.hh"
 #include "cpp8080/specific/instructions.hh"
 
 namespace cpp8080 {
 
 /*------------------------------------------------------------------------------------------------*/
 
-emulate::emulate(std::istream& rom)
+emulator::emulator(std::istream& rom)
   : state_{
       std::istreambuf_iterator<char>{rom},
       std::istreambuf_iterator<char>{},
@@ -54,7 +54,7 @@ using instructions = meta::override_instructions<specific::instructions_8080,
 /*------------------------------------------------------------------------------------------------*/
 
 void
-emulate::operator()()
+emulator::operator()()
 {
   while (true)
   {

@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "cpp8080/emulate.hh"
+#include "cpp8080/emulator.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -20,7 +20,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  cpp8080::emulate{rom_file}();
+  cpp8080::emulator{rom_file}();
 }
 
 /*------------------------------------------------------------------------------------------------*/

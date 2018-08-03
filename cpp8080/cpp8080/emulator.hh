@@ -11,11 +11,11 @@ namespace cpp8080
 
 /*------------------------------------------------------------------------------------------------*/
 
-class emulate
+class emulator
 {
 public:
 
-  emulate(std::istream& rom);
+  emulator(std::istream& rom);
 
   void
   operator()();
