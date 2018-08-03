@@ -1,7 +1,9 @@
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 #include "cpp8080/emulator.hh"
+#include "cpp8080/space_invaders_machine.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -20,7 +22,8 @@ main(int argc, char** argv)
     return 1;
   }
 
-  cpp8080::emulator{rom_file}();
+  auto machine = std::make_shared<cpp8080::space_invaders_machine>();
+  cpp8080::emulator{rom_file, machine}();
 }
 
 /*------------------------------------------------------------------------------------------------*/

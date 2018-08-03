@@ -64,24 +64,33 @@ struct override_instruction
 /*------------------------------------------------------------------------------------------------*/
   
 template <typename Instructions, typename... Overrides>
-struct override_instructions;
+struct override_instructions_impl;
 
 template <typename... Is>
-struct override_instructions<instructions<Is...>>
+struct override_instructions_impl<instructions<Is...>>
 {
   using type = instructions<Is...>;
 };
 
 template <typename... Is, typename Override, typename... Overrides>
-struct override_instructions<instructions<Is...>, Override, Overrides...>
+struct override_instructions_impl<instructions<Is...>, Override, Overrides...>
 {
   // Apply current override.
   using overrided = typename override_instruction<Override, Is...>::type;
 
   // Now apply next override.
-  using type = typename override_instructions<overrided, Overrides...>::type;
+  using type = typename override_instructions_impl<overrided, Overrides...>::type;
 };
 
+template <typename Instructions, typename Overrides>
+struct override_instructions;
+
+template <typename... Is, typename... Overrides>
+struct override_instructions<instructions<Is...>, instructions<Overrides...>>
+{
+  using type = typename override_instructions_impl<instructions<Is...>, Overrides...>::type;
+};
+  
 /*------------------------------------------------------------------------------------------------*/
   
 } // namespace cpp8080::meta

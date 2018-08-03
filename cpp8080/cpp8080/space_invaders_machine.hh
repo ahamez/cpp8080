@@ -2,15 +2,25 @@
 
 #include <cstdint>
 
+#include "cpp8080/meta/instructions.hh"
+
 namespace cpp8080 {
 
 /*------------------------------------------------------------------------------------------------*/
 
+struct in_override;
+struct out_override;
+  
 class space_invaders_machine
 {
 public:
-  
+
   enum class key {coin, left, right, fire, start};
+
+  using overrides = meta::instructions<
+    meta::instruction<in_override>,
+    meta::instruction<out_override>
+  >;
 
 public:
 
@@ -90,6 +100,34 @@ private:
   std::uint8_t in_port1;
 };
 
+/*------------------------------------------------------------------------------------------------*/
+  
+struct in_override : meta::describe_instruction<0xdb, 3, 2>
+{
+  static constexpr auto name = "in";
+
+  void operator()(specific::state<space_invaders_machine>& state) const
+  {
+    const auto port = state.op1();
+    state.a = state.machine().in(port);
+    state.pc += 2;
+  }
+};
+  
+/*------------------------------------------------------------------------------------------------*/
+
+struct out_override : meta::describe_instruction<0xd3, 3, 2>
+{
+  static constexpr auto name = "out";
+
+  void operator()(specific::state<space_invaders_machine>& state) const
+  {
+    const auto port = state.op1();
+    state.machine().out(port, state.a);
+    state.pc += 2;
+  }
+};
+  
 /*------------------------------------------------------------------------------------------------*/
 
 } // namespace cpp8080
