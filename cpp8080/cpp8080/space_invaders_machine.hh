@@ -9,6 +9,10 @@ namespace cpp8080 {
 class space_invaders_machine
 {
 public:
+  
+  enum class key {coin, left, right, fire, start};
+
+public:
 
   [[nodiscard]]
   std::uint8_t
@@ -49,11 +53,41 @@ public:
     }
   }
 
+  void
+  key_down(key k)
+  noexcept
+  {
+    switch (k)
+    {
+      case key::coin  : in_port1 |= 0x01; break;
+      case key::left  : in_port1 |= 0x20; break;
+      case key::right : in_port1 |= 0x40; break;
+      case key::fire  : in_port1 |= 0x10; break;
+      case key::start : in_port1 |= 0x04; break;
+    }
+  }
+  
+  void
+  key_up(key k)
+  noexcept
+  {
+    switch (k)
+    {
+      case key::coin  : in_port1 &= ~0x01; break;
+      case key::left  : in_port1 &= ~0x20; break;
+      case key::right : in_port1 &= ~0x40; break;
+      case key::fire  : in_port1 &= ~0x10; break;
+      case key::start : in_port1 &= ~0x04; break;
+    }
+  }
+
+  
 private:
   
   std::uint8_t shift0_;
   std::uint8_t shift1_;
   std::uint8_t shift_offset_;
+  std::uint8_t in_port1;
 };
 
 /*------------------------------------------------------------------------------------------------*/
