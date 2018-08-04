@@ -87,8 +87,8 @@
 				2BA3FD0C2112518C008F1B96 /* disassemble.hh */,
 				2BA3FD0621124F45008F1B96 /* instruction.hh */,
 				2BA3FD10211260D9008F1B96 /* instructions.hh */,
-				2BA3FD0D21125203008F1B96 /* unimplemented.hh */,
 				2BA3FD1A2115BFD8008F1B96 /* make_instructions.hh */,
+				2BA3FD0D21125203008F1B96 /* unimplemented.hh */,
 			);
 			path = meta;
 			sourceTree = "<group>";

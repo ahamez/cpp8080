@@ -68,11 +68,11 @@ struct override_instruction
 };
 
 } // namespace detail
-  
+
 /*------------------------------------------------------------------------------------------------*/
-  
+
 namespace detail {
-  
+
 template <typename Instructions, typename... Overrides>
 struct override_instructions_impl;
 
@@ -83,26 +83,30 @@ struct override_instructions_impl<instructions<Is...>>
 };
 
 template <typename... Is, typename Override, typename... Overrides>
-struct override_instructions_impl<instructions<Is...>, Override, Overrides...>
+struct override_instructions_impl<instructions<Is...>, instructions<Override, Overrides...>>
 {
   // Apply current override.
   using overrided = typename override_instruction<Override, Is...>::type;
 
   // Now apply next override.
-  using type = typename override_instructions_impl<overrided, Overrides...>::type;
+  using type = typename override_instructions_impl<overrided, instructions<Overrides...>>::type;
+};
+
+template <typename... Is>
+struct override_instructions_impl<instructions<Is...>, instructions<>>
+{
+  using type = instructions<Is...>;
 };
   
 } // namespace detail
-  
+
+/*------------------------------------------------------------------------------------------------*/
+
 template <typename Instructions, typename Overrides>
-struct override_instructions;
-
-template <typename... Is, typename... Overrides>
-struct override_instructions<instructions<Is...>, instructions<Overrides...>>
-{
-  using type = typename detail::override_instructions_impl<instructions<Is...>, Overrides...>::type;
-};
-
+using override_instructions =
+  typename detail::override_instructions_impl<Instructions, Overrides
+>::type;
+  
 /*------------------------------------------------------------------------------------------------*/
   
 } // namespace cpp8080::meta
