@@ -41,8 +41,7 @@ public:
     operator()(const specific::state<Machine>& state, Instruction)
     const
     {
-      meta::disassemble<specific::state<Machine>, Instruction, Instruction::bytes>{}(std::cout, state);
-      std::cout << '\n';
+      std::cout << meta::disassemble(state, Instruction{}) << '\n';
     }
   };
   
@@ -53,8 +52,8 @@ public:
     {
       const auto opcode = state_.read_memory(state_.pc);
       state_.pc += 1;
-      step(instructions{}, opcode, state_);
-//      step(instructions{}, opcode, state_, verbose{});
+//      step(instructions{}, opcode, state_);
+      step(instructions{}, opcode, state_, verbose{});
     }
   }
 

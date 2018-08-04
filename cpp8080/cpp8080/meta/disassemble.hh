@@ -6,11 +6,13 @@ namespace cpp8080::meta {
 
 /*------------------------------------------------------------------------------------------------*/
   
+namespace detail {
+  
 template <typename State, typename Instruction, std::uint8_t Bytes>
-struct disassemble;
+struct disassemble_impl;
   
 template <typename State, typename Instruction>
-struct disassemble<State, Instruction, 1>
+struct disassemble_impl<State, Instruction, 1>
 {
   void
   operator()(std::ostream& os, const State&)
@@ -21,7 +23,7 @@ struct disassemble<State, Instruction, 1>
 };
   
 template <typename State, typename Instruction>
-struct disassemble<State, Instruction, 2>
+struct disassemble_impl<State, Instruction, 2>
 {
   void
   operator()(std::ostream& os, const State& state)
@@ -32,7 +34,7 @@ struct disassemble<State, Instruction, 2>
 };
   
 template <typename State, typename Instruction>
-struct disassemble<State, Instruction, 3>
+struct disassemble_impl<State, Instruction, 3>
 {
   void
   operator()(std::ostream& os, const State& state)
@@ -43,5 +45,33 @@ struct disassemble<State, Instruction, 3>
 };
 
 /*------------------------------------------------------------------------------------------------*/
+
+template <typename State, typename Instruction>
+struct disassemble_dispatch
+{
+  const State& state;
   
+  friend
+  std::ostream&
+  operator<<(std::ostream& os, const disassemble_dispatch& d)
+  {
+    disassemble_impl<State, Instruction, Instruction::bytes>{}(os, d.state);
+    return os;
+  }
+};
+
+} // namespace detail
+    
+/*------------------------------------------------------------------------------------------------*/
+    
+template <typename State, typename Instruction>
+auto
+disassemble(const State& state, Instruction)
+noexcept
+{
+  return detail::disassemble_dispatch<State, Instruction>{state};
+}
+    
+/*------------------------------------------------------------------------------------------------*/
+    
 } // namespace cpp8080::meta
