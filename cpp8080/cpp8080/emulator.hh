@@ -1,15 +1,16 @@
 #pragma once
 
+#include <iostream>
 #include <istream>
 #include <memory>
 #include <vector>
 
+#include "cpp8080/meta/disassemble.hh"
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/state.hh"
 #include "cpp8080/space_invaders_machine.hh"
 
-namespace cpp8080
-{
+namespace cpp8080 {
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -32,7 +33,19 @@ public:
         machine}
     , machine_{machine}
   {}
-
+  
+  struct verbose
+  {
+    template <typename Instruction>
+    void
+    operator()(const specific::state<Machine>& state, Instruction)
+    const
+    {
+      meta::disassemble<specific::state<Machine>, Instruction, Instruction::bytes>{}(std::cout, state);
+      std::cout << '\n';
+    }
+  };
+  
   void
   operator()()
   {
@@ -41,7 +54,7 @@ public:
       const auto opcode = state_.read_memory(state_.pc);
       state_.pc += 1;
       step(instructions{}, opcode, state_);
-      //    step(instructions{}, opcode, state_, std::cout);
+//      step(instructions{}, opcode, state_, verbose{});
     }
   }
 

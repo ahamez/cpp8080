@@ -1,33 +1,37 @@
 #pragma once
 
-#include <ostream>
 #include <stdexcept>
+#include <utility> // as_const
 
-#include "cpp8080/meta/disassemble.hh"
 #include "cpp8080/meta/instructions.hh"
 
 namespace cpp8080::meta {
 
 /*------------------------------------------------------------------------------------------------*/
   
-template<typename State, typename Instruction>
+template<typename State, typename Fn, typename Instruction>
 void
-execute(State& state)
-noexcept(noexcept(Instruction{}(state)))
+execute(State& state, Fn&& fn)
+noexcept(noexcept(Instruction{}(state)) and noexcept(fn(std::as_const(state), Instruction{})))
 {
+  fn(std::as_const(state), Instruction{});
   Instruction{}(state);
 }
 
 /*------------------------------------------------------------------------------------------------*/
   
-template<typename State, typename Instruction>
+template <typename State, typename Fn, typename... Instructions>
 void
-execute_verbose(State& state, std::ostream& os)
-noexcept(noexcept(execute<State, Instruction>(state)))
+step(instructions<Instructions...>, std::uint8_t opcode, State& state, Fn&& fn)
 {
-  disassemble<State, Instruction, Instruction::bytes>{}(os, state);
-  os << '\n';
-  execute<State, Instruction>(state);
+  if (opcode >= sizeof...(Instructions))
+  {
+    throw std::runtime_error{"Invalid opcode"};
+  }
+  
+  using fun_ptr_type = void (*) (State&, Fn&&);
+  static constexpr fun_ptr_type jump_table[] = {&execute<State, Fn, Instructions>...};
+  jump_table[opcode](state, std::forward<Fn>(fn));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -36,30 +40,7 @@ template <typename State, typename... Instructions>
 void
 step(instructions<Instructions...>, std::uint8_t opcode, State& state)
 {
-  if (opcode >= sizeof...(Instructions))
-  {
-    throw std::runtime_error{"Invalid opcode"};
-  }
-  
-  using fun_ptr_type = void (*) (State&);
-  static constexpr fun_ptr_type jump_table[] = {&execute<State, Instructions>...};
-  jump_table[opcode](state);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-  
-template <typename State, typename... Instructions>
-void
-step(instructions<Instructions...>, std::uint8_t opcode, State& state, std::ostream& os)
-{
-  if (opcode >= sizeof...(Instructions))
-  {
-    throw std::runtime_error{"Invalid opcode"};
-  }
-  
-  using fun_ptr_type = void (*) (State&, std::ostream&);
-  static constexpr fun_ptr_type jump_table[] = {&execute_verbose<State, Instructions>...};
-  jump_table[opcode](state, os);
+  step(instructions<Instructions...>{}, opcode, state, [](const auto&, auto){});
 }
 
 /*------------------------------------------------------------------------------------------------*/
