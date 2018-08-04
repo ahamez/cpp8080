@@ -196,6 +196,14 @@ public:
   }
 
   void
+  interrupt(std::uint8_t interrupt_num)
+  {
+    push((pc & 0xff00) >> 8, pc & 0xff);
+    pc = 8 * interrupt_num;
+    disable_interrupt();
+  }
+  
+  void
   increment_cycles(std::uint64_t nb_cycles)
   noexcept
   {
