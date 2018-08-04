@@ -34,10 +34,12 @@ public:
   
   template <typename InputIterator>
   state(InputIterator first, InputIterator last, std::shared_ptr<Machine> machine)
-    : memory(16384, 0)
-    , machine_ptr{machine}
+    : machine_ptr_{machine}
+    , memory_(16384, 0)
+    , interrupt_{false}
+    , cycles_{0}
   {
-    std::copy(first, last, memory.begin());
+    std::copy(first, last, memory_.begin());
   }
   
   friend
@@ -80,7 +82,7 @@ public:
       throw std::runtime_error{"Attempt to write outside of RAM"};
     }
     
-    memory[address] = value;
+    memory_[address] = value;
   }
 
   [[nodiscard]]
@@ -88,7 +90,7 @@ public:
   read_memory(std::uint16_t address)
   const
   {
-    return memory.at(address);
+    return memory_.at(address);
   }
   
   void
@@ -104,7 +106,7 @@ public:
   const
   {
     const auto offset = (h << 8) | l;
-    return memory.at(offset);
+    return memory_.at(offset);
   }
 
   void
@@ -137,8 +139,8 @@ public:
   void
   pop(std::uint8_t& high, std::uint8_t& low)
   {
-    low = memory.at(sp);
-    high = memory.at(sp + 1);
+    low = memory_.at(sp);
+    high = memory_.at(sp + 1);
     sp += 2;
   }
 
@@ -147,7 +149,7 @@ public:
   op1()
   const
   {
-    return memory.at(pc + 0);
+    return memory_.at(pc + 0);
   }
   
   [[nodiscard]]
@@ -155,23 +157,51 @@ public:
   op2()
   const
   {
-    return memory.at(pc + 1);
+    return memory_.at(pc + 1);
   }
 
   Machine&
   machine()
   noexcept
   {
-    return *machine_ptr;
+    return *machine_ptr_;
   }
 
   const Machine&
   machine()
   const noexcept
   {
-    return *machine_ptr;
+    return *machine_ptr_;
   }
 
+  void
+  enable_interrupt()
+  noexcept
+  {
+    interrupt_ = true;
+  }
+
+  void
+  disable_interrupt()
+  noexcept
+  {
+    interrupt_ = false;
+  }
+
+  bool
+  interrupt_enabled()
+  const noexcept
+  {
+    return interrupt_;
+  }
+
+  void
+  increment_cycles(std::uint64_t nb_cycles)
+  noexcept
+  {
+    cycles_ += nb_cycles;
+  }
+  
 public:
 
   std::uint8_t a;
@@ -184,14 +214,13 @@ public:
   std::uint16_t sp;
   std::uint16_t pc;
   condition_codes cc;
-  std::uint8_t int_enable;
-  
-  std::uint64_t cycles;
-  std::shared_ptr<Machine> machine_ptr;
   
 private:
 
-  std::vector<std::uint8_t> memory;
+  std::shared_ptr<Machine> machine_ptr_;
+  std::vector<std::uint8_t> memory_;
+  bool interrupt_;
+  std::uint64_t cycles_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
