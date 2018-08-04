@@ -2519,7 +2519,7 @@ struct ei : meta::describe_instruction<0xfb, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.int_enable = 1;
+    state.enable_interrupt();
   }
 };
 
