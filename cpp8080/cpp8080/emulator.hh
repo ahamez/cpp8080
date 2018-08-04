@@ -33,7 +33,18 @@ public:
         machine}
     , machine_{machine}
   {}
-
+  
+  struct verbose
+  {
+    template <typename Instruction>
+    void
+    operator()(const specific::state<Machine>& state, Instruction)
+    const
+    {
+      std::cout << meta::disassemble(state, Instruction{}) << '\n';
+    }
+  };
+  
   void
   operator()()
   {
@@ -42,9 +53,7 @@ public:
       const auto opcode = state_.read_memory(state_.pc);
       state_.pc += 1;
 //      step(instructions{}, opcode, state_);
-      step(instructions{}, opcode, state_, [](const auto& state, auto i){
-        std::cout << meta::disassemble(state, i) << '\n';
-      });
+      step(instructions{}, opcode, state_, verbose{});
     }
   }
 
