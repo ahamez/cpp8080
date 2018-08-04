@@ -12,6 +12,8 @@ struct instructions
 
 /*------------------------------------------------------------------------------------------------*/
 
+namespace detail {
+  
 template <typename...>
 struct prepend_instruction;
 
@@ -21,7 +23,11 @@ struct prepend_instruction<T, instructions<Us...>>
   using type = instructions<T, Us...>;
 };
 
+} // namespace detail
+
 /*------------------------------------------------------------------------------------------------*/
+
+namespace detail {
   
 // If overridden opcode is not found, a compilation error will occurs.
 template <bool SameOpcode, typename Override, typename... Is>
@@ -61,7 +67,11 @@ struct override_instruction
   >::type;
 };
 
+} // namespace detail
+  
 /*------------------------------------------------------------------------------------------------*/
+  
+namespace detail {
   
 template <typename Instructions, typename... Overrides>
 struct override_instructions_impl;
@@ -81,16 +91,18 @@ struct override_instructions_impl<instructions<Is...>, Override, Overrides...>
   // Now apply next override.
   using type = typename override_instructions_impl<overrided, Overrides...>::type;
 };
-
+  
+} // namespace detail
+  
 template <typename Instructions, typename Overrides>
 struct override_instructions;
 
 template <typename... Is, typename... Overrides>
 struct override_instructions<instructions<Is...>, instructions<Overrides...>>
 {
-  using type = typename override_instructions_impl<instructions<Is...>, Overrides...>::type;
+  using type = typename detail::override_instructions_impl<instructions<Is...>, Overrides...>::type;
 };
-  
+
 /*------------------------------------------------------------------------------------------------*/
   
 } // namespace cpp8080::meta
