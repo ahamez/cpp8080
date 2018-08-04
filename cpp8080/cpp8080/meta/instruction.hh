@@ -15,6 +15,7 @@ execute(State& state, Fn&& fn)
 noexcept(noexcept(Instruction{}(state)) and noexcept(fn(std::as_const(state), Instruction{})))
 {
   fn(std::as_const(state), Instruction{});
+  state.increment_cycles(Instruction::cycles);
   Instruction{}(state);
 }
 
