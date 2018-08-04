@@ -202,6 +202,13 @@ public:
     cycles_ += nb_cycles;
   }
   
+  std::uint64_t
+  cycles()
+  const noexcept
+  {
+    return cycles_;
+  }
+  
 public:
 
   std::uint8_t a;
