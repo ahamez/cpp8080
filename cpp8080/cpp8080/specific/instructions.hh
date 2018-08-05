@@ -562,9 +562,11 @@ struct dcr_m : meta::describe_instruction<0x35, 10, 1>
 {
   static constexpr auto name = "dcr_m";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0x35"};
+    const auto res = state.read_hl() - 1;
+    state.flags_zsp(res);
+    state.write_hl(res);
   }
 };
 
@@ -2039,9 +2041,13 @@ struct rz : meta::describe_instruction<0xc8, 11, 1>
 {
   static constexpr auto name = "rz";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xc8"};
+    if (state.cc.z == 1)
+    {
+      state.pc = state.read_memory(state.sp) | (state.read_memory(state.sp + 1) << 8);
+      state.sp += 2;
+    }
   }
 };
 
@@ -2060,9 +2066,11 @@ struct jz_adr : meta::describe_instruction<0xca, 10, 3>
 {
   static constexpr auto name = "jz_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xca"};
+    state.pc = state.cc.z == 1
+             ? (state.op2() << 8) | state.op1()
+             : state.pc + 2;
   }
 };
 
@@ -2134,9 +2142,11 @@ struct jnc_adr : meta::describe_instruction<0xd2, 10, 3>
 {
   static constexpr auto name = "jnc_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xd2"};
+    state.pc = state.cc.cy == 0
+             ? (state.op2() << 8) | state.op1()
+             : state.pc + 2;
   }
 };
 
@@ -2204,9 +2214,11 @@ struct jc_adr : meta::describe_instruction<0xda, 10, 3>
 {
   static constexpr auto name = "jc_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xda"};
+    state.pc = state.cc.cy != 0
+             ? (state.op2() << 8) | state.op1()
+             : state.pc + 2;
   }
 };
 
@@ -2214,9 +2226,9 @@ struct in : meta::describe_instruction<0xdb, 10, 2>
 {
   static constexpr auto name = "in_d8";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xdb"};
+    state.pc += 1;
   }
 };
 
