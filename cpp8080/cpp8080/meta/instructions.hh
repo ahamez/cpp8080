@@ -29,7 +29,7 @@ struct prepend_instruction<T, instructions<Us...>>
 
 namespace detail {
   
-// If overridden opcode is not found, a compilation error will occurs.
+// If overridden opcode is not found, a compilation error will occur.
 template <bool SameOpcode, typename Override, typename... Is>
 struct override_instruction_impl;
 
@@ -45,16 +45,16 @@ struct override_instruction_impl<true, Override, instructions<I, Is...>>
   using type = instructions<Override, Is...>;
 };
 
-template <typename Override, typename I, typename... Is>
-struct override_instruction_impl<false, Override, instructions<I, Is...>>
+template <typename Override, typename Current, typename I, typename... Is>
+struct override_instruction_impl<false, Override, instructions<Current, I, Is...>>
 {
   using next = typename override_instruction_impl<
     Override::opcode == I::opcode,
     Override,
-    instructions<Is...>
+    instructions<I, Is...>
   >::type;
 
-  using type = typename prepend_instruction<I, next>::type;
+  using type = typename prepend_instruction<Current, next>::type;
 };
 
 template <typename Override, typename I, typename... Is>
@@ -77,7 +77,7 @@ template <typename Instructions, typename... Overrides>
 struct override_instructions_impl;
 
 template <typename... Is>
-struct override_instructions_impl<instructions<Is...>>
+struct override_instructions_impl<instructions<Is...>, instructions<>>
 {
   using type = instructions<Is...>;
 };
@@ -91,12 +91,6 @@ struct override_instructions_impl<instructions<Is...>, instructions<Override, Ov
   // Now apply next override.
   using type = typename override_instructions_impl<overrided, instructions<Overrides...>>::type;
 };
-
-template <typename... Is>
-struct override_instructions_impl<instructions<Is...>, instructions<>>
-{
-  using type = instructions<Is...>;
-};
   
 } // namespace detail
 
@@ -104,8 +98,7 @@ struct override_instructions_impl<instructions<Is...>, instructions<>>
 
 template <typename Instructions, typename Overrides>
 using override_instructions =
-  typename detail::override_instructions_impl<Instructions, Overrides
->::type;
+  typename detail::override_instructions_impl<Instructions, Overrides>::type;
   
 /*------------------------------------------------------------------------------------------------*/
   
