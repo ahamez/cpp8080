@@ -137,6 +137,16 @@ public:
   }
 
   void
+  artithmetic_flags(std::uint16_t res)
+  noexcept
+  {
+    cc.cy = (res > 0xff);
+    cc.z = ((res & 0xff) == 0);
+    cc.s = (0x80 == (res & 0x80));
+    cc.p = even_parity(res & 0xff);
+  }
+  
+  void
   push(std::uint8_t high, std::uint8_t low)
   {
     write_memory(sp - 1, high);
