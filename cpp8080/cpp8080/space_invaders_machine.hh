@@ -17,9 +17,9 @@ public:
 
   enum class key {coin, left, right, fire, start};
 
-  using overrides = meta::instructions<
-    meta::instruction<in_override>,
-    meta::instruction<out_override>
+  using overrides = meta::make_instructions<
+    in_override,
+    out_override
   >;
 
 public:
