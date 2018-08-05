@@ -15,7 +15,6 @@ execute(State& state, Fn&& fn)
 noexcept(noexcept(Instruction{}(state)) and noexcept(fn(std::as_const(state), Instruction{})))
 {
   fn(std::as_const(state), Instruction{});
-  state.increment_cycles(Instruction::cycles);
   Instruction{}(state);
 }
 
@@ -49,16 +48,17 @@ step(instructions<Instructions...>, std::uint8_t opcode, State& state)
 template <typename Instruction>
 struct instruction
 {
-  static constexpr auto opcode = Instruction::opcode;
-  static constexpr auto name   = Instruction::name;
   static constexpr auto bytes  = Instruction::bytes;
+  static constexpr auto cycles = Instruction::cycles;
+  static constexpr auto name   = Instruction::name;
+  static constexpr auto opcode = Instruction::opcode;
 
   template <typename State>
   void
   operator()(State& state)
   const noexcept(noexcept(Instruction{}(state)))
   {
-    state.cycles += Instruction::cycles;
+    state.increment_cycles(Instruction::cycles);
     Instruction{}(state);
   }
 };
@@ -68,9 +68,9 @@ struct instruction
 template <std::uint8_t Opcode, std::uint8_t Cycles, std::uint8_t Bytes>
 struct describe_instruction
 {
-  static constexpr auto opcode = Opcode;
-  static constexpr auto cycles = Cycles;
   static constexpr auto bytes  = Bytes;
+  static constexpr auto cycles = Cycles;
+  static constexpr auto opcode = Opcode;
 };
 
 /*------------------------------------------------------------------------------------------------*/
