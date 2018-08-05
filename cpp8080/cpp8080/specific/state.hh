@@ -96,7 +96,7 @@ public:
   void
   write_hl(std::uint8_t value)
   {
-    const auto offset = (h << 8) | l;
+    const auto offset = hl();
     write_memory(offset, value);
   }
 
@@ -105,10 +105,18 @@ public:
   read_hl()
   const
   {
-    const auto offset = (h << 8) | l;
-    return memory_.at(offset);
+    const auto offset = hl();
+    return read_memory(offset);
   }
 
+  [[nodiscard]]
+  std::uint16_t
+  hl()
+  const noexcept
+  {
+    return (h << 8) | l;
+  }
+  
   void
   flags_zsp(std::uint8_t value)
   noexcept

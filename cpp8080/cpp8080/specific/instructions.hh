@@ -107,7 +107,7 @@ struct dad_b : meta::describe_instruction<0x09, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto hl = (state.h << 8) | state.l;
+    const auto hl = state.hl();
     const auto bc = (state.b << 8) | state.c;
     const auto res = hl + bc;
     state.h = (res & 0xff00) >> 8;
@@ -274,7 +274,7 @@ struct dad_d : meta::describe_instruction<0x19, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto hl = (state.h << 8) | state.l;
+    const auto hl = state.hl();
     const auto de = (state.d << 8) | state.e;
     const auto res = hl + de;
     state.h = (res & 0xff00) >> 8;
@@ -437,7 +437,7 @@ struct dad_h : meta::describe_instruction<0x29, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto hl = (state.h << 8) | state.l;
+    const auto hl = state.hl();
     const auto res = hl + hl;
     state.h = (res & 0xff00) >> 8;
     state.l = res & 0xff;
