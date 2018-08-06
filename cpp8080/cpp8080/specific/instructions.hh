@@ -1798,9 +1798,10 @@ struct ora_b : meta::describe_instruction<0xb0, 4, 1>
 {
   static constexpr auto name = "ora_b";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xb0"};
+    state.a = state.a | state.b;
+    state.logic_flags_a();
   }
 };
 
@@ -1808,9 +1809,10 @@ struct ora_c : meta::describe_instruction<0xb1, 4, 1>
 {
   static constexpr auto name = "ora_c";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xb1"};
+    state.a = state.a | state.c;
+    state.logic_flags_a();
   }
 };
 
@@ -1818,9 +1820,10 @@ struct ora_d : meta::describe_instruction<0xb2, 4, 1>
 {
   static constexpr auto name = "ora_d";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xb2"};
+    state.a = state.a | state.d;
+    state.logic_flags_a();
   }
 };
 
@@ -1828,9 +1831,10 @@ struct ora_e : meta::describe_instruction<0xb3, 4, 1>
 {
   static constexpr auto name = "ora_e";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xb3"};
+    state.a = state.a | state.e;
+    state.logic_flags_a();
   }
 };
 
@@ -1838,9 +1842,10 @@ struct ora_h : meta::describe_instruction<0xb4, 4, 1>
 {
   static constexpr auto name = "ora_h";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xb4"};
+    state.a = state.a | state.h;
+    state.logic_flags_a();
   }
 };
 
@@ -1848,9 +1853,10 @@ struct ora_l : meta::describe_instruction<0xb5, 4, 1>
 {
   static constexpr auto name = "ora_l";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xb5"};
+    state.a = state.a | state.l;
+    state.logic_flags_a();
   }
 };
 
@@ -1861,7 +1867,7 @@ struct ora_m : meta::describe_instruction<0xb6, 7, 1>
   template <typename Machine> void operator()(state<Machine>& state) const
   {
     state.a = state.a | state.read_hl();
-    state.logic_flags_a();c
+    state.logic_flags_a();
   }
 };
 
@@ -1869,9 +1875,10 @@ struct ora_a : meta::describe_instruction<0xb7, 4, 1>
 {
   static constexpr auto name = "ora_a";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xb7"};
+    state.a = state.a | state.a;
+    state.logic_flags_a();
   }
 };
 
@@ -2010,9 +2017,20 @@ struct cnz : meta::describe_instruction<0xc4, 17, 3>
 {
   static constexpr auto name = "cnz";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xc4"};
+    if (state.cc.z == 0)
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0xff);
+      state.write_memory(state.sp - 2, ret & 0xff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
+    else
+    {
+      state.pc += 2;
+    }
   }
 };
 
@@ -2197,13 +2215,17 @@ struct push_d : meta::describe_instruction<0xd5, 11, 1>
   }
 };
 
-struct sui_d8 : meta::describe_instruction<0xd6, 7, 2>
+struct sui : meta::describe_instruction<0xd6, 7, 2>
 {
-  static constexpr auto name = "sui_d8";
+  static constexpr auto name = "sui";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xd6"};
+    const auto x = state.a - state.op1();
+    state.flags_zsp(x & 0xff);
+    state.cc.cy = (state.a < state.op1());
+    state.a = x;
+    state.pc += 1;
   }
 };
 
@@ -2317,9 +2339,14 @@ struct xthl : meta::describe_instruction<0xe3, 18, 1>
 {
   static constexpr auto name = "xthl";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xe3"};
+    const auto h = state.h;
+    const auto l = state.l;
+    state.l = state.read_memory(state.sp);
+    state.h = state.read_memory(state.sp + 1);
+    state.write_memory(state.sp, l);
+    state.write_memory(state.sp + 1, h);
   }
 };
 
@@ -2379,15 +2406,15 @@ struct pchl : meta::describe_instruction<0xe9, 5, 1>
 {
   static constexpr auto name = "pchl";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xe9"};
+    state.pc = (state.h << 8) | state.op1();
   }
 };
 
-struct jpe_adr : meta::describe_instruction<0xea, 10, 3>
+struct jpe : meta::describe_instruction<0xea, 10, 3>
 {
-  static constexpr auto name = "jpe_adr";
+  static constexpr auto name = "jpe";
 
   template <typename Machine> void operator()(state<Machine>&) const
   {
@@ -2806,7 +2833,7 @@ using instructions_8080 = meta::make_instructions<
   out,
   cnc_adr,
   push_d,
-  sui_d8,
+  sui,
   rst_2,
   rc,
   meta::unimplemented<0xd9>,
@@ -2826,7 +2853,7 @@ using instructions_8080 = meta::make_instructions<
   rst_4,
   rpe,
   pchl,
-  jpe_adr,
+  jpe,
   xchg,
   cpe_adr,
   meta::unimplemented<0xed>,
