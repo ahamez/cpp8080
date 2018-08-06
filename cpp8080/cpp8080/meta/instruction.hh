@@ -18,8 +18,9 @@ noexcept(
          and noexcept(fn.post(std::as_const(state), Instruction{}))
         )
 {
-  state.pc += 1;
+  state.fetch_operands();
   fn.pre(std::as_const(state), Instruction{});
+  state.pc += 1;
   Instruction{}(state);
   fn.post(std::as_const(state), Instruction{});
   return Instruction::cycles;

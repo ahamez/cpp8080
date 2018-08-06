@@ -162,19 +162,26 @@ public:
   [[nodiscard]]
   std::uint8_t
   op1()
-  const
+  const noexcept
   {
-    return memory_.at(pc + 0);
+    return op1_;
   }
   
   [[nodiscard]]
   std::uint8_t
   op2()
-  const
+  const noexcept
   {
-    return memory_.at(pc + 1);
+    return op2_;
   }
 
+  void
+  fetch_operands()
+  {
+    op1_ = memory_.at(pc + 1);
+    op2_ = memory_.at(pc + 2);
+  }
+  
   Machine&
   machine()
   noexcept
@@ -258,6 +265,9 @@ private:
   std::vector<std::uint8_t> memory_;
   bool interrupt_;
   std::uint64_t cycles_;
+
+  std::uint8_t op1_;
+  std::uint8_t op2_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
