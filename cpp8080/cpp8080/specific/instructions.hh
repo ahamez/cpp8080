@@ -1985,9 +1985,9 @@ struct pop_b : meta::describe_instruction<0xc1, 10, 1>
   }
 };
 
-struct jnz_adr : meta::describe_instruction<0xc2, 10, 3>
+struct jnz : meta::describe_instruction<0xc2, 10, 3>
 {
-  static constexpr auto name = "jnz_adr";
+  static constexpr auto name = "jnz";
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
@@ -2002,9 +2002,9 @@ struct jnz_adr : meta::describe_instruction<0xc2, 10, 3>
   }
 };
 
-struct jmp_adr : meta::describe_instruction<0xc3, 10, 3>
+struct jmp : meta::describe_instruction<0xc3, 10, 3>
 {
-  static constexpr auto name = "jmp_adr";
+  static constexpr auto name = "jmp";
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
@@ -2012,9 +2012,9 @@ struct jmp_adr : meta::describe_instruction<0xc3, 10, 3>
   }
 };
 
-struct cnz_adr : meta::describe_instruction<0xc4, 17, 3>
+struct cnz : meta::describe_instruction<0xc4, 17, 3>
 {
-  static constexpr auto name = "cnz_adr";
+  static constexpr auto name = "cnz";
 
   template <typename Machine> void operator()(state<Machine>&) const
   {
@@ -2788,9 +2788,9 @@ using instructions_8080 = meta::make_instructions<
   cmp_a,
   rnz,
   pop_b,
-  jnz_adr,
-  jmp_adr,
-  cnz_adr,
+  jnz,
+  jmp,
+  cnz,
   push_b,
   adi,
   rst_0,
