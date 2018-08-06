@@ -38,10 +38,20 @@ public:
   {
     template <typename Instruction>
     void
-    operator()(const specific::state<Machine>& state, Instruction)
+    pre(const specific::state<Machine>& state, Instruction)
     const
     {
-      std::cout << meta::disassemble(state, Instruction{}) << '\n';
+      std::cout
+        << std::setfill('0') << std::setw(4) << state.pc << ' '
+        << meta::disassemble(state, Instruction{}) << ' ';
+    }
+
+    template <typename Instruction>
+    void
+    post(const specific::state<Machine>& state, Instruction)
+    const
+    {
+      std::cout << state << '\n';
     }
   };
   
