@@ -61,7 +61,6 @@ public:
     while (true)
     {
       const auto opcode = state_.read_memory(state_.pc);
-      state_.pc += 1;
 //      step(instructions{}, opcode, state_);
       step(instructions{}, opcode, state_, verbose{});
     }

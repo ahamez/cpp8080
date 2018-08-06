@@ -18,6 +18,7 @@ noexcept(
          and noexcept(fn.post(std::as_const(state), Instruction{}))
         )
 {
+  state.pc += 1;
   fn.pre(std::as_const(state), Instruction{});
   Instruction{}(state);
   fn.post(std::as_const(state), Instruction{});
