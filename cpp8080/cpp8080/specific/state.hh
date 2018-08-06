@@ -189,6 +189,13 @@ public:
     return *machine_ptr_;
   }
 
+  const std::vector<std::uint8_t>&
+  memory()
+  const noexcept
+  {
+    return memory_;
+  }
+  
   void
   enable_interrupt()
   noexcept
