@@ -47,9 +47,6 @@ public:
   operator<<(std::ostream& os, const state& state)
   {
     return os
-      << std::hex
-      << std::setfill('0') << std::setw(4)
-      << state.pc
       << std::resetiosflags(std::ios_base::basefield)
       << " "
       << (state.cc.z == 1 ? "z" : ".")
