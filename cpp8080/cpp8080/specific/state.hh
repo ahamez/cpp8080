@@ -31,7 +31,7 @@ template <typename Machine>
 class state
 {
 public:
-  
+
   template <typename InputIterator>
   state(InputIterator first, InputIterator last, std::shared_ptr<Machine> machine)
     : machine_ptr_{machine}
@@ -41,7 +41,7 @@ public:
   {
     std::copy(first, last, memory_.begin());
   }
-  
+
   friend
   std::ostream&
   operator<<(std::ostream& os, const state& state)
@@ -73,12 +73,12 @@ public:
     {
       throw std::runtime_error{"Attempt to write ROM"};
     }
-    
+
     if (address >= 0x4000)
     {
       throw std::runtime_error{"Attempt to write outside of RAM"};
     }
-    
+
     memory_[address] = value;
   }
 
@@ -89,7 +89,7 @@ public:
   {
     return memory_.at(address);
   }
-  
+
   void
   write_hl(std::uint8_t value)
   {
