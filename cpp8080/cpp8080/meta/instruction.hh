@@ -10,18 +10,19 @@ namespace cpp8080::meta {
 /*------------------------------------------------------------------------------------------------*/
   
 template<typename State, typename Fn, typename Instruction>
-void
+std::uint64_t
 execute(State& state, Fn&& fn)
 noexcept(noexcept(Instruction{}(state)) and noexcept(fn(std::as_const(state), Instruction{})))
 {
   fn(std::as_const(state), Instruction{});
   Instruction{}(state);
+  return Instruction::cycles;
 }
 
 /*------------------------------------------------------------------------------------------------*/
   
 template <typename State, typename Fn, typename... Instructions>
-void
+std::uint64_t
 step(instructions<Instructions...>, std::uint8_t opcode, State& state, Fn&& fn)
 {
   if (opcode >= sizeof...(Instructions))
@@ -29,18 +30,18 @@ step(instructions<Instructions...>, std::uint8_t opcode, State& state, Fn&& fn)
     throw std::runtime_error{"Invalid opcode"};
   }
   
-  using fun_ptr_type = void (*) (State&, Fn&&);
+  using fun_ptr_type = std::uint64_t (*) (State&, Fn&&);
   static constexpr fun_ptr_type jump_table[] = {&execute<State, Fn, Instructions>...};
-  jump_table[opcode](state, std::forward<Fn>(fn));
+  return jump_table[opcode](state, std::forward<Fn>(fn));
 }
 
 /*------------------------------------------------------------------------------------------------*/
   
 template <typename State, typename... Instructions>
-void
+std::uint64_t
 step(instructions<Instructions...>, std::uint8_t opcode, State& state)
 {
-  step(instructions<Instructions...>{}, opcode, state, [](const auto&, auto){});
+  return step(instructions<Instructions...>{}, opcode, state, [](const auto&, auto){});
 }
 
 /*------------------------------------------------------------------------------------------------*/
