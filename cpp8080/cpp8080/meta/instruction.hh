@@ -8,6 +8,8 @@
 namespace cpp8080::meta {
 
 /*------------------------------------------------------------------------------------------------*/
+
+namespace detail {
   
 template<typename State, typename Fn, typename Instruction>
 std::uint64_t
@@ -26,7 +28,7 @@ noexcept(
   return Instruction::cycles;
 }
 
-/*------------------------------------------------------------------------------------------------*/
+} // namespace detail
   
 template <typename State, typename Fn, typename... Instructions>
 std::uint64_t
@@ -38,17 +40,32 @@ step(instructions<Instructions...>, std::uint8_t opcode, State& state, Fn&& fn)
   }
   
   using fun_ptr_type = std::uint64_t (*) (State&, Fn&&);
-  static constexpr fun_ptr_type jump_table[] = {&execute<State, Fn, Instructions>...};
+  static constexpr fun_ptr_type jump_table[] = {&detail::execute<State, Fn, Instructions>...};
   return jump_table[opcode](state, std::forward<Fn>(fn));
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+namespace detail {
+
+struct dummy_hook
+{
+  template <typename State, typename Instruction>
+  void pre(const State&, Instruction) const noexcept
+  {}
+  
+  template <typename State, typename Instruction>
+  void post(const State&, Instruction) const noexcept
+  {}
+};
+  
+} // namespace detail
   
 template <typename State, typename... Instructions>
 std::uint64_t
 step(instructions<Instructions...>, std::uint8_t opcode, State& state)
 {
-  return step(instructions<Instructions...>{}, opcode, state, [](const auto&, auto){});
+  return step(instructions<Instructions...>{}, opcode, state, detail::dummy_hook{});
 }
 
 /*------------------------------------------------------------------------------------------------*/
