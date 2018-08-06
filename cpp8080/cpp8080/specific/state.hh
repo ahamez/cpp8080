@@ -52,8 +52,8 @@ public:
       << (state.cc.z == 1 ? "z" : ".")
       << (state.cc.s == 1 ? "s" : ".")
       << (state.cc.p == 1 ? "p" : ".")
-      << (state.cc.cy == 1 ? "cy" : ".")
-      << (state.cc.ac == 1 ? "ac" : ".")
+      << (state.cc.cy == 1 ? "c" : ".")
+      << (state.cc.ac == 1 ? "a" : ".")
       << std::hex
       << "  A $" << std::setfill('0') << std::setw(2) << +state.a
       << " B $"  << std::setfill('0') << std::setw(2) << +state.b
