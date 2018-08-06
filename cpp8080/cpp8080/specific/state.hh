@@ -182,6 +182,7 @@ public:
     op2_ = memory_.at(pc + 2);
   }
   
+  [[nodiscard]]
   Machine&
   machine()
   noexcept
@@ -189,6 +190,7 @@ public:
     return *machine_ptr_;
   }
 
+  [[nodiscard]]
   const Machine&
   machine()
   const noexcept
@@ -196,6 +198,7 @@ public:
     return *machine_ptr_;
   }
 
+  [[nodiscard]]
   const std::vector<std::uint8_t>&
   memory()
   const noexcept
@@ -217,6 +220,7 @@ public:
     interrupt_ = false;
   }
 
+  [[nodiscard]]
   bool
   interrupt_enabled()
   const noexcept
@@ -239,6 +243,7 @@ public:
     cycles_ += nb_cycles;
   }
   
+  [[nodiscard]]
   std::uint64_t
   cycles()
   const noexcept
