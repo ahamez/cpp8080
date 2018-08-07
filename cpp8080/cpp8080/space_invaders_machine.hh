@@ -110,7 +110,7 @@ struct in_override : meta::describe_instruction<0xdb, 3, 2>
   {
     const auto port = state.op1();
     state.a = state.machine().in(port);
-    state.pc += 2;
+    state.pc += 1;
   }
 };
   
@@ -124,7 +124,7 @@ struct out_override : meta::describe_instruction<0xd3, 3, 2>
   {
     const auto port = state.op1();
     state.machine().out(port, state.a);
-    state.pc += 2;
+    state.pc += 1;
   }
 };
   
