@@ -34,7 +34,17 @@ public:
 
   template <typename InputIterator>
   state(InputIterator first, InputIterator last, std::shared_ptr<Machine> machine)
-    : machine_ptr_{machine}
+    : a{0}
+    , b{0}
+    , c{0}
+    , d{0}
+    , e{0}
+    , h{0}
+    , l{0}
+    , sp{0}
+    , pc{0}
+    , cc{}
+    , machine_ptr_{machine}
     , memory_(16384, 0)
     , interrupt_{false}
     , cycles_{0}
@@ -250,7 +260,7 @@ public:
   {
     return cycles_;
   }
-  
+
 public:
 
   std::uint8_t a;
