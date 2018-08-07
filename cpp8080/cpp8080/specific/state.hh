@@ -144,7 +144,7 @@ public:
   }
 
   void
-  artithmetic_flags(std::uint16_t res)
+  arithmetic_flags(std::uint16_t res)
   noexcept
   {
     cc.cy = (res > 0xff);
