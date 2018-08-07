@@ -123,7 +123,23 @@ public:
   {
     return (h << 8) | l;
   }
-  
+
+  [[nodiscard]]
+  std::uint16_t
+  bc()
+  const noexcept
+  {
+    return (b << 8) | c;
+  }
+
+  [[nodiscard]]
+  std::uint16_t
+  de()
+  const noexcept
+  {
+    return (d << 8) | e;
+  }
+
   void
   flags_zsp(std::uint8_t value)
   noexcept
