@@ -2408,7 +2408,7 @@ struct pchl : meta::describe_instruction<0xe9, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.pc = (state.h << 8) | state.op1();
+    state.pc = state.hl();
   }
 };
 
