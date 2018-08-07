@@ -32,18 +32,23 @@ public:
     switch (port)
     {
       case 0:
-        return 1;
+        return 0xf;
 
       case 1:
-        return 0;
+        return in_port1;
 
+      case 2:
+        return 0;
+        
       case 3:
       {
         const std::uint16_t v = (shift1_ << 8) | shift0_;
         return (v >> (8 - shift_offset_)) & 0xff;
       }
+        
+      default:
+        return 0;
     }
-    return 0;
   }
 
   void
