@@ -241,7 +241,7 @@ public:
   void
   interrupt(std::uint8_t interrupt_num)
   {
-    push((pc & 0xff00) >> 8, pc & 0xff);
+    push((pc & 0xff00) >> 8, pc & 0x00ff);
     pc = 8 * interrupt_num;
     disable_interrupt();
   }
