@@ -436,6 +436,7 @@ struct daa : meta::describe_instruction<0x27, 4, 1>
       const auto res = static_cast<std::uint16_t>(state.a) + 0x60;
       state.a = res & 0xff;
       
+      state.arithmetic_flags(res);
     }
   }
 };
