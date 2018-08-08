@@ -64,10 +64,6 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "$(SRCROOT)/bin/space_invaders.bin"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "$(SRCROOT)/bin/cpu_diag.bin"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
