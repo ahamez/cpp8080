@@ -693,8 +693,7 @@ struct cmc : meta::describe_instruction<0x3f, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.op1();
-    state.pc += 1;
+    state.cc.cy = 0;
   }
 };
 
