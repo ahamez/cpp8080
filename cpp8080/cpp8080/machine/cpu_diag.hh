@@ -35,9 +35,6 @@ public:
   {
     std::copy(first, last, memory_.begin());
 
-//    Fix bug of diagnostic???
-    memory_[368] = 0x7;
-
 //    Skip DAA test
     memory_[0x59c] = 0xc3;
     memory_[0x59d] = 0xc2;
