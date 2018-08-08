@@ -2382,7 +2382,7 @@ struct sbi : meta::describe_instruction<0xde, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto x = state.a - state.op1() - state.cc.cy;
+    const std::uint16_t x = state.a - state.op1() - state.cc.cy;
     state.flags_zsp(x & 0x00ff);
     state.cc.cy = (x > 0x00ff);
     state.a = x & 0x00ff;
