@@ -1530,9 +1530,11 @@ struct sub_b : meta::describe_instruction<0x90, 4, 1>
 {
   static constexpr auto name = "sub_b";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x90"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.b);
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1540,9 +1542,11 @@ struct sub_c : meta::describe_instruction<0x91, 4, 1>
 {
   static constexpr auto name = "sub_c";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x91"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.c);
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1550,9 +1554,11 @@ struct sub_d : meta::describe_instruction<0x92, 4, 1>
 {
   static constexpr auto name = "sub_d";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x92"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.d);
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1560,9 +1566,11 @@ struct sub_e : meta::describe_instruction<0x93, 4, 1>
 {
   static constexpr auto name = "sub_e";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x93"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.e);
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1570,9 +1578,11 @@ struct sub_h : meta::describe_instruction<0x94, 4, 1>
 {
   static constexpr auto name = "sub_h";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x94"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.h);
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1580,9 +1590,11 @@ struct sub_l : meta::describe_instruction<0x95, 4, 1>
 {
   static constexpr auto name = "sub_l";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x95"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.l);
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1590,9 +1602,12 @@ struct sub_m : meta::describe_instruction<0x96, 7, 1>
 {
   static constexpr auto name = "sub_m";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0x96"};
+    const auto res = static_cast<std::uint16_t>(state.a)
+                   - static_cast<std::uint16_t>(state.read_hl());
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1600,9 +1615,11 @@ struct sub_a : meta::describe_instruction<0x97, 4, 1>
 {
   static constexpr auto name = "sub_a";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x97"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.a);
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1610,9 +1627,12 @@ struct sbb_b : meta::describe_instruction<0x98, 4, 1>
 {
   static constexpr auto name = "sbb_b";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x98"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.b)
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1620,9 +1640,12 @@ struct sbb_c : meta::describe_instruction<0x99, 4, 1>
 {
   static constexpr auto name = "sbb_c";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x99"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.c)
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1630,9 +1653,12 @@ struct sbb_d : meta::describe_instruction<0x9a, 4, 1>
 {
   static constexpr auto name = "sbb_d";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x9a"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.d)
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1640,9 +1666,12 @@ struct sbb_e : meta::describe_instruction<0x9b, 4, 1>
 {
   static constexpr auto name = "sbb_e";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x9b"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.e)
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1650,9 +1679,12 @@ struct sbb_h : meta::describe_instruction<0x9c, 4, 1>
 {
   static constexpr auto name = "sbb_h";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x9c"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.h)
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1660,9 +1692,12 @@ struct sbb_l : meta::describe_instruction<0x9d, 4, 1>
 {
   static constexpr auto name = "sbb_l";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x9d"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.l)
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1670,9 +1705,13 @@ struct sbb_m : meta::describe_instruction<0x9e, 7, 1>
 {
   static constexpr auto name = "sbb_m";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0x9e"};
+    const auto res = static_cast<std::uint16_t>(state.a)
+                   - static_cast<std::uint16_t>(state.read_hl())
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1680,9 +1719,12 @@ struct sbb_a : meta::describe_instruction<0x9f, 4, 1>
 {
   static constexpr auto name = "sbb_a";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0x9f"};
+    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.a)
+                   - state.cc.cy;
+    state.arithmetic_flags(res);
+    state.a = res & 0x00ff;
   }
 };
 
@@ -1690,9 +1732,10 @@ struct ana_b : meta::describe_instruction<0xa0, 4, 1>
 {
   static constexpr auto name = "ana_b";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xa0"};
+    state.a = state.a & state.b;
+    state.logic_flags_a();
   }
 };
 
@@ -1700,9 +1743,10 @@ struct ana_c : meta::describe_instruction<0xa1, 4, 1>
 {
   static constexpr auto name = "ana_c";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xa1"};
+    state.a = state.a & state.c;
+    state.logic_flags_a();
   }
 };
 
@@ -1710,9 +1754,10 @@ struct ana_d : meta::describe_instruction<0xa2, 4, 1>
 {
   static constexpr auto name = "ana_d";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xa2"};
+    state.a = state.a & state.d;
+    state.logic_flags_a();
   }
 };
 
@@ -1720,9 +1765,10 @@ struct ana_e : meta::describe_instruction<0xa3, 4, 1>
 {
   static constexpr auto name = "ana_e";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xa3"};
+    state.a = state.a & state.e;
+    state.logic_flags_a();
   }
 };
 
@@ -1730,9 +1776,10 @@ struct ana_h : meta::describe_instruction<0xa4, 4, 1>
 {
   static constexpr auto name = "ana_h";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xa4"};
+    state.a = state.a & state.h;
+    state.logic_flags_a();
   }
 };
 
@@ -1740,9 +1787,10 @@ struct ana_l : meta::describe_instruction<0xa5, 4, 1>
 {
   static constexpr auto name = "ana_l";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xa5"};
+    state.a = state.a & state.l;
+    state.logic_flags_a();
   }
 };
 
@@ -1750,9 +1798,10 @@ struct ana_m : meta::describe_instruction<0xa6, 7, 1>
 {
   static constexpr auto name = "ana_m";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xa6"};
+    state.a = state.a & state.read_hl();
+    state.logic_flags_a();
   }
 };
 
@@ -2198,11 +2247,34 @@ struct call_adr : meta::describe_instruction<0xcd, 17, 3>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
-    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
-    state.write_memory(state.sp - 2, ret & 0x00ff);
-    state.sp -= 2;
-    state.pc = (state.op2() << 8) | state.op1();
+    if (5 ==  ((state.op2() << 8) | state.op1()))
+    {
+      if (state.c == 9)
+      {
+        uint16_t offset = (state.d<<8) | (state.e);
+        const auto* str = &state.memory()[offset + 3];  //skip the prefix bytes
+        while (*str != '$')
+          printf("%c", *str++);
+        printf("\n");
+      }
+      else if (state.c == 2)
+      {
+        //saw this in the inspected code, never saw it called
+        printf ("print char routine called\n");
+      }
+    }
+    else if (((state.op2() << 8) | state.op1()) == 0)
+    {
+      exit(0);
+    }
+    else
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+      state.write_memory(state.sp - 2, ret & 0x00ff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
   }
 };
 
@@ -2426,9 +2498,13 @@ struct rpo : meta::describe_instruction<0xe0, 11, 1>
 {
   static constexpr auto name = "rpo";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xe0"};
+    if (state.cc.p == 0)
+    {
+      state.pc = state.read_memory(state.sp) | (state.read_memory(state.sp + 1) << 8);
+      state.sp += 2;
+    }
   }
 };
 
@@ -2531,9 +2607,13 @@ struct rpe : meta::describe_instruction<0xe8, 11, 1>
 {
   static constexpr auto name = "rpe";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xe8"};
+    if (state.cc.p != 0)
+    {
+      state.pc = state.read_memory(state.sp) | (state.read_memory(state.sp + 1) << 8);
+      state.sp += 2;
+    }
   }
 };
 
@@ -2625,9 +2705,13 @@ struct rp : meta::describe_instruction<0xf0, 11, 1>
 {
   static constexpr auto name = "rp";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xf0"};
+    if (state.cc.s == 0)
+    {
+      state.pc = state.read_memory(state.sp) | (state.read_memory(state.sp + 1) << 8);
+      state.sp += 2;
+    }
   }
 };
 
@@ -2728,9 +2812,13 @@ struct rm : meta::describe_instruction<0xf8, 11, 1>
 {
   static constexpr auto name = "rm";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xf8"};
+    if (state.cc.s != 0)
+    {
+      state.pc = state.read_memory(state.sp) | (state.read_memory(state.sp + 1) << 8);
+      state.sp += 2;
+    }
   }
 };
 
