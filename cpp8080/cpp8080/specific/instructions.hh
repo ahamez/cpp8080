@@ -429,6 +429,7 @@ struct mvi_h : meta::describe_instruction<0x26, 7, 2>
   }
 };
 
+//  Incomplete implementation, doesn't pass the CPU diagnostic.
 struct daa : meta::describe_instruction<0x27, 4, 1>
 {
   static constexpr auto name = "daa";
