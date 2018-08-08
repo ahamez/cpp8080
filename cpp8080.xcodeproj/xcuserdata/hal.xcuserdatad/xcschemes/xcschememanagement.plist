@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>invaders.xcscheme</key>
+		<key>cpp8080.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -12,7 +12,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2BA3FCC6210CCAC2008F1B96</key>
+		<key>2BB1B080211B743000E0DD8F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
