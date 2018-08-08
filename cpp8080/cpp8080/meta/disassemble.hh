@@ -40,7 +40,7 @@ struct disassemble_impl<State, Instruction, 3>
   operator()(std::ostream& os, const State& state)
   const
   {
-    os << Instruction::name << " " << std::hex << "0x" << +state.op1() << " 0x" << +state.op2();
+    os << Instruction::name << " " << std::hex << "0x" << +state.op2() << " 0x" <<+state.op1();
   }
 };
 
