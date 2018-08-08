@@ -2255,34 +2255,11 @@ struct call_adr : meta::describe_instruction<0xcd, 17, 3>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    if (5 ==  ((state.op2() << 8) | state.op1()))
-    {
-      if (state.c == 9)
-      {
-        uint16_t offset = (state.d<<8) | (state.e);
-        const auto* str = &state.memory()[offset + 3];  //skip the prefix bytes
-        while (*str != '$')
-          printf("%c", *str++);
-        printf("\n");
-      }
-      else if (state.c == 2)
-      {
-        //saw this in the inspected code, never saw it called
-        printf ("print char routine called\n");
-      }
-    }
-    else if (((state.op2() << 8) | state.op1()) == 0)
-    {
-      exit(0);
-    }
-    else
-    {
-      const auto ret = state.pc + 2;
-      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
-      state.write_memory(state.sp - 2, ret & 0x00ff);
-      state.sp -= 2;
-      state.pc = (state.op2() << 8) | state.op1();
-    }
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = (state.op2() << 8) | state.op1();
   }
 };
 
