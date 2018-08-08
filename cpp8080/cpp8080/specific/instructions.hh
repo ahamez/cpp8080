@@ -107,7 +107,7 @@ struct dad_b : meta::describe_instruction<0x09, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = state.hl() + state.bc();
+    const std::uint32_t res = state.hl() + state.bc();
     state.h = (res & 0xff00) >> 8;
     state.l = res & 0x00ff;
     state.cc.cy = ((res & 0xffff0000) != 0);
@@ -270,7 +270,7 @@ struct dad_d : meta::describe_instruction<0x19, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = state.hl() + state.de();
+    const std::uint32_t res = state.hl() + state.de();
     state.h = (res & 0xff00) >> 8;
     state.l = res & 0x00ff;
     state.cc.cy = ((res & 0xffff0000) != 0);
@@ -374,7 +374,7 @@ struct shld_adr : meta::describe_instruction<0x22, 16, 3>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto offset = state.op1() | (state.op2() << 8);
+    const std::uint16_t offset = state.op1() | (state.op2() << 8);
     state.write_memory(offset, state.l);
     state.write_memory(offset + 1, state.h);
     state.pc += 2;
@@ -453,7 +453,7 @@ struct dad_h : meta::describe_instruction<0x29, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = 2 * state.hl();
+    const std::uint32_t res = 2 * state.hl();
     state.h = (res & 0xff00) >> 8;
     state.l = res & 0x00ff;
     state.cc.cy = ((res & 0xffff0000) != 0);
@@ -625,7 +625,7 @@ struct dad_sp : meta::describe_instruction<0x39, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = state.hl() + state.sp;
+    const std::uint32_t res = state.hl() + state.sp;
     state.h = (res & 0xff00) >> 8;
     state.l = res & 0x00ff;
     state.cc.cy = ((res & 0xffff0000) > 0);
