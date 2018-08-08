@@ -36,12 +36,14 @@ public:
   
   struct verbose
   {
+    std::ostream& os;
+
     template <typename Instruction>
     void
     pre(const specific::state<Machine>& state, Instruction)
     const
     {
-      std::cout
+      os
         << std::setfill('0') << std::setw(4) << state.pc << ' '
         << meta::disassemble(state, Instruction{}) << ' ';
     }
@@ -51,7 +53,7 @@ public:
     post(const specific::state<Machine>& state, Instruction)
     const
     {
-      std::cout << state << '\n';
+      os << state << std::endl;
     }
   };
   
@@ -61,8 +63,8 @@ public:
     while (true)
     {
       const auto opcode = state_.read_memory(state_.pc);
-//      step(instructions{}, opcode, state_);
-      step(instructions{}, opcode, state_, verbose{});
+      cycles += step(instructions{}, opcode, state_);
+//      cycles += step(instructions{}, opcode, state_, verbose{std::cout});
     }
   }
 
