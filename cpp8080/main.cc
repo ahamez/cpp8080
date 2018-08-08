@@ -5,7 +5,7 @@
 #include <thread>
 
 #include "cpp8080/emulator.hh"
-#include "cpp8080/space_invaders_machine.hh"
+#include "cpp8080/machine/space_invaders.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -25,8 +25,8 @@ main(int argc, char** argv)
   }
 
   auto machine =
-    std::make_shared<cpp8080::space_invaders_machine>(std::istreambuf_iterator<char>{rom_file},
-                                                      std::istreambuf_iterator<char>{});
+    std::make_shared<cpp8080::machine::space_invaders>(std::istreambuf_iterator<char>{rom_file},
+                                                       std::istreambuf_iterator<char>{});
   auto emulator = cpp8080::emulator{machine};
 
   emulator.start();

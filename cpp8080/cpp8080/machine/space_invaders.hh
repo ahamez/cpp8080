@@ -7,30 +7,32 @@
 
 #include "cpp8080/meta/instructions.hh"
 
-namespace cpp8080 {
+namespace cpp8080::machine {
 
 /*------------------------------------------------------------------------------------------------*/
 
+namespace detail{
 struct in_override;
 struct out_override;
+}
 
 /*------------------------------------------------------------------------------------------------*/
 
-class space_invaders_machine
+class space_invaders
 {
 public:
 
   enum class key {coin, left, right, fire, start};
 
   using overrides = meta::make_instructions<
-    in_override,
-    out_override
+    detail::in_override,
+    detail::out_override
   >;
 
 public:
 
   template <typename InputIterator>
-  space_invaders_machine(InputIterator first, InputIterator last)
+  space_invaders(InputIterator first, InputIterator last)
     : memory_(16384, 0)
     , shift0_{0}
     , shift1_{}
@@ -150,12 +152,14 @@ private:
 };
 
 /*------------------------------------------------------------------------------------------------*/
-  
+
+namespace detail {
+
 struct in_override : meta::describe_instruction<0xdb, 3, 2>
 {
   static constexpr auto name = "in";
 
-  void operator()(specific::state<space_invaders_machine>& state) const
+  void operator()(specific::state<space_invaders>& state) const
   {
     const auto port = state.op1();
     state.a = state.machine().in(port);
@@ -163,13 +167,11 @@ struct in_override : meta::describe_instruction<0xdb, 3, 2>
   }
 };
   
-/*------------------------------------------------------------------------------------------------*/
-
 struct out_override : meta::describe_instruction<0xd3, 3, 2>
 {
   static constexpr auto name = "out";
 
-  void operator()(specific::state<space_invaders_machine>& state) const
+  void operator()(specific::state<space_invaders>& state) const
   {
     const auto port = state.op1();
     state.machine().out(port, state.a);
@@ -177,6 +179,8 @@ struct out_override : meta::describe_instruction<0xd3, 3, 2>
   }
 };
   
+} // namespace detail
+
 /*------------------------------------------------------------------------------------------------*/
 
-} // namespace cpp8080
+} // namespace cpp8080::machine

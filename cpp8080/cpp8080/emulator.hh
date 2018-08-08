@@ -8,7 +8,6 @@
 #include "cpp8080/meta/disassemble.hh"
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/state.hh"
-#include "cpp8080/space_invaders_machine.hh"
 
 namespace cpp8080 {
 

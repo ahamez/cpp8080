@@ -33,10 +33,10 @@
 		2BA3FD0D21125203008F1B96 /* unimplemented.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = unimplemented.hh; sourceTree = "<group>"; };
 		2BA3FD10211260D9008F1B96 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
 		2BA3FD112112625C008F1B96 /* cpp8080 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cpp8080; sourceTree = BUILT_PRODUCTS_DIR; };
-		2BA3FD132113752A008F1B96 /* space_invaders_machine.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders_machine.hh; sourceTree = "<group>"; };
 		2BA3FD1521137833008F1B96 /* util.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = util.hh; sourceTree = "<group>"; };
 		2BA3FD172113968E008F1B96 /* libSDL2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2.a; path = ../../../../usr/local/Cellar/sdl2/2.0.8/lib/libSDL2.a; sourceTree = "<group>"; };
 		2BA3FD1A2115BFD8008F1B96 /* make_instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = make_instructions.hh; sourceTree = "<group>"; };
+		2BB1B076211B71BC00E0DD8F /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,10 +72,10 @@
 		2BA3FCEE21124304008F1B96 /* cpp8080 */ = {
 			isa = PBXGroup;
 			children = (
+				2BB1B075211B71BC00E0DD8F /* machine */,
 				2BA3FD0521124F32008F1B96 /* meta */,
 				2BA3FD0721124FAE008F1B96 /* specific */,
 				2BA3FCEF21124304008F1B96 /* emulator.hh */,
-				2BA3FD132113752A008F1B96 /* space_invaders_machine.hh */,
 				2BA3FD1521137833008F1B96 /* util.hh */,
 			);
 			path = cpp8080;
@@ -108,6 +108,14 @@
 				2BA3FD172113968E008F1B96 /* libSDL2.a */,
 			);
 			name = lib;
+			sourceTree = "<group>";
+		};
+		2BB1B075211B71BC00E0DD8F /* machine */ = {
+			isa = PBXGroup;
+			children = (
+				2BB1B076211B71BC00E0DD8F /* space_invaders.hh */,
+			);
+			path = machine;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
