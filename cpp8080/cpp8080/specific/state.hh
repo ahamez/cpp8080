@@ -1,10 +1,8 @@
 #pragma once
 
-#include <algorithm>
 #include <iomanip>
 #include <memory>
 #include <ostream>
-#include <vector>
 
 #include "cpp8080/util.hh"
 
@@ -32,8 +30,7 @@ class state
 {
 public:
 
-  template <typename InputIterator>
-  state(InputIterator first, InputIterator last, std::shared_ptr<Machine> machine)
+  state(std::shared_ptr<Machine> machine)
     : a{0}
     , b{0}
     , c{0}
@@ -45,12 +42,9 @@ public:
     , pc{0}
     , cc{}
     , machine_ptr_{machine}
-    , memory_(16384, 0)
     , interrupt_{false}
     , cycles_{0}
-  {
-    std::copy(first, last, memory_.begin());
-  }
+  {}
 
   friend
   std::ostream&
@@ -79,17 +73,7 @@ public:
   void
   write_memory(std::uint16_t address, std::uint8_t value)
   {
-    if (address < 0x2000)
-    {
-      throw std::runtime_error{"Attempt to write ROM"};
-    }
-
-    if (address >= 0x4000)
-    {
-      throw std::runtime_error{"Attempt to write outside of RAM"};
-    }
-
-    memory_[address] = value;
+    machine_ptr_->write_memory(address, value);
   }
 
   [[nodiscard]]
@@ -97,7 +81,7 @@ public:
   read_memory(std::uint16_t address)
   const
   {
-    return memory_.at(address);
+    return machine_ptr_->read_memory(address);
   }
 
   void
@@ -180,8 +164,8 @@ public:
   void
   pop(std::uint8_t& high, std::uint8_t& low)
   {
-    low = memory_.at(sp);
-    high = memory_.at(sp + 1);
+    low = read_memory(sp);
+    high = read_memory(sp + 1);
     sp += 2;
   }
 
@@ -204,8 +188,8 @@ public:
   void
   fetch_operands()
   {
-    op1_ = memory_.at(pc + 1);
-    op2_ = memory_.at(pc + 2);
+    op1_ = read_memory(pc + 1);
+    op2_ = read_memory(pc + 2);
   }
   
   [[nodiscard]]
@@ -224,14 +208,6 @@ public:
     return *machine_ptr_;
   }
 
-  [[nodiscard]]
-  const std::vector<std::uint8_t>&
-  memory()
-  const noexcept
-  {
-    return memory_;
-  }
-  
   void
   enable_interrupt()
   noexcept
@@ -293,7 +269,6 @@ public:
 private:
 
   std::shared_ptr<Machine> machine_ptr_;
-  std::vector<std::uint8_t> memory_;
   bool interrupt_;
   std::uint64_t cycles_;
 

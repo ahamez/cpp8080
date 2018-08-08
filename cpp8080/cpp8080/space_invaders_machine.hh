@@ -1,6 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
+#include <sstream>
+#include <vector>
 
 #include "cpp8080/meta/instructions.hh"
 
@@ -10,7 +13,9 @@ namespace cpp8080 {
 
 struct in_override;
 struct out_override;
-  
+
+/*------------------------------------------------------------------------------------------------*/
+
 class space_invaders_machine
 {
 public:
@@ -23,6 +28,17 @@ public:
   >;
 
 public:
+
+  template <typename InputIterator>
+  space_invaders_machine(InputIterator first, InputIterator last)
+    : memory_(16384, 0)
+    , shift0_{0}
+    , shift1_{}
+    , shift_offset_{}
+    , in_port1_{}
+  {
+    std::copy(first, last, memory_.begin());
+  }
 
   [[nodiscard]]
   std::uint8_t
@@ -96,9 +112,37 @@ public:
     }
   }
 
-  
+  void
+  write_memory(std::uint16_t address, std::uint8_t value)
+  {
+    if (address < 0x2000)
+    {
+      auto ss = std::stringstream{};
+      ss << std::hex << "Attempt to write 0x" << +value << " in ROM at 0x" << +address;
+      throw std::runtime_error{ss.str()};
+    }
+
+    if (address >= 0x4000)
+    {
+      auto ss = std::stringstream{};
+      ss << std::hex << "Attempt to write 0x" << +value << " outside of RAM at 0x" << +address;
+      throw std::runtime_error{ss.str()};
+    }
+
+    memory_[address] = value;
+  }
+
+  [[nodiscard]]
+  std::uint8_t
+  read_memory(std::uint16_t address)
+  const
+  {
+    return memory_.at(address);
+  }
+
 private:
-  
+
+  std::vector<std::uint8_t> memory_;
   std::uint8_t shift0_;
   std::uint8_t shift1_;
   std::uint8_t shift_offset_;

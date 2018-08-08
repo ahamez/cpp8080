@@ -23,17 +23,14 @@ private:
     specific::instructions_8080,
     typename Machine::overrides
   >;
-  
+
 public:
 
-  emulator(std::istream& rom, std::shared_ptr<Machine> machine)
-    : state_{
-        std::istreambuf_iterator<char>{rom},
-        std::istreambuf_iterator<char>{},
-        machine}
+  emulator(std::shared_ptr<Machine> machine)
+    : state_{machine}
     , machine_{machine}
   {}
-  
+
   struct verbose
   {
     std::ostream& os;

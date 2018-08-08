@@ -22,8 +22,10 @@ main(int argc, char** argv)
     return 1;
   }
 
-  auto machine = std::make_shared<cpp8080::space_invaders_machine>();
-  cpp8080::emulator{rom_file, machine}();
+  auto machine =
+    std::make_shared<cpp8080::space_invaders_machine>(std::istreambuf_iterator<char>{rom_file},
+                                                      std::istreambuf_iterator<char>{});
+  auto emulator = cpp8080::emulator{machine};
 }
 
 /*------------------------------------------------------------------------------------------------*/
