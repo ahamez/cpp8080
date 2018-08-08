@@ -1,6 +1,8 @@
 #include <fstream>
 #include <iostream>
+#include <istream>
 #include <memory>
+#include <thread>
 
 #include "cpp8080/emulator.hh"
 #include "cpp8080/space_invaders_machine.hh"
@@ -26,6 +28,13 @@ main(int argc, char** argv)
     std::make_shared<cpp8080::space_invaders_machine>(std::istreambuf_iterator<char>{rom_file},
                                                       std::istreambuf_iterator<char>{});
   auto emulator = cpp8080::emulator{machine};
+
+  emulator.start();
+  while (true)
+  {
+    emulator();
+    std::this_thread::sleep_for(std::chrono::milliseconds{1});
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
