@@ -2285,9 +2285,20 @@ struct cnc_adr : meta::describe_instruction<0xd4, 17, 3>
 {
   static constexpr auto name = "cnc_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xd4"};
+    if (state.cc.cy == 0)
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+      state.write_memory(state.sp - 2, ret & 0x00ff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
+    else
+    {
+      state.pc += 2;
+    }
   }
 };
 
@@ -2358,7 +2369,7 @@ struct jc_adr : meta::describe_instruction<0xda, 10, 3>
 
 struct in : meta::describe_instruction<0xdb, 10, 2>
 {
-  static constexpr auto name = "in_d8";
+  static constexpr auto name = "in";
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
@@ -2370,9 +2381,20 @@ struct cc_adr : meta::describe_instruction<0xdc, 10, 3>
 {
   static constexpr auto name = "cc_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xdc"};
+    if (state.cc.cy != 0)
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+      state.write_memory(state.sp - 2, ret & 0x00ff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
+    else
+    {
+      state.pc += 2;
+    }
   }
 };
 
@@ -2456,9 +2478,20 @@ struct cpo_adr : meta::describe_instruction<0xe4, 17, 3>
 {
   static constexpr auto name = "cpo_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xe4"};
+    if (state.cc.p == 0)
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+      state.write_memory(state.sp - 2, ret & 0x00ff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
+    else
+    {
+      state.pc += 2;
+    }
   }
 };
 
@@ -2546,19 +2579,35 @@ struct cpe_adr : meta::describe_instruction<0xec, 17, 3>
 {
   static constexpr auto name = "cpe_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xec"};
+    if (state.cc.p != 0)
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+      state.write_memory(state.sp - 2, ret & 0x00ff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
+    else
+    {
+      state.pc += 2;
+    }
+
   }
 };
 
-struct xri_d8 : meta::describe_instruction<0xee, 7, 2>
+struct xri : meta::describe_instruction<0xee, 7, 2>
 {
-  static constexpr auto name = "xri_d8";
+  static constexpr auto name = "xri";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xee"};
+    const auto x = state.a ^ state.op1();
+    state.flags_zsp(x);
+    state.cc.cy = 0;
+    state.a = x;
+    state.pc += 1;
   }
 };
 
@@ -2623,9 +2672,21 @@ struct cp_adr : meta::describe_instruction<0xf4, 17, 3>
 {
   static constexpr auto name = "cp_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xf4"};
+    if (state.cc.s == 0)
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+      state.write_memory(state.sp - 2, ret & 0x00ff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
+    else
+    {
+      state.pc += 2;
+    }
+
   }
 };
 
@@ -2714,9 +2775,20 @@ struct cm_adr : meta::describe_instruction<0xfc, 17, 3>
 {
   static constexpr auto name = "cm_adr";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xfc"};
+    if (state.cc.s != 0)
+    {
+      const auto ret = state.pc + 2;
+      state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+      state.write_memory(state.sp - 2, ret & 0x00ff);
+      state.sp -= 2;
+      state.pc = (state.op2() << 8) | state.op1();
+    }
+    else
+    {
+      state.pc += 2;
+    }
   }
 };
 
@@ -2984,7 +3056,7 @@ using instructions_8080 = meta::make_instructions<
   xchg,
   cpe_adr,
   meta::unimplemented<0xed>,
-  xri_d8,
+  xri,
   rst_5,
   rp,
   pop_psw,
