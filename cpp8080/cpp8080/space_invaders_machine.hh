@@ -35,7 +35,7 @@ public:
         return 0xf;
 
       case 1:
-        return in_port1;
+        return in_port1_;
 
       case 2:
         return 0;
@@ -74,11 +74,11 @@ public:
   {
     switch (k)
     {
-      case key::coin  : in_port1 |= 0x01; break;
-      case key::left  : in_port1 |= 0x20; break;
-      case key::right : in_port1 |= 0x40; break;
-      case key::fire  : in_port1 |= 0x10; break;
-      case key::start : in_port1 |= 0x04; break;
+      case key::coin  : in_port1_ |= 0x01; break;
+      case key::left  : in_port1_ |= 0x20; break;
+      case key::right : in_port1_ |= 0x40; break;
+      case key::fire  : in_port1_ |= 0x10; break;
+      case key::start : in_port1_ |= 0x04; break;
     }
   }
   
@@ -88,11 +88,11 @@ public:
   {
     switch (k)
     {
-      case key::coin  : in_port1 &= ~0x01; break;
-      case key::left  : in_port1 &= ~0x20; break;
-      case key::right : in_port1 &= ~0x40; break;
-      case key::fire  : in_port1 &= ~0x10; break;
-      case key::start : in_port1 &= ~0x04; break;
+      case key::coin  : in_port1_ &= ~0x01; break;
+      case key::left  : in_port1_ &= ~0x20; break;
+      case key::right : in_port1_ &= ~0x40; break;
+      case key::fire  : in_port1_ &= ~0x10; break;
+      case key::start : in_port1_ &= ~0x04; break;
     }
   }
 
@@ -102,7 +102,7 @@ private:
   std::uint8_t shift0_;
   std::uint8_t shift1_;
   std::uint8_t shift_offset_;
-  std::uint8_t in_port1;
+  std::uint8_t in_port1_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
