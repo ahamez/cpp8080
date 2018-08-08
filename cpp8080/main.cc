@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "cpp8080/emulator.hh"
+#include "cpp8080/machine/cpu_diag.hh"
 #include "cpp8080/machine/space_invaders.hh"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -24,9 +25,13 @@ main(int argc, char** argv)
     return 1;
   }
 
+//  auto machine =
+//    std::make_shared<cpp8080::machine::space_invaders>(std::istreambuf_iterator<char>{file},
+//                                                       std::istreambuf_iterator<char>{});
   auto machine =
-    std::make_shared<cpp8080::machine::space_invaders>(std::istreambuf_iterator<char>{file},
-                                                       std::istreambuf_iterator<char>{});
+    std::make_shared<cpp8080::machine::cpu_diag>(std::istreambuf_iterator<char>{file},
+                                                 std::istreambuf_iterator<char>{});
+
   auto emulator = cpp8080::emulator{machine};
 
   try

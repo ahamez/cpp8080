@@ -112,6 +112,7 @@
 		2BB1B098211B749700E0DD8F /* machine */ = {
 			isa = PBXGroup;
 			children = (
+				2BB1B099211B749700E0DD8F /* cpu_diag.hh */,
 				2BB1B09A211B749700E0DD8F /* space_invaders.hh */,
 			);
 			path = machine;
