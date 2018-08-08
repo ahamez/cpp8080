@@ -29,11 +29,18 @@ main(int argc, char** argv)
                                                        std::istreambuf_iterator<char>{});
   auto emulator = cpp8080::emulator{machine};
 
-  emulator.start();
-  while (true)
+  try
   {
-    emulator();
-    std::this_thread::sleep_for(std::chrono::milliseconds{1});
+    emulator.start();
+    while (true)
+    {
+      emulator();
+      std::this_thread::sleep_for(std::chrono::milliseconds{1});
+    }
+  }
+  catch (const cpp8080::specific::halt& h)
+  {
+    std::cout << h.what() << '\n';
   }
 }
 

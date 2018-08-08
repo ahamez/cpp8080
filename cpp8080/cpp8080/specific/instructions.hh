@@ -5,6 +5,7 @@
 
 #include "cpp8080/meta/make_instructions.hh"
 #include "cpp8080/meta/unimplemented.hh"
+#include "cpp8080/specific/halt.hh"
 #include "cpp8080/specific/state.hh"
 
 namespace cpp8080::specific {
@@ -1231,7 +1232,7 @@ struct hlt : meta::describe_instruction<0x76, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>&) const
   {
-    throw std::runtime_error{"HLT"};
+    throw halt{"HLT"};
   }
 };
 
