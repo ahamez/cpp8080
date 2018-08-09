@@ -15,6 +15,8 @@
 int
 main(int argc, char** argv)
 {
+  static constexpr auto factor = 2;
+
   if(SDL_Init(SDL_INIT_VIDEO) < 0)
   {
     std::cerr << "SDL could not initialize. SDL_Error: " << SDL_GetError() << '\n';
@@ -44,7 +46,7 @@ main(int argc, char** argv)
 
   auto window = SDL_CreateWindow("Space Invaders",
                                  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                 256, 224,
+                                 224 * factor, 256 * factor,
                                  SDL_WINDOW_SHOWN
                                  );
   if (window == nullptr)
@@ -62,12 +64,21 @@ main(int argc, char** argv)
 
   try
   {
+//    emulator.start();
+//    while (true)
+//    {
+//      emulator();
+//    }
+
     auto e = SDL_Event{};
     auto quit = false;
 
     emulator.start();
     while (not quit)
     {
+      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+      SDL_RenderClear(renderer);
+
       while (SDL_PollEvent(&e))
       {
         switch (e.type)
@@ -144,25 +155,26 @@ main(int argc, char** argv)
 
       emulator();
 
-      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-      SDL_RenderClear(renderer);
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-//      for (auto i = 0ul; i < 256; ++i)
-//      {
-//        for (auto j = 0ul; j < 224/8; ++j)
-//        {
-//          for (auto p = 0ul; p < 8; ++p)
-//          {
-//            if ((machine->read_memory(0x2400 + i * j) & (1 << p)) == 1)
-//            {
-//              const auto rect = SDL_Rect{static_cast<int>(i), static_cast<int>(j*8), 1, 1};
-//              SDL_RenderFillRect(renderer, &rect);
-//            }
-//          }
-//        }
-//      }
-
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+      for (auto j = 31, y = 0; j >= 0; --j, ++y)
+      {
+        for (auto i = 0, x = 0; i < 224; ++i, ++x)
+        {
+          const auto byte = machine->read_memory(0x2400 + (j  + i * 32));
+          for (auto b = 7, pos = 0; b >= 0; --b, ++pos)
+          {
+            if (((byte >> b) & 0x01) == 1)
+            {
+              const auto rect = SDL_Rect{
+                static_cast<int>(x * factor),
+                static_cast<int>((y * 8 + pos) * factor),
+                1 * factor,
+                1 * factor};
+              SDL_RenderFillRect(renderer, &rect);
+            }
+          }
+        }
+      }
       SDL_RenderPresent(renderer);
 
       std::this_thread::sleep_for(std::chrono::milliseconds{1});
