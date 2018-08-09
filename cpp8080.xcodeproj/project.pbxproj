@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2BB1B09C211B749800E0DD8F /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BB1B08C211B749700E0DD8F /* main.cc */; };
+		2BDD86C7211B85E000D14E59 /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDD86C6211B85E000D14E59 /* libSDL2.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,7 @@
 		2BB1B09A211B749700E0DD8F /* space_invaders.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
 		2BB1B09B211B749700E0DD8F /* util.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = util.hh; sourceTree = "<group>"; };
 		2BB1B09D211B7B4400E0DD8F /* halt.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = halt.hh; sourceTree = "<group>"; };
+		2BDD86C6211B85E000D14E59 /* libSDL2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2.a; path = ../../../../usr/local/Cellar/sdl2/2.0.8/lib/libSDL2.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BDD86C7211B85E000D14E59 /* libSDL2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,6 +58,7 @@
 			children = (
 				2BB1B08B211B749700E0DD8F /* cpp8080 */,
 				2BB1B082211B743000E0DD8F /* exe */,
+				2BDD86C5211B85E000D14E59 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -116,6 +120,14 @@
 				2BB1B09A211B749700E0DD8F /* space_invaders.hh */,
 			);
 			path = machine;
+			sourceTree = "<group>";
+		};
+		2BDD86C5211B85E000D14E59 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2BDD86C6211B85E000D14E59 /* libSDL2.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -295,7 +307,12 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_STYLE = Automatic;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/sdl2/2.0.8/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = /usr/local/Cellar/sdl2/2.0.8/include;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/cpp8080";
 			};
 			name = Debug;
@@ -305,7 +322,12 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CODE_SIGN_STYLE = Automatic;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/sdl2/2.0.8/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = /usr/local/Cellar/sdl2/2.0.8/include;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/cpp8080";
 			};
 			name = Release;
