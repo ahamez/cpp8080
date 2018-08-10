@@ -2282,9 +2282,13 @@ struct rst_1 : meta::describe_instruction<0xcf, 11, 1>
 {
   static constexpr auto name = "rst_1";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xcf"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0008;
   }
 };
 
@@ -2388,9 +2392,13 @@ struct rst_2 : meta::describe_instruction<0xd7, 11, 1>
 {
   static constexpr auto name = "rst_2";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xd7"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0010;
   }
 };
 
@@ -2474,9 +2482,13 @@ struct rst_3 : meta::describe_instruction<0xdf, 11, 1>
 {
   static constexpr auto name = "rst_3";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xdf"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0018;
   }
 };
 
@@ -2583,9 +2595,13 @@ struct rst_4 : meta::describe_instruction<0xe7, 11, 1>
 {
   static constexpr auto name = "rst_4";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xe7"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0020;
   }
 };
 
@@ -2681,9 +2697,13 @@ struct rst_5 : meta::describe_instruction<0xef, 11, 1>
 {
   static constexpr auto name = "rst_5";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xef"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0028;
   }
 };
 
@@ -2732,9 +2752,9 @@ struct di : meta::describe_instruction<0xf3, 4, 1>
 {
   static constexpr auto name = "di";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    throw std::runtime_error{"Unimplemented instruction 0xf3"};
+    state.disable_interrupt();
   }
 };
 
@@ -2788,10 +2808,15 @@ struct rst_6 : meta::describe_instruction<0xf7, 11, 1>
 {
   static constexpr auto name = "rst_6";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xf7"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0030;
   }
+
 };
 
 struct rm : meta::describe_instruction<0xf8, 11, 1>
@@ -2883,9 +2908,13 @@ struct rst_7 : meta::describe_instruction<0xff, 11, 1>
 {
   static constexpr auto name = "rst_7";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xff"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0038;
   }
 };
 
