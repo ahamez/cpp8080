@@ -2731,7 +2731,14 @@ struct pop_psw : meta::describe_instruction<0xf1, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.pop(state.a, *reinterpret_cast<std::uint8_t*>(&state.cc));
+    auto flags = std::uint8_t{};
+    state.pop(state.a, flags);
+
+    state.cc.s  = flags & 0b10000000 ? true : false;
+    state.cc.z  = flags & 0b01000000 ? true : false;
+    state.cc.ac = flags & 0b00010000 ? true : false;
+    state.cc.p  = flags & 0b00000100 ? true : false;
+    state.cc.cy = flags & 0b00000001 ? true : false;
   }
 };
 
@@ -2790,7 +2797,19 @@ struct push_psw : meta::describe_instruction<0xf5, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.push(state.a, *reinterpret_cast<std::uint8_t*>(&state.cc));
+    auto flags = std::uint8_t{0};
+
+    if (state.cc.s)  flags |= 0b10000000;
+    if (state.cc.z)  flags |= 0b01000000;
+    if (state.cc.ac) flags |= 0b00010000;
+    if (state.cc.p)  flags |= 0b00000100;
+    if (state.cc.cy) flags |= 0b00000001;
+
+    flags |=  0b00000010; // bit 1 is always 1
+    flags &= ~0b00001000; // bit 3 is always 0
+    flags &= ~0b00100000; // bit 5 is always 0
+
+    state.push(state.a, flags);
   }
 };
 

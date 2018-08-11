@@ -9,17 +9,13 @@ namespace cpp8080::specific {
 
 /*------------------------------------------------------------------------------------------------*/
 
-// Order is important: some code "pops" values into the PSW that they didn't push.
 struct condition_codes
 {
-  std::uint8_t cy:1;
-  std::uint8_t _pad:1;
-  std::uint8_t p:1;
-  std::uint8_t _pad2:1;
-  std::uint8_t ac:1;
-  std::uint8_t _pad3:1;
-  std::uint8_t z:1;
-  std::uint8_t s:1;
+  bool cy;
+  bool p;
+  bool ac;
+  bool z;
+  bool s;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -52,11 +48,11 @@ public:
     return os
       << std::resetiosflags(std::ios_base::basefield)
       << " "
-      << (state.cc.z == 1 ? "z" : ".")
-      << (state.cc.s == 1 ? "s" : ".")
-      << (state.cc.p == 1 ? "p" : ".")
-      << (state.cc.cy == 1 ? "c" : ".")
-      << (state.cc.ac == 1 ? "a" : ".")
+      << (state.cc.z ? "z" : ".")
+      << (state.cc.s ? "s" : ".")
+      << (state.cc.p ? "p" : ".")
+      << (state.cc.cy ? "c" : ".")
+      << (state.cc.ac ? "a" : ".")
       << std::hex
       << "  A $" << std::setfill('0') << std::setw(2) << +state.a
       << " B $"  << std::setfill('0') << std::setw(2) << +state.b

@@ -137,7 +137,7 @@ public:
     {
       const auto opcode = state_.read_memory(state_.pc);
       step(instructions{}, opcode, state_);
-//     step(instructions{}, opcode, state_, detail::verbose{std::cout})
+//     step(instructions{}, opcode, state_, detail::verbose{std::cout});
       if (state_.pc == 0)
       {
         std::cout << '\n';
