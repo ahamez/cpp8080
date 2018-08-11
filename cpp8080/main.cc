@@ -109,6 +109,7 @@ main(int argc, char** argv)
                 machine->key_down(cpp8080::machine::space_invaders::key::fire);
                 break;
 
+              case SDLK_1:
                 machine->key_down(cpp8080::machine::space_invaders::key::start);
                 break;
             }
@@ -135,6 +136,7 @@ main(int argc, char** argv)
                 machine->key_up(cpp8080::machine::space_invaders::key::fire);
                 break;
 
+              case SDLK_1:
                 machine->key_up(cpp8080::machine::space_invaders::key::start);
                 break;
             }
