@@ -94,27 +94,21 @@ main(int argc, char** argv)
             switch (e.key.keysym.sym)
             {
               case SDLK_c:
-                std::cout << "down c\n";
                 machine->key_down(cpp8080::machine::space_invaders::key::coin);
                 break;
 
               case SDLK_LEFT:
-                std::cout << "down left\n";
                 machine->key_down(cpp8080::machine::space_invaders::key::left);
                 break;
 
               case SDLK_RIGHT:
-                std::cout << "down right\n";
                 machine->key_down(cpp8080::machine::space_invaders::key::right);
                 break;
 
               case SDLK_SPACE:
-                std::cout << "down space\n";
                 machine->key_down(cpp8080::machine::space_invaders::key::fire);
                 break;
 
-              case SDLK_f:
-                std::cout << "down f\n";
                 machine->key_down(cpp8080::machine::space_invaders::key::start);
                 break;
             }
@@ -126,27 +120,21 @@ main(int argc, char** argv)
             switch (e.key.keysym.sym)
             {
               case SDLK_c:
-                std::cout << "up c\n";
                 machine->key_up(cpp8080::machine::space_invaders::key::coin);
                 break;
 
               case SDLK_LEFT:
-                std::cout << "up left\n";
                 machine->key_up(cpp8080::machine::space_invaders::key::left);
                 break;
 
               case SDLK_RIGHT:
-                std::cout << "up right\n";
                 machine->key_up(cpp8080::machine::space_invaders::key::right);
                 break;
 
               case SDLK_SPACE:
-                std::cout << "up space\n";
                 machine->key_up(cpp8080::machine::space_invaders::key::fire);
                 break;
 
-              case SDLK_f:
-                std::cout << "up f\n";
                 machine->key_up(cpp8080::machine::space_invaders::key::start);
                 break;
             }
