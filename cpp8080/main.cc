@@ -70,14 +70,13 @@ main(int argc, char** argv)
 //      emulator();
 //    }
 
-    auto e = SDL_Event{};
-
     emulator.start();
     while (true)
     {
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
       SDL_RenderClear(renderer);
 
+      auto e = SDL_Event{};
       while (SDL_PollEvent(&e))
       {
         switch (e.type)
