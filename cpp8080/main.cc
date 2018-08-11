@@ -71,10 +71,9 @@ main(int argc, char** argv)
 //    }
 
     auto e = SDL_Event{};
-    auto quit = false;
 
     emulator.start();
-    while (not quit)
+    while (true)
     {
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
       SDL_RenderClear(renderer);
@@ -85,7 +84,6 @@ main(int argc, char** argv)
         {
           case SDL_QUIT:
           {
-            quit = true;
             std::exit(0);
           }
 
@@ -93,6 +91,9 @@ main(int argc, char** argv)
           {
             switch (e.key.keysym.sym)
             {
+              case SDLK_ESCAPE:
+                std::exit(0);
+
               case SDLK_c:
                 machine->key_down(cpp8080::machine::space_invaders::key::coin);
                 break;
