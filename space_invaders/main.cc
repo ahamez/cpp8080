@@ -6,7 +6,6 @@
 
 #include <SDL2/SDL.h>
 
-#include "cpp8080/machine/cpu_diag.hh"
 #include "cpp8080/machine/space_invaders.hh"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -14,8 +13,6 @@
 int
 main(int argc, char** argv)
 {
-  static constexpr auto factor = 2;
-
   if(SDL_Init(SDL_INIT_VIDEO) < 0)
   {
     std::cerr << "SDL could not initialize. SDL_Error: " << SDL_GetError() << '\n';
@@ -34,9 +31,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-//  auto machine =
-//    std::make_shared<cpp8080::machine::cpu_diag>(std::istreambuf_iterator<char>{file},
-//                                                 std::istreambuf_iterator<char>{});
+  static constexpr auto factor = 2;
 
   auto machine = cpp8080::machine::space_invaders{
     std::istreambuf_iterator<char>{file},
@@ -63,12 +58,6 @@ main(int argc, char** argv)
 
   try
   {
-//    emulator.start();
-//    while (true)
-//    {
-//      emulator();
-//    }
-
     machine.start();
     while (true)
     {
