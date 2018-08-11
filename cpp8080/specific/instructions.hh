@@ -433,7 +433,7 @@ struct daa : meta::describe_instruction<0x27, 4, 1>
 {
   static constexpr auto name = "daa";
 
-  template <typename Machine> void operator()(state<Machine>& state) const
+  template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
     if ((state.a & 0x000f) > 9)
     {
