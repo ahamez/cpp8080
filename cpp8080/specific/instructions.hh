@@ -2181,9 +2181,13 @@ struct rst_0 : meta::describe_instruction<0xc7, 11, 1>
 {
   static constexpr auto name = "rst_0";
 
-  template <typename Machine> void operator()(state<Machine>&) const
+  template <typename Machine> void operator()(state<Machine>& state) const
   {
-    throw std::runtime_error{"Unimplemented instruction 0xc7"};
+    const auto ret = state.pc + 2;
+    state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
+    state.write_memory(state.sp - 2, ret & 0x00ff);
+    state.sp -= 2;
+    state.pc = 0x0000;
   }
 };
 
