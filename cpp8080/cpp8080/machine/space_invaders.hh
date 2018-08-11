@@ -35,9 +35,10 @@ public:
   space_invaders(InputIterator first, InputIterator last)
     : memory_(16384, 0)
     , shift0_{0}
-    , shift1_{}
-    , shift_offset_{}
-    , in_port1_{}
+    , shift1_{0}
+    , shift_offset_{0}
+    , port1_{1 << 3}
+    , port2_{0}
   {
     std::copy(first, last, memory_.begin());
   }
@@ -49,14 +50,11 @@ public:
   {
     switch (port)
     {
-      case 0:
-        return 0xf;
-
       case 1:
-        return in_port1_;
+        return port1_;
 
       case 2:
-        return 0;
+        return port2_;
         
       case 3:
       {
@@ -65,7 +63,7 @@ public:
       }
         
       default:
-        return 0;
+        throw std::runtime_error{"Unknwown IN port"};
     }
   }
 
@@ -76,13 +74,27 @@ public:
     switch (port)
     {
       case 2:
-        shift_offset_ = value & 0x7;
+        shift_offset_ = value & 0x07;
+        break;
+
+      case 3:
+        // play sound;
         break;
 
       case 4:
         shift0_ = shift1_;
         shift1_ = value;
         break;
+
+      case 5:
+        // play sound;
+        break;
+
+      case 6:
+        break;
+
+      default:
+        throw std::runtime_error{"Unknwown OUT port"};
     }
   }
 
@@ -92,11 +104,11 @@ public:
   {
     switch (k)
     {
-      case key::coin  : in_port1_ |= 0x01; break;
-      case key::left  : in_port1_ |= 0x20; break;
-      case key::right : in_port1_ |= 0x40; break;
-      case key::fire  : in_port1_ |= 0x10; break;
-      case key::start : in_port1_ |= 0x04; break;
+      case key::coin  : port1_ |= 0x01; break;
+      case key::left  : port1_ |= 0x20; break;
+      case key::right : port1_ |= 0x40; break;
+      case key::fire  : port1_ |= 0x10; break;
+      case key::start : port1_ |= 0x04; break;
     }
   }
   
@@ -106,11 +118,11 @@ public:
   {
     switch (k)
     {
-      case key::coin  : in_port1_ &= ~0x01; break;
-      case key::left  : in_port1_ &= ~0x20; break;
-      case key::right : in_port1_ &= ~0x40; break;
-      case key::fire  : in_port1_ &= ~0x10; break;
-      case key::start : in_port1_ &= ~0x04; break;
+      case key::coin  : port1_ &= ~0x01; break;
+      case key::left  : port1_ &= ~0x20; break;
+      case key::right : port1_ &= ~0x40; break;
+      case key::fire  : port1_ &= ~0x10; break;
+      case key::start : port1_ &= ~0x04; break;
     }
   }
 
@@ -148,7 +160,8 @@ private:
   std::uint8_t shift0_;
   std::uint8_t shift1_;
   std::uint8_t shift_offset_;
-  std::uint8_t in_port1_;
+  std::uint8_t port1_;
+  std::uint8_t port2_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
