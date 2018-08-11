@@ -118,6 +118,7 @@ main(int argc, char** argv)
                 machine->key_down(cpp8080::machine::space_invaders::key::start);
                 break;
             }
+            break;
           }
 
           case SDL_KEYUP:
@@ -150,6 +151,7 @@ main(int argc, char** argv)
                 break;
             }
           }
+          break;
         }
       }
 
