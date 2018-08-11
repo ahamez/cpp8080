@@ -28,7 +28,7 @@ public:
   emulator(std::shared_ptr<Machine> machine)
     : state_{machine}
     , machine_{machine}
-    , which_interrupt_{1}
+    , which_interrupt_{0x08}
     , last_timer_{}
     , next_interrupt_{}
   {}
@@ -72,14 +72,9 @@ public:
     if (state_.interrupt_enabled() and now > next_interrupt_)
     {
       state_.interrupt(which_interrupt_);
-      if (which_interrupt_ == 1)
-      {
-        which_interrupt_ = 2;
-      }
-      else
-      {
-        which_interrupt_ = 1;
-      }
+      which_interrupt_ = which_interrupt_ == 0x08
+                       ? 0x10
+                       : 0x08;
       next_interrupt_ = now + std::chrono::milliseconds{8};
     }
 
