@@ -2,9 +2,12 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iostream>
+#include <ostream>
 #include <sstream>
 #include <vector>
 
+#include "cpp8080/meta/disassemble.hh"
 #include "cpp8080/meta/instructions.hh"
 #include "cpp8080/specific/halt.hh"
 #include "cpp8080/specific/instructions.hh"
@@ -29,9 +32,9 @@ struct call_adr
     {
       if (state.c == 9)
       {
-        const std::uint16_t offset = (state.d<<8) | (state.e);
+        const std::uint16_t offset = state.de();
         auto s = std::string{};
-        for (auto i = std::uint16_t{3}; ; ++i)
+        for (auto i = std::uint16_t{0}; ; ++i)
         {
           const auto c = state.read_memory(offset + i);
           if (c == '$')
@@ -41,19 +44,11 @@ struct call_adr
           s.push_back(c);
         }
 
-//        std::cout << s << '\n';
-        if (s == " CPU IS OPERATIONAL")
-        {
-          throw specific::halt{s};
-        }
-        else
-        {
-          throw std::runtime_error{s};
-        }
+        std::cout << s << '\n';
       }
       else if (state.c == 2)
       {
-        // TODO: print single character stored in register E.
+        std::cout << state.e;
       }
     }
     else
@@ -63,11 +58,36 @@ struct call_adr
   }
 };
 
+/*------------------------------------------------------------------------------------------------*/
+
+struct verbose
+{
+  std::ostream& os;
+
+  template <typename Machine, typename Instruction>
+  void
+  pre(const specific::state<Machine>& state, Instruction)
+  const
+  {
+    os
+      << std::setfill('0') << std::setw(4) << state.pc << ' '
+      << meta::disassemble(state, Instruction{}) << ' ';
+  }
+
+  template <typename Machine, typename Instruction>
+  void
+  post(const specific::state<Machine>& state, Instruction)
+  const
+  {
+    os << state << std::endl;
+  }
+};
+
 } // namespace detail
 
 /*------------------------------------------------------------------------------------------------*/
 
-class cpu_diag
+class cpu_test
 {
 public:
 
@@ -83,14 +103,12 @@ public:
 public:
 
   template <typename InputIterator>
-  cpu_diag(InputIterator first, InputIterator last)
+  cpu_test(InputIterator first, InputIterator last)
     : state_{*this}
-    , memory_(16384, 0)
+    , memory_(65536, 0)
   {
-    std::copy(first, last, memory_.begin());
-
-//    Fix bug of diagnostic???
-    memory_[368] = 0x7;
+    std::copy(first, last, memory_.begin() + 0x100);
+    state_.pc = 0x100;
 
 //    Skip DAA test
     memory_[0x59c] = 0xc3;
@@ -115,14 +133,22 @@ public:
   void
   operator()()
   {
-    const auto opcode = state_.read_memory(state_.pc);
-    step(instructions{}, opcode, state_);
-    // cycles += step(instructions{}, opcode, state_, verbose{std::cout});
+    while (true)
+    {
+      const auto opcode = state_.read_memory(state_.pc);
+      step(instructions{}, opcode, state_);
+//     step(instructions{}, opcode, state_, detail::verbose{std::cout})
+      if (state_.pc == 0)
+      {
+        std::cout << '\n';
+        break;
+      }
+    }
   }
 
 private:
 
-  specific::state<cpu_diag> state_;
+  specific::state<cpu_test> state_;
   std::vector<std::uint8_t> memory_;
 };
 

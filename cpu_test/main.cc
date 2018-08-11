@@ -23,22 +23,12 @@ main(int argc, char** argv)
     return 1;
   }
 
-  auto machine = cpp8080::machine::cpu_diag{
+  auto cpu_test = cpp8080::machine::cpu_test{
     std::istreambuf_iterator<char>{file},
     std::istreambuf_iterator<char>{}
   };
 
-  try
-  {
-    while (true)
-    {
-      machine();
-    }
-  }
-  catch (const cpp8080::specific::halt& h)
-  {
-    std::cout << h.what() << '\n';
-  }
+  cpu_test();
 }
 
 /*------------------------------------------------------------------------------------------------*/
