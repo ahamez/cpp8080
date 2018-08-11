@@ -48,11 +48,11 @@ public:
     return os
       << std::resetiosflags(std::ios_base::basefield)
       << " "
-      << (state.cc.z ? "z" : ".")
-      << (state.cc.s ? "s" : ".")
-      << (state.cc.p ? "p" : ".")
-      << (state.cc.cy ? "c" : ".")
-      << (state.cc.ac ? "a" : ".")
+      << (state.flags.z ? "z" : ".")
+      << (state.flags.s ? "s" : ".")
+      << (state.flags.p ? "p" : ".")
+      << (state.flags.cy ? "c" : ".")
+      << (state.flags.ac ? "a" : ".")
       << std::hex
       << "  A $" << std::setfill('0') << std::setw(2) << +state.a
       << " B $"  << std::setfill('0') << std::setw(2) << +state.b
