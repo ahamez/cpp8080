@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iomanip>
-#include <memory>
 #include <ostream>
 
 #include "cpp8080/util.hh"
@@ -30,7 +29,7 @@ class state
 {
 public:
 
-  state(std::shared_ptr<Machine> machine)
+  state(Machine& machine)
     : a{0}
     , b{0}
     , c{0}
@@ -41,7 +40,7 @@ public:
     , sp{0}
     , pc{0}
     , cc{}
-    , machine_ptr_{machine}
+    , machine_{machine}
     , interrupt_{false}
     , cycles_{0}
   {}
@@ -73,7 +72,7 @@ public:
   void
   write_memory(std::uint16_t address, std::uint8_t value)
   {
-    machine_ptr_->write_memory(address, value);
+    machine_.write_memory(address, value);
   }
 
   [[nodiscard]]
@@ -81,7 +80,7 @@ public:
   read_memory(std::uint16_t address)
   const
   {
-    return machine_ptr_->read_memory(address);
+    return machine_.read_memory(address);
   }
 
   void
@@ -197,7 +196,7 @@ public:
   machine()
   noexcept
   {
-    return *machine_ptr_;
+    return machine_;
   }
 
   [[nodiscard]]
@@ -205,7 +204,7 @@ public:
   machine()
   const noexcept
   {
-    return *machine_ptr_;
+    return machine_;
   }
 
   void
@@ -268,7 +267,7 @@ public:
   
 private:
 
-  std::shared_ptr<Machine> machine_ptr_;
+  Machine& machine_;
   bool interrupt_;
   std::uint64_t cycles_;
 

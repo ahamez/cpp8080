@@ -6,7 +6,6 @@
 
 #include <SDL2/SDL.h>
 
-#include "cpp8080/emulator.hh"
 #include "cpp8080/machine/cpu_diag.hh"
 #include "cpp8080/machine/space_invaders.hh"
 
@@ -35,14 +34,14 @@ main(int argc, char** argv)
     return 1;
   }
 
-  auto machine =
-    std::make_shared<cpp8080::machine::space_invaders>(std::istreambuf_iterator<char>{file},
-                                                       std::istreambuf_iterator<char>{});
 //  auto machine =
 //    std::make_shared<cpp8080::machine::cpu_diag>(std::istreambuf_iterator<char>{file},
 //                                                 std::istreambuf_iterator<char>{});
 
-  auto emulator = cpp8080::emulator{machine};
+  auto machine = cpp8080::machine::space_invaders{
+    std::istreambuf_iterator<char>{file},
+    std::istreambuf_iterator<char>{}
+  };
 
   auto window = SDL_CreateWindow("Space Invaders",
                                  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -70,7 +69,7 @@ main(int argc, char** argv)
 //      emulator();
 //    }
 
-    emulator.start();
+    machine.start();
     while (true)
     {
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -94,23 +93,23 @@ main(int argc, char** argv)
                 std::exit(0);
 
               case SDLK_c:
-                machine->key_down(cpp8080::machine::space_invaders::key::coin);
+                machine.key_down(cpp8080::machine::space_invaders::key::coin);
                 break;
 
               case SDLK_LEFT:
-                machine->key_down(cpp8080::machine::space_invaders::key::left);
+                machine.key_down(cpp8080::machine::space_invaders::key::left);
                 break;
 
               case SDLK_RIGHT:
-                machine->key_down(cpp8080::machine::space_invaders::key::right);
+                machine.key_down(cpp8080::machine::space_invaders::key::right);
                 break;
 
               case SDLK_SPACE:
-                machine->key_down(cpp8080::machine::space_invaders::key::fire);
+                machine.key_down(cpp8080::machine::space_invaders::key::fire);
                 break;
 
               case SDLK_1:
-                machine->key_down(cpp8080::machine::space_invaders::key::start);
+                machine.key_down(cpp8080::machine::space_invaders::key::start_1player);
                 break;
             }
             break;
@@ -121,23 +120,23 @@ main(int argc, char** argv)
             switch (e.key.keysym.sym)
             {
               case SDLK_c:
-                machine->key_up(cpp8080::machine::space_invaders::key::coin);
+                machine.key_up(cpp8080::machine::space_invaders::key::coin);
                 break;
 
               case SDLK_LEFT:
-                machine->key_up(cpp8080::machine::space_invaders::key::left);
+                machine.key_up(cpp8080::machine::space_invaders::key::left);
                 break;
 
               case SDLK_RIGHT:
-                machine->key_up(cpp8080::machine::space_invaders::key::right);
+                machine.key_up(cpp8080::machine::space_invaders::key::right);
                 break;
 
               case SDLK_SPACE:
-                machine->key_up(cpp8080::machine::space_invaders::key::fire);
+                machine.key_up(cpp8080::machine::space_invaders::key::fire);
                 break;
 
               case SDLK_1:
-                machine->key_up(cpp8080::machine::space_invaders::key::start);
+                machine.key_up(cpp8080::machine::space_invaders::key::start_1player);
                 break;
             }
           }
@@ -145,7 +144,7 @@ main(int argc, char** argv)
         }
       }
 
-      emulator();
+      machine();
 
 //  Screen is rotated 90° counterclockwise, we can't simply iterate on video memory.
 //  Rather than computing the rotaion, I chose to iterate in such a way that pixels are
@@ -185,7 +184,7 @@ main(int argc, char** argv)
       {
         for (auto i = 0, x = 0; i < 224; ++i, ++x)
         {
-          const auto byte = machine->read_memory(0x2400 + (j  + i * 32));
+          const auto byte = machine.read_memory(0x2400 + (j  + i * 32));
           for (auto b = 7, pos = 0; b >= 0; --b, ++pos)
           {
             if (((byte >> b) & 0x01) == 1)

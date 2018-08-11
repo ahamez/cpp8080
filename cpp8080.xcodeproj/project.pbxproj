@@ -33,7 +33,6 @@
 		2BB1B094211B749700E0DD8F /* instruction.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = instruction.hh; sourceTree = "<group>"; };
 		2BB1B095211B749700E0DD8F /* unimplemented.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = unimplemented.hh; sourceTree = "<group>"; };
 		2BB1B096211B749700E0DD8F /* instructions.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
-		2BB1B097211B749700E0DD8F /* emulator.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = emulator.hh; sourceTree = "<group>"; };
 		2BB1B099211B749700E0DD8F /* cpu_diag.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cpu_diag.hh; sourceTree = "<group>"; };
 		2BB1B09A211B749700E0DD8F /* space_invaders.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
 		2BB1B09B211B749700E0DD8F /* util.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = util.hh; sourceTree = "<group>"; };
@@ -82,7 +81,6 @@
 		2BB1B08D211B749700E0DD8F /* cpp8080 */ = {
 			isa = PBXGroup;
 			children = (
-				2BB1B097211B749700E0DD8F /* emulator.hh */,
 				2BB1B09B211B749700E0DD8F /* util.hh */,
 				2BB1B098211B749700E0DD8F /* machine */,
 				2BB1B091211B749700E0DD8F /* meta */,
