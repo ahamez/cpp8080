@@ -9,7 +9,7 @@ namespace cpp8080::specific {
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct condition_codes
+struct flag_bits
 {
   bool cy;
   bool p;
@@ -35,7 +35,7 @@ public:
     , l{0}
     , sp{0}
     , pc{0}
-    , cc{}
+    , flags{}
     , machine_{machine}
     , interrupt_{false}
     , cycles_{0}
@@ -123,29 +123,29 @@ public:
   flags_zsp(std::uint8_t value)
   noexcept
   {
-    cc.z = (value == 0);
-    cc.s = (0x80 == (value & 0x80));
-    cc.p = even_parity(value);
+    flags.z = (value == 0);
+    flags.s = (0x80 == (value & 0x80));
+    flags.p = even_parity(value);
   }
 
   void
   logic_flags_a()
   noexcept
   {
-    cc.cy = cc.ac = 0;
-    cc.z = (a == 0);
-    cc.s = (0x80 == (a & 0x80));
-    cc.p = even_parity(a);
+    flags.cy = flags.ac = 0;
+    flags.z = (a == 0);
+    flags.s = (0x80 == (a & 0x80));
+    flags.p = even_parity(a);
   }
 
   void
   arithmetic_flags(std::uint16_t res)
   noexcept
   {
-    cc.cy = (res > 0xff);
-    cc.z = ((res & 0xff) == 0);
-    cc.s = (0x80 == (res & 0x80));
-    cc.p = even_parity(res & 0xff);
+    flags.cy = (res > 0xff);
+    flags.z = ((res & 0xff) == 0);
+    flags.s = (0x80 == (res & 0x80));
+    flags.p = even_parity(res & 0xff);
   }
   
   void
@@ -259,7 +259,7 @@ public:
   std::uint8_t l;
   std::uint16_t sp;
   std::uint16_t pc;
-  condition_codes cc;
+  flag_bits flags;
   
 private:
 
