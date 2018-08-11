@@ -347,16 +347,6 @@ struct rar : meta::describe_instruction<0x1f, 4, 1>
   }
 };
 
-struct rim : meta::describe_instruction<0x20, 4, 1>
-{
-  static constexpr auto name = "rim";
-
-  template <typename Machine> void operator()(state<Machine>&) const
-  {
-    throw std::runtime_error{"Unimplemented instruction 0x20"};
-  }
-};
-
 struct lxi_h : meta::describe_instruction<0x21, 10, 3>
 {
   static constexpr auto name = "lxi_h";
@@ -529,16 +519,6 @@ struct cma : meta::describe_instruction<0x2f, 4, 1>
   template <typename Machine> void operator()(state<Machine>& state) const
   {
     state.a = ~state.a;
-  }
-};
-
-struct sim : meta::describe_instruction<0x30, 4, 1>
-{
-  static constexpr auto name = "sim";
-
-  template <typename Machine> void operator()(state<Machine>&) const
-  {
-    throw std::runtime_error{"Unimplemented instruction 0x30"};
   }
 };
 
@@ -2976,7 +2956,7 @@ using instructions_8080 = meta::make_instructions<
   dcr_e,
   mvi_e,
   rar,
-  rim,
+  meta::unimplemented<0x20>,
   lxi_h,
   shld_adr,
   inx_h,
@@ -2992,7 +2972,7 @@ using instructions_8080 = meta::make_instructions<
   dcr_l,
   mvi_l_d8,
   cma,
-  sim,
+  meta::unimplemented<0x30>,
   lxi_sp,
   sta_adr,
   inx_sp,
