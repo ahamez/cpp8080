@@ -118,24 +118,32 @@ private:
 int
 main(int argc, char** argv)
 {
-  if (argc != 2)
+  if (argc < 2)
   {
-    std::cerr << "Usage: " << argv[0] << " /path/to/file\n";
-    return 1;
-  }
-  auto file = std::ifstream{argv[1], std::ios::binary};
-  if (not file.is_open())
-  {
-    std::cerr << "Cannot open ROM file " << argv[1] << '\n';
+    std::cerr << "Usage: " << argv[0] << " /path/to/rom_1 ... /path/to/rom_n\n";
     return 1;
   }
 
-  auto tester = cpu_test{
-    std::istreambuf_iterator<char>{file},
-    std::istreambuf_iterator<char>{}
-  };
+  for (auto i = 1ul; i < argc; ++i)
+  {
+    std::cout << "\n--------------------------\nTest with ROM " << argv[i] << '\n';
 
-  tester();
+    auto file = std::ifstream{argv[i], std::ios::binary};
+    if (not file.is_open())
+    {
+      std::cerr << "Cannot open ROM file " << argv[i] << '\n';
+      return 1;
+    }
+
+    auto tester = cpu_test{
+      std::istreambuf_iterator<char>{file},
+      std::istreambuf_iterator<char>{}
+    };
+
+    tester();
+
+    std::cout << "End of test with ROM " << argv[i] << "\n";
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
