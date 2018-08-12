@@ -6,7 +6,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "cpp8080/machine/space_invaders.hh"
+#include "space_invaders.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ main(int argc, char** argv)
 
   static constexpr auto factor = 2;
 
-  auto machine = cpp8080::machine::space_invaders{
+  auto machine = space_invaders{
     std::istreambuf_iterator<char>{file},
     std::istreambuf_iterator<char>{}
   };
@@ -82,23 +82,23 @@ main(int argc, char** argv)
                 std::exit(0);
 
               case SDLK_c:
-                machine.key_down(cpp8080::machine::space_invaders::key::coin);
+                machine.key_down(space_invaders::key::coin);
                 break;
 
               case SDLK_LEFT:
-                machine.key_down(cpp8080::machine::space_invaders::key::left);
+                machine.key_down(space_invaders::key::left);
                 break;
 
               case SDLK_RIGHT:
-                machine.key_down(cpp8080::machine::space_invaders::key::right);
+                machine.key_down(space_invaders::key::right);
                 break;
 
               case SDLK_SPACE:
-                machine.key_down(cpp8080::machine::space_invaders::key::fire);
+                machine.key_down(space_invaders::key::fire);
                 break;
 
               case SDLK_1:
-                machine.key_down(cpp8080::machine::space_invaders::key::start_1player);
+                machine.key_down(space_invaders::key::start_1player);
                 break;
             }
             break;
@@ -109,23 +109,23 @@ main(int argc, char** argv)
             switch (e.key.keysym.sym)
             {
               case SDLK_c:
-                machine.key_up(cpp8080::machine::space_invaders::key::coin);
+                machine.key_up(space_invaders::key::coin);
                 break;
 
               case SDLK_LEFT:
-                machine.key_up(cpp8080::machine::space_invaders::key::left);
+                machine.key_up(space_invaders::key::left);
                 break;
 
               case SDLK_RIGHT:
-                machine.key_up(cpp8080::machine::space_invaders::key::right);
+                machine.key_up(space_invaders::key::right);
                 break;
 
               case SDLK_SPACE:
-                machine.key_up(cpp8080::machine::space_invaders::key::fire);
+                machine.key_up(space_invaders::key::fire);
                 break;
 
               case SDLK_1:
-                machine.key_up(cpp8080::machine::space_invaders::key::start_1player);
+                machine.key_up(space_invaders::key::start_1player);
                 break;
             }
           }

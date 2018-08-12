@@ -11,18 +11,14 @@
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/state.hh"
 
-namespace cpp8080::machine {
-
 /*------------------------------------------------------------------------------------------------*/
 
-namespace detail{
-
-struct in_override : meta::describe_instruction<0xdb, 3, 2>
+struct in_override : cpp8080::meta::describe_instruction<0xdb, 3, 2>
 {
   static constexpr auto name = "in";
 
   template <typename Machine>
-  void operator()(specific::state<Machine>& state) const
+  void operator()(cpp8080::specific::state<Machine>& state) const
   {
     const auto port = state.op1();
     state.a = state.machine().in(port);
@@ -30,12 +26,12 @@ struct in_override : meta::describe_instruction<0xdb, 3, 2>
   }
 };
 
-struct out_override : meta::describe_instruction<0xd3, 3, 2>
+struct out_override : cpp8080::meta::describe_instruction<0xd3, 3, 2>
 {
   static constexpr auto name = "out";
 
   template <typename Machine>
-  void operator()(specific::state<Machine>& state) const
+  void operator()(cpp8080::specific::state<Machine>& state) const
   {
     const auto port = state.op1();
     state.machine().out(port, state.a);
@@ -43,21 +39,19 @@ struct out_override : meta::describe_instruction<0xd3, 3, 2>
   }
 };
 
-} // namespace detail
-
 /*------------------------------------------------------------------------------------------------*/
 
 class space_invaders
 {
 private:
 
-  using overrides = meta::make_instructions<
-    detail::in_override,
-    detail::out_override
+  using overrides = cpp8080::meta::make_instructions<
+    in_override,
+    out_override
   >;
 
-  using instructions = meta::override_instructions<
-    specific::instructions_8080,
+  using instructions = cpp8080::meta::override_instructions<
+    cpp8080::specific::instructions_8080,
     overrides
   >;
 
@@ -227,7 +221,7 @@ public:
 
 private:
 
-  specific::state<space_invaders> state_;
+  cpp8080::specific::state<space_invaders> state_;
   std::vector<std::uint8_t> memory_;
   std::uint8_t shift0_;
   std::uint8_t shift1_;
@@ -240,5 +234,3 @@ private:
 };
 
 /*------------------------------------------------------------------------------------------------*/
-
-} // namespace cpp8080::machine
