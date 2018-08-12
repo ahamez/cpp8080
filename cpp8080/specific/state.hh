@@ -224,7 +224,7 @@ public:
   inr(std::uint8_t value)
   noexcept
   {
-    const auto res = value + 1;
+    const std::uint8_t res = value + 1;
     flags.ac = (res & 0x0f) == 0;
     flags.z = res == 0;
     flags.s = (res & 0b10000000) != 0;
@@ -237,7 +237,7 @@ public:
   dcr(std::uint8_t value)
   noexcept
   {
-    const auto res = value - 1;
+    const std::uint8_t res = value - 1;
     flags.ac = not ((res & 0x0f) == 0x0f);
     flags.z = res == 0;
     flags.s = (res & 0b10000000) != 0;
@@ -287,7 +287,7 @@ public:
   ana(std::uint8_t val)
   noexcept
   {
-    const auto res = a & val;
+    const std::uint8_t res = a & val;
     flags.cy = false;
     flags.ac = ((a | val) & 0x08) != 0;
     flags.z = res == 0;
@@ -312,7 +312,7 @@ public:
   cmp(std::uint8_t val)
   noexcept
   {
-    const std::uint16_t res = a - val;
+    const std::int16_t res = a - val;
     flags.cy = (res & 0b100000000) != 0;
     flags.ac = ~(a ^ res ^ val) & 0x10;
     flags.z = (res & 0xff) == 0;

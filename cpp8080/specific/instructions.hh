@@ -418,8 +418,8 @@ struct daa : meta::describe_instruction<0x27, 4, 1>
     auto cy = state.flags.cy;
     auto value_to_add = std::uint8_t{0};
 
-    const auto lsb = state.a & 0x0f;
-    const auto msb = state.a >> 4;
+    const std::uint8_t lsb = state.a & 0x0f;
+    const std::uint8_t msb = state.a >> 4;
 
     if (state.flags.ac or lsb > 9)
     {
@@ -1995,7 +1995,7 @@ struct cnz : meta::describe_instruction<0xc4, 17, 3>
   {
     if (state.flags.z == 0)
     {
-      const auto ret = state.pc + 2;
+      const uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2035,7 +2035,7 @@ struct rst_0 : meta::describe_instruction<0xc7, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2093,7 +2093,7 @@ struct cz_adr : meta::describe_instruction<0xcc, 10, 3>
   {
     if (state.flags.z == 1)
     {
-      const auto ret = state.pc + 2;
+      const std::uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2112,7 +2112,7 @@ struct call_adr : meta::describe_instruction<0xcd, 17, 3>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2137,7 +2137,7 @@ struct rst_1 : meta::describe_instruction<0xcf, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2204,7 +2204,7 @@ struct cnc_adr : meta::describe_instruction<0xd4, 17, 3>
   {
     if (state.flags.cy == 0)
     {
-      const auto ret = state.pc + 2;
+      const std::uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2244,7 +2244,7 @@ struct rst_2 : meta::describe_instruction<0xd7, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2301,7 +2301,7 @@ struct cc_adr : meta::describe_instruction<0xdc, 10, 3>
   {
     if (state.flags.cy != 0)
     {
-      const auto ret = state.pc + 2;
+      const std::uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2331,7 +2331,7 @@ struct rst_3 : meta::describe_instruction<0xdf, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2403,7 +2403,7 @@ struct cpo_adr : meta::describe_instruction<0xe4, 17, 3>
   {
     if (state.flags.p == 0)
     {
-      const auto ret = state.pc + 2;
+      const std::uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2443,7 +2443,7 @@ struct rst_4 : meta::describe_instruction<0xe7, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2511,7 +2511,7 @@ struct cpe_adr : meta::describe_instruction<0xec, 17, 3>
   {
     if (state.flags.p != 0)
     {
-      const auto ret = state.pc + 2;
+      const std::uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2542,7 +2542,7 @@ struct rst_5 : meta::describe_instruction<0xef, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2616,7 +2616,7 @@ struct cp_adr : meta::describe_instruction<0xf4, 17, 3>
   {
     if (state.flags.s == 0)
     {
-      const auto ret = state.pc + 2;
+      const std::uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2669,7 +2669,7 @@ struct rst_6 : meta::describe_instruction<0xf7, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
@@ -2737,7 +2737,7 @@ struct cm_adr : meta::describe_instruction<0xfc, 17, 3>
   {
     if (state.flags.s != 0)
     {
-      const auto ret = state.pc + 2;
+      const std::uint16_t ret = state.pc + 2;
       state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
       state.write_memory(state.sp - 2, ret & 0x00ff);
       state.sp -= 2;
@@ -2767,7 +2767,7 @@ struct rst_7 : meta::describe_instruction<0xff, 11, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto ret = state.pc + 2;
+    const std::uint16_t ret = state.pc + 2;
     state.write_memory(state.sp - 1, (ret >> 8) & 0x00ff);
     state.write_memory(state.sp - 2, ret & 0x00ff);
     state.sp -= 2;
