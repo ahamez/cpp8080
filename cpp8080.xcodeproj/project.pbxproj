@@ -72,6 +72,7 @@
 		2B0E15CA211F4C1300D53F74 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		2B28510E2120BF30003771AE /* parity.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parity.hh; sourceTree = "<group>"; };
 		2B28510F2120BFF1003771AE /* verbose.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = verbose.hh; sourceTree = "<group>"; };
+		2B2851122120C263003771AE /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
 		2B585A05211F4D2A0082B965 /* state.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = state.hh; sourceTree = "<group>"; };
 		2B585A06211F4D2A0082B965 /* halt.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = halt.hh; sourceTree = "<group>"; };
 		2B585A07211F4D2A0082B965 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
@@ -80,8 +81,6 @@
 		2B585A0B211F4D2A0082B965 /* instruction.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instruction.hh; sourceTree = "<group>"; };
 		2B585A0C211F4D2A0082B965 /* unimplemented.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = unimplemented.hh; sourceTree = "<group>"; };
 		2B585A0D211F4D2A0082B965 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
-		2B585A0F211F4D2A0082B965 /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
-		2B585A10211F4D2A0082B965 /* cpu_test.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cpu_test.hh; sourceTree = "<group>"; };
 		2BDD86C6211B85E000D14E59 /* libSDL2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2.a; path = ../../../../usr/local/Cellar/sdl2/2.0.8/lib/libSDL2.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -129,10 +128,18 @@
 			path = util;
 			sourceTree = "<group>";
 		};
+		2B2851112120C263003771AE /* machine */ = {
+			isa = PBXGroup;
+			children = (
+				2B2851122120C263003771AE /* space_invaders.hh */,
+			);
+			path = machine;
+			sourceTree = "<group>";
+		};
 		2B585A03211F4D2A0082B965 /* cpp8080 */ = {
 			isa = PBXGroup;
 			children = (
-				2B585A0E211F4D2A0082B965 /* machine */,
+				2B2851112120C263003771AE /* machine */,
 				2B585A08211F4D2A0082B965 /* meta */,
 				2B585A04211F4D2A0082B965 /* specific */,
 				2B28510D2120BF30003771AE /* util */,
@@ -160,15 +167,6 @@
 				2B585A0C211F4D2A0082B965 /* unimplemented.hh */,
 			);
 			path = meta;
-			sourceTree = "<group>";
-		};
-		2B585A0E211F4D2A0082B965 /* machine */ = {
-			isa = PBXGroup;
-			children = (
-				2B585A10211F4D2A0082B965 /* cpu_test.hh */,
-				2B585A0F211F4D2A0082B965 /* space_invaders.hh */,
-			);
-			path = machine;
 			sourceTree = "<group>";
 		};
 		2BB1B078211B743000E0DD8F = {
