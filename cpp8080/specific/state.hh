@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <ostream>
 
-#include "cpp8080/util.hh"
+#include "cpp8080/util/parity.hh"
 
 namespace cpp8080::specific {
 
@@ -228,7 +228,7 @@ public:
     flags.ac = (res & 0x0f) == 0;
     flags.z = res == 0;
     flags.s = (res & 0b10000000) != 0;
-    flags.p = even_parity(res);
+    flags.p = util::parity(res);
     return res;
   }
 
@@ -241,7 +241,7 @@ public:
     flags.ac = not ((res & 0x0f) == 0x0f);
     flags.z = res == 0;
     flags.s = (res & 0b10000000) != 0;
-    flags.p = even_parity(res);
+    flags.p = util::parity(res);
     return res;
   }
 
@@ -254,7 +254,7 @@ public:
     flags.s  = (res & 0b10000000) != 0;
     flags.cy = (res & 0b100000000) != 0;
     flags.ac = (reg ^ res ^ val) & 0x10;
-    flags.p  = even_parity(res & 0xff);
+    flags.p  = util::parity(res & 0xff);
     reg = res & 0xff;
   }
 
@@ -267,7 +267,7 @@ public:
     flags.s = (res & 0b10000000) != 0;
     flags.cy = (res & 0b100000000) != 0;
     flags.ac = ~(reg ^ res ^ val) & 0x10;
-    flags.p = even_parity(res & 0xff);
+    flags.p = util::parity(res & 0xff);
     reg = res & 0xff;
   }
 
@@ -280,7 +280,7 @@ public:
     flags.ac = false;
     flags.z = a == 0;
     flags.s = (a & 0x80) != 0;
-    flags.p = even_parity(a);
+    flags.p = util::parity(a);
   }
 
   void
@@ -292,7 +292,7 @@ public:
     flags.ac = ((a | val) & 0x08) != 0;
     flags.z = res == 0;
     flags.s = (res & 0x80) != 0;
-    flags.p = even_parity(res);
+    flags.p = util::parity(res);
     a = res;
   }
 
@@ -305,7 +305,7 @@ public:
     flags.ac = false;
     flags.z = a == 0;
     flags.s = (a & 0x80) != 0;
-    flags.p = even_parity(a);
+    flags.p = util::parity(a);
   }
 
   void
@@ -317,7 +317,7 @@ public:
     flags.ac = ~(a ^ res ^ val) & 0x10;
     flags.z = (res & 0xff) == 0;
     flags.s = (res & 0x80) != 0;
-    flags.p = even_parity(res);
+    flags.p = util::parity(res);
   }
 
 public:

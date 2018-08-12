@@ -7,6 +7,7 @@
 #include "cpp8080/meta/unimplemented.hh"
 #include "cpp8080/specific/halt.hh"
 #include "cpp8080/specific/state.hh"
+#include "cpp8080/util/parity.hh"
 
 namespace cpp8080::specific {
 
@@ -431,7 +432,7 @@ struct daa : meta::describe_instruction<0x27, 4, 1>
       cy = true;
     }
     state.add(state.a, value_to_add, 0);
-    state.flags.p = even_parity(state.a);
+    state.flags.p = util::parity(state.a);
     state.flags.cy = cy;
 
   }

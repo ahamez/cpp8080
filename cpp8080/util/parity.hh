@@ -1,13 +1,13 @@
 #pragma once
 
-namespace cpp8080 {
+namespace cpp8080::util {
 
 /*------------------------------------------------------------------------------------------------*/
 
 [[nodiscard]]
 inline
 bool
-even_parity(std::uint8_t x)
+parity(std::uint8_t x)
 noexcept
 {
   x ^= x >> 4;
@@ -18,4 +18,4 @@ noexcept
 
 /*------------------------------------------------------------------------------------------------*/
   
-} // namespace cpp8080
+} // namespace cpp8080::util
