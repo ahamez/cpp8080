@@ -415,19 +415,25 @@ struct daa : meta::describe_instruction<0x27, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    if ((state.a & 0x000f) > 9)
+    auto cy = state.flags.cy;
+    auto value_to_add = std::uint8_t{0};
+
+    const auto lsb = state.a & 0x0f;
+    const auto msb = state.a >> 4;
+
+    if (state.flags.ac or lsb > 9)
     {
-      state.a += 6;
+      value_to_add += 0x06;
     }
-    if ((state.a & 0x00f0) > 0x90)
+    if (state.flags.cy or msb > 9 or (msb >= 9 and lsb > 9))
     {
-      const auto res = static_cast<std::uint16_t>(state.a) + 0x0060;
-      state.a = res & 0x00ff;
-      state.flags.cy = (res > 0xff);
-      state.flags.z = ((res & 0xff) == 0);
-      state.flags.s = (0x80 == (res & 0x80));
-      state.flags.p = even_parity(res & 0xff);
+      value_to_add += 0x60;
+      cy = true;
     }
+    state.add(state.a, value_to_add, 0);
+    state.flags.p = even_parity(state.a);
+    state.flags.cy = cy;
+
   }
 };
 

@@ -109,11 +109,6 @@ public:
   {
     std::copy(first, last, memory_.begin() + 0x100);
     state_.pc = 0x100;
-
-//    Skip DAA test
-    memory_[0x59c] = 0xc3;
-    memory_[0x59d] = 0xc2;
-    memory_[0x59e] = 0x05;
   }
 
   void
