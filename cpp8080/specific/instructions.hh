@@ -508,7 +508,7 @@ struct cma : meta::describe_instruction<0x2f, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.a = ~state.a;
+    state.a ^= 0xff;
   }
 };
 
@@ -584,7 +584,7 @@ struct stc : meta::describe_instruction<0x37, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.flags.cy = 1;
+    state.flags.cy = true;
   }
 };
 
@@ -660,7 +660,7 @@ struct cmc : meta::describe_instruction<0x3f, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.flags.cy = 0;
+    state.flags.cy = not(state.flags.cy);
   }
 };
 
