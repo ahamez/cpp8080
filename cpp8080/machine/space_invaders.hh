@@ -190,28 +190,6 @@ public:
   {
     return memory_.at(address);
   }
-  struct verbose
-  {
-    std::ostream& os;
-
-    template <typename Instruction>
-    void
-    pre(const specific::state<space_invaders>& state, Instruction)
-    const
-    {
-      os
-      << std::setfill('0') << std::setw(4) << state.pc << ' '
-      << meta::disassemble(state, Instruction{}) << ' ';
-    }
-
-    template <typename Instruction>
-    void
-    post(const specific::state<space_invaders>& state, Instruction)
-    const
-    {
-      os << state << std::endl;
-    }
-  };
 
   void
   start()
@@ -243,7 +221,6 @@ public:
     {
       const auto opcode = state_.read_memory(state_.pc);
       cycles += step(instructions{}, opcode, state_);
-      // cycles += step(instructions{}, opcode, state_, verbose{std::cout});
     }
     last_timer_ = now;
   }

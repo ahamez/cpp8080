@@ -2,8 +2,6 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <iostream>
-#include <ostream>
 #include <sstream>
 #include <vector>
 
@@ -58,31 +56,6 @@ struct call_adr
   }
 };
 
-/*------------------------------------------------------------------------------------------------*/
-
-struct verbose
-{
-  std::ostream& os;
-
-  template <typename Machine, typename Instruction>
-  void
-  pre(const specific::state<Machine>& state, Instruction)
-  const
-  {
-    os
-      << std::setfill('0') << std::setw(4) << state.pc << ' '
-      << meta::disassemble(state, Instruction{}) << ' ';
-  }
-
-  template <typename Machine, typename Instruction>
-  void
-  post(const specific::state<Machine>& state, Instruction)
-  const
-  {
-    os << state << std::endl;
-  }
-};
-
 } // namespace detail
 
 /*------------------------------------------------------------------------------------------------*/
@@ -132,7 +105,6 @@ public:
     {
       const auto opcode = state_.read_memory(state_.pc);
       step(instructions{}, opcode, state_);
-//     step(instructions{}, opcode, state_, detail::verbose{std::cout});
       if (state_.pc == 0)
       {
         std::cout << '\n';
