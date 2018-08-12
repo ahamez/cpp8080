@@ -120,35 +120,6 @@ public:
   }
 
   void
-  flags_zsp(std::uint8_t value)
-  noexcept
-  {
-    flags.z = (value == 0);
-    flags.s = (0x80 == (value & 0x80));
-    flags.p = even_parity(value);
-  }
-
-  void
-  logic_flags_a()
-  noexcept
-  {
-    flags.cy = flags.ac = 0;
-    flags.z = (a == 0);
-    flags.s = (0x80 == (a & 0x80));
-    flags.p = even_parity(a);
-  }
-
-  void
-  arithmetic_flags(std::uint16_t res)
-  noexcept
-  {
-    flags.cy = (res > 0xff);
-    flags.z = ((res & 0xff) == 0);
-    flags.s = (0x80 == (res & 0x80));
-    flags.p = even_parity(res & 0xff);
-  }
-  
-  void
   push(std::uint8_t high, std::uint8_t low)
   {
     write_memory(sp - 1, high);
@@ -246,6 +217,107 @@ public:
   const noexcept
   {
     return cycles_;
+  }
+
+  [[nodiscard]]
+  std::uint8_t
+  inr(std::uint8_t value)
+  noexcept
+  {
+    const auto res = value + 1;
+    flags.ac = (res & 0x0f) == 0;
+    flags.z = res == 0;
+    flags.s = (res & 0b10000000) != 0;
+    flags.p = even_parity(res);
+    return res;
+  }
+
+  [[nodiscard]]
+  std::uint8_t
+  dcr(std::uint8_t value)
+  noexcept
+  {
+    const auto res = value - 1;
+    flags.ac = not ((res & 0x0f) == 0x0f);
+    flags.z = res == 0;
+    flags.s = (res & 0b10000000) != 0;
+    flags.p = even_parity(res);
+    return res;
+  }
+
+  void
+  add(std::uint8_t& reg, std::uint8_t val, bool carry)
+  noexcept
+  {
+    const std::uint16_t res = reg + val + carry;
+    flags.z  = (res & 0xff) == 0;
+    flags.s  = (res & 0b10000000) != 0;
+    flags.cy = (res & 0b100000000) != 0;
+    flags.ac = (reg ^ res ^ val) & 0x10;
+    flags.p  = even_parity(res & 0xff);
+    reg = res & 0xff;
+  }
+
+  void
+  sub(std::uint8_t& reg, std::uint8_t val, bool carry)
+  noexcept
+  {
+    const std::int16_t res = reg - val - carry;
+    flags.z = (res & 0xff) == 0;
+    flags.s = (res & 0b10000000) != 0;
+    flags.cy = (res & 0b100000000) != 0;
+    flags.ac = ~(reg ^ res ^ val) & 0x10;
+    flags.p = even_parity(res & 0xff);
+    reg = res & 0xff;
+  }
+
+  void
+  ora(std::uint8_t val)
+  noexcept
+  {
+    a |= val;
+    flags.cy = false;
+    flags.ac = false;
+    flags.z = a == 0;
+    flags.s = (a & 0x80) != 0;
+    flags.p = even_parity(a);
+  }
+
+  void
+  ana(std::uint8_t val)
+  noexcept
+  {
+    const auto res = a & val;
+    flags.cy = false;
+    flags.ac = ((a | val) & 0x08) != 0;
+    flags.z = res == 0;
+    flags.s = (res & 0x80) != 0;
+    flags.p = even_parity(res);
+    a = res;
+  }
+
+  void
+  xra(std::uint8_t val)
+  noexcept
+  {
+    a ^= val;
+    flags.cy = false;
+    flags.ac = false;
+    flags.z = a == 0;
+    flags.s = (a & 0x80) != 0;
+    flags.p = even_parity(a);
+  }
+
+  void
+  cmp(std::uint8_t val)
+  noexcept
+  {
+    const std::uint16_t res = a - val;
+    flags.cy = (res & 0b100000000) != 0;
+    flags.ac = ~(a ^ res ^ val) & 0x10;
+    flags.z = (res & 0xff) == 0;
+    flags.s = (res & 0x80) != 0;
+    flags.p = even_parity(res);
   }
 
 public:

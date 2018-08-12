@@ -63,8 +63,7 @@ struct inr_b : meta::describe_instruction<0x04, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.b += 1;
-    state.flags_zsp(state.b);
+    state.b = state.inr(state.b);
   }
 };
 
@@ -74,8 +73,7 @@ struct dcr_b : meta::describe_instruction<0x05, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.b -= 1;
-    state.flags_zsp(state.b);
+    state.b = state.dcr(state.b);
   }
 };
 
@@ -145,8 +143,7 @@ struct inr_c : meta::describe_instruction<0x0c, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.c += 1;
-    state.flags_zsp(state.c);
+    state.c = state.inr(state.c);
   }
 };
 
@@ -156,8 +153,7 @@ struct dcr_c : meta::describe_instruction<0x0d, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.c -= 1;
-    state.flags_zsp(state.c);
+    state.c = state.dcr(state.c);
   }
 };
 
@@ -226,8 +222,7 @@ struct inr_d : meta::describe_instruction<0x14, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.d += 1;
-    state.flags_zsp(state.d);
+    state.d = state.inr(state.d);
   }
 };
 
@@ -237,8 +232,7 @@ struct dcr_d : meta::describe_instruction<0x15, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.d -= 1;
-    state.flags_zsp(state.d);
+    state.d = state.dcr(state.d);
   }
 };
 
@@ -308,8 +302,7 @@ struct inr_e : meta::describe_instruction<0x1c, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.e += 1;
-    state.flags_zsp(state.e);
+    state.e = state.inr(state.e);
   }
 };
 
@@ -319,8 +312,7 @@ struct dcr_e : meta::describe_instruction<0x1d, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.e -= 1;
-    state.flags_zsp(state.e);
+    state.e = state.dcr(state.e);
   }
 };
 
@@ -392,8 +384,7 @@ struct inr_h : meta::describe_instruction<0x24, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.h += 1;
-    state.flags_zsp(state.h);
+    state.h = state.inr(state.h);
   }
 };
 
@@ -403,8 +394,7 @@ struct dcr_h : meta::describe_instruction<0x25, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.h -= 1;
-    state.flags_zsp(state.h);
+    state.h = state.dcr(state.h);
   }
 };
 
@@ -433,7 +423,10 @@ struct daa : meta::describe_instruction<0x27, 4, 1>
     {
       const auto res = static_cast<std::uint16_t>(state.a) + 0x0060;
       state.a = res & 0x00ff;
-      state.arithmetic_flags(res);
+      state.flags.cy = (res > 0xff);
+      state.flags.z = ((res & 0xff) == 0);
+      state.flags.s = (0x80 == (res & 0x80));
+      state.flags.p = even_parity(res & 0xff);
     }
   }
 };
@@ -484,8 +477,7 @@ struct inr_l : meta::describe_instruction<0x2c, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.l += 1;
-    state.flags_zsp(state.l);
+    state.l = state.inr(state.l);
   }
 };
 
@@ -495,9 +487,7 @@ struct dcr_l : meta::describe_instruction<0x2d, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.l -= 1;
-    state.flags_zsp(state.l);
-
+    state.l = state.dcr(state.l);
   }
 };
 
@@ -561,8 +551,7 @@ struct inr_m : meta::describe_instruction<0x34, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = state.read_hl() + 1;
-    state.flags_zsp(res);
+    const auto res = state.inr(state.read_hl());
     state.write_hl(res);
   }
 };
@@ -573,8 +562,7 @@ struct dcr_m : meta::describe_instruction<0x35, 10, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = state.read_hl() - 1;
-    state.flags_zsp(res);
+    const auto res = state.dcr(state.read_hl());
     state.write_hl(res);
   }
 };
@@ -641,8 +629,7 @@ struct inr_a : meta::describe_instruction<0x3c, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a += 1;
-    state.flags_zsp(state.a);
+    state.a = state.inr(state.a);
   }
 };
 
@@ -652,8 +639,7 @@ struct dcr_a : meta::describe_instruction<0x3d, 5, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a -= 1;
-    state.flags_zsp(state.a);
+    state.a = state.dcr(state.a);
   }
 };
 
@@ -1310,9 +1296,7 @@ struct add_b : meta::describe_instruction<0x80, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.b);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.b, 0);
   }
 };
 
@@ -1322,9 +1306,7 @@ struct add_c : meta::describe_instruction<0x81, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.c);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.c, 0);
   }
 };
 
@@ -1334,9 +1316,7 @@ struct add_d : meta::describe_instruction<0x82, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.d);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.d, 0);
   }
 };
 
@@ -1346,9 +1326,7 @@ struct add_e : meta::describe_instruction<0x83, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.e);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.e, 0);
   }
 };
 
@@ -1358,9 +1336,7 @@ struct add_h : meta::describe_instruction<0x84, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.h);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.h, 0);
   }
 };
 
@@ -1370,9 +1346,7 @@ struct add_l : meta::describe_instruction<0x85, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.l);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.l, 0);
   }
 };
 
@@ -1382,10 +1356,7 @@ struct add_m : meta::describe_instruction<0x86, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = static_cast<std::uint16_t>(state.a)
-                   + static_cast<std::uint16_t>(state.read_hl());
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.read_hl(), 0);
   }
 };
 
@@ -1395,9 +1366,7 @@ struct add_a : meta::describe_instruction<0x87, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.a);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.a, 0);
   }
 };
 
@@ -1407,10 +1376,7 @@ struct adc_b : meta::describe_instruction<0x88, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.b)
-    + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.b, state.flags.cy);
   }
 };
 
@@ -1420,10 +1386,7 @@ struct adc_c : meta::describe_instruction<0x89, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.c)
-                   + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.c, state.flags.cy);
   }
 };
 
@@ -1433,10 +1396,7 @@ struct adc_d : meta::describe_instruction<0x8a, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.d)
-                   + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.d, state.flags.cy);
   }
 };
 
@@ -1446,10 +1406,7 @@ struct adc_e : meta::describe_instruction<0x8b, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.e)
-                   + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.e, state.flags.cy);
   }
 };
 
@@ -1459,10 +1416,7 @@ struct adc_h : meta::describe_instruction<0x8c, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.h)
-                   + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.h, state.flags.cy);
   }
 };
 
@@ -1472,10 +1426,7 @@ struct adc_l : meta::describe_instruction<0x8d, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.l)
-                   + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.l, state.flags.cy);
   }
 };
 
@@ -1485,11 +1436,7 @@ struct adc_m : meta::describe_instruction<0x8e, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = static_cast<std::uint16_t>(state.a)
-                   + static_cast<std::uint16_t>(state.read_hl())
-                   + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.read_hl(), state.flags.cy);
   }
 };
 
@@ -1499,10 +1446,7 @@ struct adc_a : meta::describe_instruction<0x8f, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.a)
-                   + state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.add(state.a, state.a, state.flags.cy);
   }
 };
 
@@ -1512,9 +1456,7 @@ struct sub_b : meta::describe_instruction<0x90, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.b);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.b, 0);
   }
 };
 
@@ -1524,9 +1466,7 @@ struct sub_c : meta::describe_instruction<0x91, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.c);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.c, 0);
   }
 };
 
@@ -1536,9 +1476,7 @@ struct sub_d : meta::describe_instruction<0x92, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.d);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.d, 0);
   }
 };
 
@@ -1548,9 +1486,7 @@ struct sub_e : meta::describe_instruction<0x93, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.e);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.e, 0);
   }
 };
 
@@ -1560,9 +1496,7 @@ struct sub_h : meta::describe_instruction<0x94, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.h);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.h, 0);
   }
 };
 
@@ -1572,9 +1506,7 @@ struct sub_l : meta::describe_instruction<0x95, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.l);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.l, 0);
   }
 };
 
@@ -1584,10 +1516,7 @@ struct sub_m : meta::describe_instruction<0x96, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = static_cast<std::uint16_t>(state.a)
-                   - static_cast<std::uint16_t>(state.read_hl());
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.read_hl(), 0);
   }
 };
 
@@ -1597,9 +1526,7 @@ struct sub_a : meta::describe_instruction<0x97, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.a);
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.a, 0);
   }
 };
 
@@ -1609,10 +1536,7 @@ struct sbb_b : meta::describe_instruction<0x98, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.b)
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.b, state.flags.cy);
   }
 };
 
@@ -1622,10 +1546,7 @@ struct sbb_c : meta::describe_instruction<0x99, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.c)
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.c, state.flags.cy);
   }
 };
 
@@ -1635,10 +1556,7 @@ struct sbb_d : meta::describe_instruction<0x9a, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.d)
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.d, state.flags.cy);
   }
 };
 
@@ -1648,10 +1566,7 @@ struct sbb_e : meta::describe_instruction<0x9b, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.e)
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.e, state.flags.cy);
   }
 };
 
@@ -1661,10 +1576,7 @@ struct sbb_h : meta::describe_instruction<0x9c, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.h)
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.h, state.flags.cy);
   }
 };
 
@@ -1674,10 +1586,7 @@ struct sbb_l : meta::describe_instruction<0x9d, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.l)
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.l, state.flags.cy);
   }
 };
 
@@ -1687,11 +1596,7 @@ struct sbb_m : meta::describe_instruction<0x9e, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = static_cast<std::uint16_t>(state.a)
-                   - static_cast<std::uint16_t>(state.read_hl())
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.read_hl(), state.flags.cy);
   }
 };
 
@@ -1701,10 +1606,7 @@ struct sbb_a : meta::describe_instruction<0x9f, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.a)
-                   - state.flags.cy;
-    state.arithmetic_flags(res);
-    state.a = res & 0x00ff;
+    state.sub(state.a, state.a, state.flags.cy);
   }
 };
 
@@ -1714,8 +1616,7 @@ struct ana_b : meta::describe_instruction<0xa0, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.b;
-    state.logic_flags_a();
+    state.ana(state.b);
   }
 };
 
@@ -1725,8 +1626,7 @@ struct ana_c : meta::describe_instruction<0xa1, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.c;
-    state.logic_flags_a();
+    state.ana(state.c);
   }
 };
 
@@ -1736,8 +1636,7 @@ struct ana_d : meta::describe_instruction<0xa2, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.d;
-    state.logic_flags_a();
+    state.ana(state.d);
   }
 };
 
@@ -1747,8 +1646,7 @@ struct ana_e : meta::describe_instruction<0xa3, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.e;
-    state.logic_flags_a();
+    state.ana(state.e);
   }
 };
 
@@ -1758,8 +1656,7 @@ struct ana_h : meta::describe_instruction<0xa4, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.h;
-    state.logic_flags_a();
+    state.ana(state.h);
   }
 };
 
@@ -1769,8 +1666,7 @@ struct ana_l : meta::describe_instruction<0xa5, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.l;
-    state.logic_flags_a();
+    state.ana(state.l);
   }
 };
 
@@ -1780,8 +1676,7 @@ struct ana_m : meta::describe_instruction<0xa6, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.a = state.a & state.read_hl();
-    state.logic_flags_a();
+    state.ana(state.read_hl());
   }
 };
 
@@ -1791,8 +1686,7 @@ struct ana_a : meta::describe_instruction<0xa7, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.a;
-    state.logic_flags_a();
+    state.ana(state.a);
   }
 };
 
@@ -1802,8 +1696,7 @@ struct xra_b : meta::describe_instruction<0xa8, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a ^ state.b;
-    state.logic_flags_a();
+    state.xra(state.b);
   }
 };
 
@@ -1813,8 +1706,7 @@ struct xra_c : meta::describe_instruction<0xa9, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a ^ state.c;
-    state.logic_flags_a();
+    state.xra(state.c);
   }
 };
 
@@ -1824,8 +1716,7 @@ struct xra_d : meta::describe_instruction<0xaa, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a ^ state.d;
-    state.logic_flags_a();
+    state.xra(state.d);
   }
 };
 
@@ -1835,8 +1726,7 @@ struct xra_e : meta::describe_instruction<0xab, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a ^ state.e;
-    state.logic_flags_a();
+    state.xra(state.e);
   }
 };
 
@@ -1846,8 +1736,7 @@ struct xra_h : meta::describe_instruction<0xac, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a ^ state.h;
-    state.logic_flags_a();
+    state.xra(state.h);
   }
 };
 
@@ -1857,8 +1746,7 @@ struct xra_l : meta::describe_instruction<0xad, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a ^ state.l;
-    state.logic_flags_a();
+    state.xra(state.l);
   }
 };
 
@@ -1868,8 +1756,7 @@ struct xra_m : meta::describe_instruction<0xae, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.a = state.a ^ state.read_hl();
-    state.logic_flags_a();
+    state.xra(state.read_hl());
   }
 };
 
@@ -1879,8 +1766,7 @@ struct xra_a : meta::describe_instruction<0xaf, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a ^ state.a;
-    state.logic_flags_a();
+    state.xra(state.a);
   }
 };
 
@@ -1890,8 +1776,7 @@ struct ora_b : meta::describe_instruction<0xb0, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a | state.b;
-    state.logic_flags_a();
+    state.ora(state.b);
   }
 };
 
@@ -1901,8 +1786,7 @@ struct ora_c : meta::describe_instruction<0xb1, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a | state.c;
-    state.logic_flags_a();
+    state.ora(state.c);
   }
 };
 
@@ -1912,8 +1796,7 @@ struct ora_d : meta::describe_instruction<0xb2, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a | state.d;
-    state.logic_flags_a();
+    state.ora(state.d);
   }
 };
 
@@ -1923,8 +1806,7 @@ struct ora_e : meta::describe_instruction<0xb3, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a | state.e;
-    state.logic_flags_a();
+    state.ora(state.e);
   }
 };
 
@@ -1934,8 +1816,7 @@ struct ora_h : meta::describe_instruction<0xb4, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a | state.h;
-    state.logic_flags_a();
+    state.ora(state.h);
   }
 };
 
@@ -1945,8 +1826,7 @@ struct ora_l : meta::describe_instruction<0xb5, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a | state.l;
-    state.logic_flags_a();
+    state.ora(state.l);
   }
 };
 
@@ -1956,8 +1836,7 @@ struct ora_m : meta::describe_instruction<0xb6, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    state.a = state.a | state.read_hl();
-    state.logic_flags_a();
+    state.ora(state.read_hl());
   }
 };
 
@@ -1967,8 +1846,7 @@ struct ora_a : meta::describe_instruction<0xb7, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a | state.a;
-    state.logic_flags_a();
+    state.ora(state.a);
   }
 };
 
@@ -1978,8 +1856,7 @@ struct cmp_b : meta::describe_instruction<0xb8, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.b);
-    state.arithmetic_flags(res);
+    state.cmp(state.b);
   }
 };
 
@@ -1989,8 +1866,7 @@ struct cmp_c : meta::describe_instruction<0xb9, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.c);
-    state.arithmetic_flags(res);
+    state.cmp(state.c);
   }
 };
 
@@ -2000,8 +1876,7 @@ struct cmp_d : meta::describe_instruction<0xba, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.d);
-    state.arithmetic_flags(res);
+    state.cmp(state.d);
   }
 };
 
@@ -2011,8 +1886,7 @@ struct cmp_e : meta::describe_instruction<0xbb, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.e);
-    state.arithmetic_flags(res);
+    state.cmp(state.e);
   }
 };
 
@@ -2022,8 +1896,7 @@ struct cmp_h : meta::describe_instruction<0xbc, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.h);
-    state.arithmetic_flags(res);
+    state.cmp(state.h);
   }
 };
 
@@ -2033,8 +1906,7 @@ struct cmp_l : meta::describe_instruction<0xbd, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.l);
-    state.arithmetic_flags(res);
+    state.cmp(state.l);
   }
 };
 
@@ -2044,9 +1916,7 @@ struct cmp_m : meta::describe_instruction<0xbe, 7, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const
   {
-    const auto res = static_cast<std::uint16_t>(state.a)
-                   - static_cast<std::uint16_t>(state.read_hl());
-    state.arithmetic_flags(res);
+    state.cmp(state.read_hl());
   }
 };
 
@@ -2056,8 +1926,7 @@ struct cmp_a : meta::describe_instruction<0xbf, 4, 1>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto res = static_cast<std::uint16_t>(state.a) - static_cast<std::uint16_t>(state.a);
-    state.arithmetic_flags(res);
+    state.cmp(state.a);
   }
 };
 
@@ -2149,10 +2018,7 @@ struct adi : meta::describe_instruction<0xc6, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto x = static_cast<std::uint16_t>(state.a) + static_cast<std::uint16_t>(state.op1());
-    state.flags_zsp(x & 0x00ff);
-    state.flags.cy = (x > 0x00ff);
-    state.a = x & 0x00ff;
+    state.add(state.a, state.op1(), 0);
     state.pc += 1;
   }
 };
@@ -2254,10 +2120,7 @@ struct aci : meta::describe_instruction<0xce, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const std::uint16_t x = state.a + state.op1() + state.flags.cy;
-    state.flags_zsp(x & 0x00ff);
-    state.flags.cy = (x > 0x00ff);
-    state.a = x & 0x00ff;
+    state.add(state.a, state.op1(), state.flags.cy);
     state.pc += 1;
   }
 };
@@ -2364,10 +2227,7 @@ struct sui : meta::describe_instruction<0xd6, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto x = state.a - state.op1();
-    state.flags_zsp(x & 0x00ff);
-    state.flags.cy = (state.a < state.op1());
-    state.a = x;
+    state.sub(state.a, state.op1(), 0);
     state.pc += 1;
   }
 };
@@ -2454,10 +2314,7 @@ struct sbi : meta::describe_instruction<0xde, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const std::uint16_t x = state.a - state.op1() - state.flags.cy;
-    state.flags_zsp(x & 0x00ff);
-    state.flags.cy = (x > 0x00ff);
-    state.a = x & 0x00ff;
+    state.sub(state.a, state.op1(), state.flags.cy);
     state.pc += 1;
   }
 };
@@ -2563,14 +2420,13 @@ struct push_h : meta::describe_instruction<0xe5, 11, 1>
   }
 };
 
-struct ani_d8 : meta::describe_instruction<0xe6, 7, 2>
+struct ani : meta::describe_instruction<0xe6, 7, 2>
 {
-  static constexpr auto name = "ani_d8";
+  static constexpr auto name = "ani";
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    state.a = state.a & state.op1();
-    state.logic_flags_a();
+    state.ana(state.op1());
     state.pc += 1;
   }
 };
@@ -2669,10 +2525,7 @@ struct xri : meta::describe_instruction<0xee, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto x = state.a ^ state.op1();
-    state.flags_zsp(x);
-    state.flags.cy = 0;
-    state.a = x;
+    state.xra(state.op1());
     state.pc += 1;
   }
 };
@@ -2799,10 +2652,7 @@ struct ori : meta::describe_instruction<0xf6, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto x = state.a | state.op1();
-    state.flags_zsp(x);
-    state.flags.cy = 0;
-    state.a = x;
+    state.ora(state.op1());
     state.pc += 1;
   }
 };
@@ -2900,9 +2750,7 @@ struct cpi : meta::describe_instruction<0xfe, 7, 2>
 
   template <typename Machine> void operator()(state<Machine>& state) const noexcept
   {
-    const auto x = state.a - state.op1();
-    state.flags_zsp(x);
-    state.flags.cy = (state.a < state.op1());
+    state.cmp(state.op1());
     state.pc += 1;
   }
 };
@@ -3154,7 +3002,7 @@ using instructions_8080 = meta::make_instructions<
   xthl,
   cpo_adr,
   push_h,
-  ani_d8,
+  ani,
   rst_4,
   rpe,
   pchl,
