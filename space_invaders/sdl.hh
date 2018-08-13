@@ -17,8 +17,8 @@ public:
   ~sdl();
 
   [[nodiscard]]
-  std::vector<std::pair<kind, event>>
-  get_events();
+  std::pair<kind, event>
+  get_next_event();
 
   void
   render_screen(const std::vector<std::uint8_t>&);

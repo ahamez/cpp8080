@@ -167,13 +167,34 @@ public:
     {
       const auto now = std::chrono::steady_clock::now();
 
-      for (const auto& [kind, event] : display.get_events())
+      for (auto process_events = true; process_events;)
       {
+        const auto [kind, event] = display.get_next_event();
+
         switch (kind)
         {
-          case kind::key_up   : key_up(event); break;
-          case kind::key_down : key_down(event); break;
-          case kind::other    : run = false;
+          case kind::key_up:
+            key_up(event);
+            break;
+
+          case kind::key_down:
+            key_down(event);
+            break;
+
+          case kind::other:
+            switch (event)
+            {
+              case event::quit:
+                run = false;
+                break;
+
+              case event::end:
+                process_events = false;
+                break;
+
+              default:
+                break;
+            }
         }
       }
 

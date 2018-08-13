@@ -51,80 +51,52 @@ sdl::~sdl()
 /*------------------------------------------------------------------------------------------------*/
 
 [[nodiscard]]
-std::vector<std::pair<kind, event>>
-sdl::get_events()
+std::pair<kind, event>
+sdl::get_next_event()
 {
-  auto events = std::vector<std::pair<kind, event>>{};
-
-  for (auto e = SDL_Event{}; SDL_PollEvent(&e);)
+  auto e = SDL_Event{};
+  if (not SDL_PollEvent(&e))
   {
-    switch (e.type)
+    return {kind::other, event::end};
+  }
+
+  switch (e.type)
+  {
+    case SDL_QUIT:
     {
-      case SDL_QUIT:
+      return {kind::other, event::quit};
+    }
+
+    case SDL_KEYDOWN:
+    {
+      switch (e.key.keysym.sym)
       {
-        return {{kind::other, event::quit}};
+        case SDLK_ESCAPE : return {kind::other, event::quit};
+        case SDLK_c      : return {kind::key_down, event::coin};
+        case SDLK_LEFT   : return {kind::key_down, event::left};
+        case SDLK_RIGHT  : return {kind::key_down, event::right};
+        case SDLK_SPACE  : return {kind::key_down, event::fire};
+        case SDLK_1      : return {kind::key_down, event::start_1player};
+        default          : break;
       }
+      break;
+    }
 
-      case SDL_KEYDOWN:
+    case SDL_KEYUP:
+    {
+      switch (e.key.keysym.sym)
       {
-        switch (e.key.keysym.sym)
-        {
-          case SDLK_ESCAPE:
-            return {{kind::other, event::quit}};
-
-          case SDLK_c:
-            events.push_back({kind::key_down, event::coin});
-            break;
-
-          case SDLK_LEFT:
-            events.push_back({kind::key_down, event::left});
-            break;
-
-          case SDLK_RIGHT:
-            events.push_back({kind::key_down, event::right});
-            break;
-
-          case SDLK_SPACE:
-            events.push_back({kind::key_down, event::fire});
-            break;
-
-          case SDLK_1:
-            events.push_back({kind::key_down, event::start_1player});
-            break;
-        }
-        break;
-      }
-
-      case SDL_KEYUP:
-      {
-        switch (e.key.keysym.sym)
-        {
-          case SDLK_c:
-            events.push_back({kind::key_up, event::coin});
-            break;
-
-          case SDLK_LEFT:
-            events.push_back({kind::key_up, event::left});
-            break;
-
-          case SDLK_RIGHT:
-            events.push_back({kind::key_up, event::right});
-            break;
-
-          case SDLK_SPACE:
-            events.push_back({kind::key_up, event::fire});
-            break;
-
-          case SDLK_1:
-            events.push_back({kind::key_up, event::start_1player});
-            break;
-        }
+        case SDLK_c     : return {kind::key_up, event::coin};
+        case SDLK_LEFT  : return {kind::key_up, event::left};
+        case SDLK_RIGHT : return {kind::key_up, event::right};
+        case SDLK_SPACE : return {kind::key_up, event::fire};
+        case SDLK_1     : return {kind::key_up, event::start_1player};
+        default         : break;
       }
       break;
     }
   }
-
-  return events;
+  return {kind::other, event::none};
 }
 
 /*------------------------------------------------------------------------------------------------*/
