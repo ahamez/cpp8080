@@ -172,31 +172,16 @@ public:
 
       for (auto process_events = true; process_events;)
       {
-        const auto [kind, event] = display.get_next_event();
-
-        switch (kind)
+        switch (const auto [kind, event] = display.get_next_event(); kind)
         {
-          case kind::key_up:
-            key_up(event);
-            break;
-
-          case kind::key_down:
-            key_down(event);
-            break;
-
+          case kind::key_up   : key_up(event);   break;
+          case kind::key_down : key_down(event); break;
           case kind::other:
             switch (event)
             {
-              case event::quit:
-                run = false;
-                break;
-
-              case event::end:
-                process_events = false;
-                break;
-
-              default:
-                break;
+              case event::quit : run = false; break;
+              case event::end  : process_events = false; break;
+              default          : break;
             }
         }
       }
