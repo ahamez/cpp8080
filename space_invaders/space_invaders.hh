@@ -70,6 +70,9 @@ public:
     , shift_offset_{0}
     , port1_{1 << 3}
     , port2_{0}
+    , which_interrupt_{0x08}
+    , last_timer_{}
+    , next_interrupt_{}
   {
     std::copy(first, last, memory_.begin());
   }
@@ -161,8 +164,7 @@ public:
   operator()(sdl& display)
   {
     last_timer_ = std::chrono::steady_clock::now();
-    next_interrupt_ = last_timer_ + std::chrono::milliseconds{16};
-    which_interrupt_ = 1;
+    next_interrupt_ = last_timer_ + std::chrono::milliseconds{8};
 
     for (auto run = true; run;)
     {
