@@ -4,11 +4,14 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
+static constexpr auto multiplier = 2;
+
+/*------------------------------------------------------------------------------------------------*/
+
 // TODO Proper handling of SDL failures.
 
-sdl::sdl(space_invaders& machine)
-  : machine_{machine}
-  , window_{nullptr}
+sdl::sdl()
+  : window_{nullptr}
   , renderer_{nullptr}
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -47,16 +50,19 @@ sdl::~sdl()
 
 /*------------------------------------------------------------------------------------------------*/
 
-bool
-sdl::process_events()
+[[nodiscard]]
+std::vector<std::pair<kind, event>>
+sdl::get_events()
 {
+  auto events = std::vector<std::pair<kind, event>>{};
+
   for (auto e = SDL_Event{}; SDL_PollEvent(&e);)
   {
     switch (e.type)
     {
       case SDL_QUIT:
       {
-        return false;
+        return {{kind::other, event::quit}};
       }
 
       case SDL_KEYDOWN:
@@ -64,26 +70,26 @@ sdl::process_events()
         switch (e.key.keysym.sym)
         {
           case SDLK_ESCAPE:
-            return false;
+            return {{kind::other, event::quit}};
 
           case SDLK_c:
-            machine_.key_down(space_invaders::key::coin);
+            events.push_back({kind::key_down, event::coin});
             break;
 
           case SDLK_LEFT:
-            machine_.key_down(space_invaders::key::left);
+            events.push_back({kind::key_down, event::left});
             break;
 
           case SDLK_RIGHT:
-            machine_.key_down(space_invaders::key::right);
+            events.push_back({kind::key_down, event::right});
             break;
 
           case SDLK_SPACE:
-            machine_.key_down(space_invaders::key::fire);
+            events.push_back({kind::key_down, event::fire});
             break;
 
           case SDLK_1:
-            machine_.key_down(space_invaders::key::start_1player);
+            events.push_back({kind::key_down, event::start_1player});
             break;
         }
         break;
@@ -94,23 +100,23 @@ sdl::process_events()
         switch (e.key.keysym.sym)
         {
           case SDLK_c:
-            machine_.key_up(space_invaders::key::coin);
+            events.push_back({kind::key_up, event::coin});
             break;
 
           case SDLK_LEFT:
-            machine_.key_up(space_invaders::key::left);
+            events.push_back({kind::key_up, event::left});
             break;
 
           case SDLK_RIGHT:
-            machine_.key_up(space_invaders::key::right);
+            events.push_back({kind::key_up, event::right});
             break;
 
           case SDLK_SPACE:
-            machine_.key_up(space_invaders::key::fire);
+            events.push_back({kind::key_up, event::fire});
             break;
 
           case SDLK_1:
-            machine_.key_up(space_invaders::key::start_1player);
+            events.push_back({kind::key_up, event::start_1player});
             break;
         }
       }
@@ -118,13 +124,13 @@ sdl::process_events()
     }
   }
 
-  return true;
+  return events;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-sdl::render_screen()
+sdl::render_screen(const std::vector<std::uint8_t>& vram)
 {
   //  Screen is rotated 90° counterclockwise, we can't simply iterate on video memory.
   //  Rather than computing the rotation, I chose to iterate in such a way that pixels
@@ -169,7 +175,7 @@ sdl::render_screen()
   {
     for (auto i = 0, x = 0; i < 224; ++i, ++x)
     {
-      const auto byte = machine_.read_memory(0x2400 + (j  + i * 32));
+      const auto byte = vram.at(0x2400 + (j  + i * 32));
       for (auto b = 7, pos = 0; b >= 0; --b, ++pos)
       {
         if (((byte >> b) & 0x01) == 1)

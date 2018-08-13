@@ -1,28 +1,30 @@
 #pragma once
 
+#include <utility> // pair
+#include <vector>
+
 #include <SDL2/SDL.h>
 
-#include "space_invaders.hh"
+#include "events.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
 class sdl
 {
-private:
-
-  static constexpr auto multiplier = 2;
-
 public:
 
-  sdl(space_invaders&);
+  sdl();
   ~sdl();
 
-  bool process_events();
-  void render_screen();
+  [[nodiscard]]
+  std::vector<std::pair<kind, event>>
+  get_events();
+
+  void
+  render_screen(const std::vector<std::uint8_t>&);
 
 private:
 
-  space_invaders& machine_;
   SDL_Window* window_;
   SDL_Renderer* renderer_;
 };

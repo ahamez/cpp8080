@@ -1,8 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
-#include <memory>
-#include <thread>
 
 #include <SDL2/SDL.h>
 
@@ -26,26 +24,13 @@ main(int argc, char** argv)
     return 1;
   }
 
+  auto display = sdl{};
   auto machine = space_invaders{
     std::istreambuf_iterator<char>{file},
     std::istreambuf_iterator<char>{}
   };
-  auto display = sdl{machine};
 
-  machine.start();
-  while (true)
-  {
-    if (const auto run = display.process_events(); run)
-    {
-      machine();
-      display.render_screen();
-      std::this_thread::sleep_for(std::chrono::milliseconds{1});
-    }
-    else
-    {
-      return 0;
-    }
-  }
+  machine(display);
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -84,6 +84,7 @@
 		2B585A0D211F4D2A0082B965 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
 		2B84B0B621219E0A007CD902 /* sdl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sdl.cc; sourceTree = "<group>"; };
 		2B84B0B721219E0A007CD902 /* sdl.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sdl.hh; sourceTree = "<group>"; };
+		2B9F2F3221220EC800181D1F /* events.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = events.hh; sourceTree = "<group>"; };
 		2BDD86C6211B85E000D14E59 /* libSDL2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2.a; path = ../../../../usr/local/Cellar/sdl2/2.0.8/lib/libSDL2.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,6 +110,7 @@
 		2B0E15BC211F4AE300D53F74 /* space_invaders */ = {
 			isa = PBXGroup;
 			children = (
+				2B9F2F3221220EC800181D1F /* events.hh */,
 				2B0E15BD211F4AE300D53F74 /* main.cc */,
 				2B84B0B721219E0A007CD902 /* sdl.hh */,
 				2B84B0B621219E0A007CD902 /* sdl.cc */,

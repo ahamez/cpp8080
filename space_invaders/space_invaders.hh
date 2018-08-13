@@ -4,12 +4,16 @@
 #include <chrono>
 #include <cstdint>
 #include <sstream>
+#include <thread>
 #include <vector>
 
 #include "cpp8080/meta/disassemble.hh"
 #include "cpp8080/meta/instructions.hh"
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/state.hh"
+
+#include "events.hh"
+#include "sdl.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -54,10 +58,6 @@ private:
     cpp8080::specific::instructions_8080,
     overrides
   >;
-
-public:
-
-  enum class key {coin, left, right, fire, start_1player};
 
 public:
 
@@ -130,34 +130,6 @@ public:
   }
 
   void
-  key_down(key k)
-  noexcept
-  {
-    switch (k)
-    {
-      case key::coin  : port1_ |= 0x01; break;
-      case key::left  : port1_ |= 0x20; break;
-      case key::right : port1_ |= 0x40; break;
-      case key::fire  : port1_ |= 0x10; break;
-      case key::start_1player : port1_ |= 0x04; break;
-    }
-  }
-  
-  void
-  key_up(key k)
-  noexcept
-  {
-    switch (k)
-    {
-      case key::coin  : port1_ &= ~0x01; break;
-      case key::left  : port1_ &= ~0x20; break;
-      case key::right : port1_ &= ~0x40; break;
-      case key::fire  : port1_ &= ~0x10; break;
-      case key::start_1player : port1_ &= ~0x04; break;
-    }
-  }
-
-  void
   write_memory(std::uint16_t address, std::uint8_t value)
   {
     if (address < 0x2000)
@@ -185,37 +157,79 @@ public:
   }
 
   void
-  start()
+  operator()(sdl& display)
   {
     last_timer_ = std::chrono::steady_clock::now();
     next_interrupt_ = last_timer_ + std::chrono::milliseconds{16};
     which_interrupt_ = 1;
+
+    for (auto run = true; run;)
+    {
+      const auto now = std::chrono::steady_clock::now();
+
+      for (const auto& [kind, event] : display.get_events())
+      {
+        switch (kind)
+        {
+          case kind::key_up   : key_up(event); break;
+          case kind::key_down : key_down(event); break;
+          case kind::other    : run = false;
+        }
+      }
+
+      if (now > next_interrupt_)
+      {
+        state_.interrupt(which_interrupt_);
+        which_interrupt_ = which_interrupt_ == 0x08 ? 0x10 : 0x08;
+        next_interrupt_ = now + std::chrono::milliseconds{8};
+      }
+
+      const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - last_timer_);
+      const auto cycles_to_catch_up = 2 * elapsed.count();
+      auto cycles = std::uint64_t{0};
+
+      while (cycles_to_catch_up > cycles)
+      {
+        const auto opcode = state_.read_memory(state_.pc);
+        cycles += step(instructions{}, opcode, state_);
+      }
+      last_timer_ = now;
+
+      display.render_screen(memory_);
+      std::this_thread::sleep_for(std::chrono::milliseconds{1});
+    }
+  }
+
+private:
+
+  void
+  key_down(event k)
+  noexcept
+  {
+    switch (k)
+    {
+      case event::coin  : port1_ |= 0x01; break;
+      case event::left  : port1_ |= 0x20; break;
+      case event::right : port1_ |= 0x40; break;
+      case event::fire  : port1_ |= 0x10; break;
+      case event::start_1player : port1_ |= 0x04; break;
+      default: break;
+    }
   }
 
   void
-  operator()()
+  key_up(event k)
+  noexcept
   {
-    const auto now = std::chrono::steady_clock::now();
-
-    if (now > next_interrupt_)
+    switch (k)
     {
-      state_.interrupt(which_interrupt_);
-      which_interrupt_ = which_interrupt_ == 0x08
-                       ? 0x10
-                       : 0x08;
-      next_interrupt_ = now + std::chrono::milliseconds{8};
+      case event::coin  : port1_ &= ~0x01; break;
+      case event::left  : port1_ &= ~0x20; break;
+      case event::right : port1_ &= ~0x40; break;
+      case event::fire  : port1_ &= ~0x10; break;
+      case event::start_1player : port1_ &= ~0x04; break;
+      default: break;
     }
-
-    const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - last_timer_);
-    const auto cycles_to_catch_up = 2 * elapsed.count();
-    auto cycles = std::uint64_t{0};
-
-    while (cycles_to_catch_up > cycles)
-    {
-      const auto opcode = state_.read_memory(state_.pc);
-      cycles += step(instructions{}, opcode, state_);
-    }
-    last_timer_ = now;
   }
 
 private:
