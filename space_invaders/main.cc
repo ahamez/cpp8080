@@ -33,13 +33,10 @@ main(int argc, char** argv)
 
   auto render_screen = display{machine};
 
-  auto quit = false;
-
   machine.start();
-  while (not quit)
+  for (auto quit = false; not quit;)
   {
-    auto e = SDL_Event{};
-    while (SDL_PollEvent(&e))
+    for (auto e = SDL_Event{}; SDL_PollEvent(&e);)
     {
       switch (e.type)
       {
