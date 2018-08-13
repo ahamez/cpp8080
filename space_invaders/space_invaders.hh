@@ -17,6 +17,12 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
+static constexpr auto fps = 60;
+static constexpr auto cycles_per_second = 2'000'000; // 2 MHz
+static constexpr auto cycles_per_frame = cycles_per_second / fps;
+
+/*------------------------------------------------------------------------------------------------*/
+
 struct in_override : cpp8080::meta::describe_instruction<0xdb, 3, 2>
 {
   static constexpr auto name = "in";
@@ -70,9 +76,6 @@ public:
     , shift_offset_{0}
     , port1_{1 << 3}
     , port2_{0}
-    , which_interrupt_{0x08}
-    , last_timer_{}
-    , next_interrupt_{}
   {
     std::copy(first, last, memory_.begin());
   }
@@ -163,8 +166,8 @@ public:
   void
   operator()(sdl& display)
   {
-    last_timer_ = std::chrono::steady_clock::now();
-    next_interrupt_ = last_timer_ + std::chrono::milliseconds{8};
+    auto which_interrupt = std::uint8_t{0x08};
+    auto next_interrupt = std::chrono::steady_clock::now() + std::chrono::microseconds{8333};
 
     for (auto run = true; run;)
     {
@@ -186,26 +189,23 @@ public:
         }
       }
 
-      if (now > next_interrupt_)
+      if (now > next_interrupt)
       {
-        state_.interrupt(which_interrupt_);
-        which_interrupt_ = which_interrupt_ == 0x08 ? 0x10 : 0x08;
-        next_interrupt_ = now + std::chrono::milliseconds{8};
+        state_.interrupt(which_interrupt);
+        which_interrupt = which_interrupt == 0x08 ? 0x10 : 0x08;
+        next_interrupt = now + std::chrono::microseconds{8333};
       }
 
-      const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - last_timer_);
-      const auto cycles_to_catch_up = 2 * elapsed.count();
-      auto cycles = std::uint64_t{0};
-
-      while (cycles_to_catch_up > cycles)
+      for (auto cycles = std::uint64_t{0}; cycles <= cycles_per_frame;)
       {
         const auto opcode = state_.read_memory(state_.pc);
         cycles += step(instructions{}, opcode, state_);
       }
-      last_timer_ = now;
 
       display.render_screen(memory_);
-      std::this_thread::sleep_for(std::chrono::milliseconds{1});
+
+      const auto duration = std::chrono::steady_clock::now() - now;
+      std::this_thread::sleep_for(std::chrono::milliseconds{1} - duration);
     }
   }
 
@@ -250,9 +250,6 @@ private:
   std::uint8_t shift_offset_;
   std::uint8_t port1_;
   std::uint8_t port2_;
-  std::uint8_t which_interrupt_;
-  std::chrono::time_point<std::chrono::steady_clock> last_timer_;
-  std::chrono::time_point<std::chrono::steady_clock> next_interrupt_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

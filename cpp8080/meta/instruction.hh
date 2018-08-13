@@ -20,6 +20,7 @@ execute(State& state, Fn&& fn)
   state.pc += 1;
   Instruction{}(state);
   fn.post(std::as_const(state), Instruction{});
+  // TODO The number of cycles is not fixed for conditional instructions.
   return Instruction::cycles;
 }
 
