@@ -56,84 +56,86 @@ main(int argc, char** argv)
     std::exit(1);
   }
 
-  try
+  auto quit = false;
+
+  machine.start();
+  while (not quit)
   {
-    machine.start();
-    while (true)
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+
+    auto e = SDL_Event{};
+    while (SDL_PollEvent(&e))
     {
-      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-      SDL_RenderClear(renderer);
-
-      auto e = SDL_Event{};
-      while (SDL_PollEvent(&e))
+      switch (e.type)
       {
-        switch (e.type)
+        case SDL_QUIT:
         {
-          case SDL_QUIT:
+          quit = true;
+          break;
+        }
+
+        case SDL_KEYDOWN:
+        {
+          switch (e.key.keysym.sym)
           {
-            std::exit(0);
-          }
+            case SDLK_ESCAPE:
+              quit = true;
+              break;
 
-          case SDL_KEYDOWN:
-          {
-            switch (e.key.keysym.sym)
-            {
-              case SDLK_ESCAPE:
-                std::exit(0);
+            case SDLK_c:
+              machine.key_down(space_invaders::key::coin);
+              break;
 
-              case SDLK_c:
-                machine.key_down(space_invaders::key::coin);
-                break;
+            case SDLK_LEFT:
+              machine.key_down(space_invaders::key::left);
+              break;
 
-              case SDLK_LEFT:
-                machine.key_down(space_invaders::key::left);
-                break;
+            case SDLK_RIGHT:
+              machine.key_down(space_invaders::key::right);
+              break;
 
-              case SDLK_RIGHT:
-                machine.key_down(space_invaders::key::right);
-                break;
+            case SDLK_SPACE:
+              machine.key_down(space_invaders::key::fire);
+              break;
 
-              case SDLK_SPACE:
-                machine.key_down(space_invaders::key::fire);
-                break;
-
-              case SDLK_1:
-                machine.key_down(space_invaders::key::start_1player);
-                break;
-            }
-            break;
-          }
-
-          case SDL_KEYUP:
-          {
-            switch (e.key.keysym.sym)
-            {
-              case SDLK_c:
-                machine.key_up(space_invaders::key::coin);
-                break;
-
-              case SDLK_LEFT:
-                machine.key_up(space_invaders::key::left);
-                break;
-
-              case SDLK_RIGHT:
-                machine.key_up(space_invaders::key::right);
-                break;
-
-              case SDLK_SPACE:
-                machine.key_up(space_invaders::key::fire);
-                break;
-
-              case SDLK_1:
-                machine.key_up(space_invaders::key::start_1player);
-                break;
-            }
+            case SDLK_1:
+              machine.key_down(space_invaders::key::start_1player);
+              break;
           }
           break;
         }
-      }
 
-      machine();
+        case SDL_KEYUP:
+        {
+          switch (e.key.keysym.sym)
+          {
+            case SDLK_c:
+              machine.key_up(space_invaders::key::coin);
+              break;
+
+            case SDLK_LEFT:
+              machine.key_up(space_invaders::key::left);
+              break;
+
+            case SDLK_RIGHT:
+              machine.key_up(space_invaders::key::right);
+              break;
+
+            case SDLK_SPACE:
+              machine.key_up(space_invaders::key::fire);
+              break;
+
+            case SDLK_1:
+              machine.key_up(space_invaders::key::start_1player);
+              break;
+          }
+        }
+        break;
+      }
+    }
+
+    machine();
 
 //  Screen is rotated 90° counterclockwise, we can't simply iterate on video memory.
 //  Rather than computing the rotation, I chose to iterate in such a way that pixels
@@ -170,34 +172,29 @@ main(int argc, char** argv)
 //  -                +--------------+--------------+--------------+--------------+ x=223
 //                                                                            y=31
 
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
-      for (auto j = 31, y = 0; j >= 0; --j, ++y)
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+    for (auto j = 31, y = 0; j >= 0; --j, ++y)
+    {
+      for (auto i = 0, x = 0; i < 224; ++i, ++x)
       {
-        for (auto i = 0, x = 0; i < 224; ++i, ++x)
+        const auto byte = machine.read_memory(0x2400 + (j  + i * 32));
+        for (auto b = 7, pos = 0; b >= 0; --b, ++pos)
         {
-          const auto byte = machine.read_memory(0x2400 + (j  + i * 32));
-          for (auto b = 7, pos = 0; b >= 0; --b, ++pos)
+          if (((byte >> b) & 0x01) == 1)
           {
-            if (((byte >> b) & 0x01) == 1)
-            {
-              const auto rect = SDL_Rect{
-                static_cast<int>(x * factor),
-                static_cast<int>((y * 8 + pos) * factor),
-                1 * factor,
-                1 * factor};
-              SDL_RenderFillRect(renderer, &rect);
-            }
+            const auto rect = SDL_Rect{
+              static_cast<int>(x * factor),
+              static_cast<int>((y * 8 + pos) * factor),
+              1 * factor,
+              1 * factor};
+            SDL_RenderFillRect(renderer, &rect);
           }
         }
       }
-      SDL_RenderPresent(renderer);
-
-      std::this_thread::sleep_for(std::chrono::milliseconds{1});
     }
-  }
-  catch (const cpp8080::specific::halt& h)
-  {
-    std::cout << h.what() << '\n';
+    SDL_RenderPresent(renderer);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds{1});
   }
 
   SDL_DestroyWindow(window);
