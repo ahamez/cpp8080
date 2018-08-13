@@ -14,11 +14,6 @@ namespace detail {
 template<typename State, typename Fn, typename Instruction>
 std::uint64_t
 execute(State& state, Fn&& fn)
-noexcept(
-         noexcept(Instruction{}(state))
-         and noexcept(fn.pre(std::as_const(state), Instruction{}))
-         and noexcept(fn.post(std::as_const(state), Instruction{}))
-        )
 {
   state.fetch_operands();
   fn.pre(std::as_const(state), Instruction{});
