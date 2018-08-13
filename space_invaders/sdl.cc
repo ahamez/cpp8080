@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "display.hh"
+#include "sdl.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
 // TODO Proper handling of SDL failures.
 
-display::display(const space_invaders& machine)
+sdl::sdl(space_invaders& machine)
   : machine_{machine}
   , window_{nullptr}
   , renderer_{nullptr}
@@ -39,7 +39,7 @@ display::display(const space_invaders& machine)
 
 /*------------------------------------------------------------------------------------------------*/
 
-display::~display()
+sdl::~sdl()
 {
   SDL_DestroyWindow(window_);
   SDL_Quit();
@@ -47,8 +47,84 @@ display::~display()
 
 /*------------------------------------------------------------------------------------------------*/
 
+bool
+sdl::process_events()
+{
+  for (auto e = SDL_Event{}; SDL_PollEvent(&e);)
+  {
+    switch (e.type)
+    {
+      case SDL_QUIT:
+      {
+        return false;
+      }
+
+      case SDL_KEYDOWN:
+      {
+        switch (e.key.keysym.sym)
+        {
+          case SDLK_ESCAPE:
+            return false;
+
+          case SDLK_c:
+            machine_.key_down(space_invaders::key::coin);
+            break;
+
+          case SDLK_LEFT:
+            machine_.key_down(space_invaders::key::left);
+            break;
+
+          case SDLK_RIGHT:
+            machine_.key_down(space_invaders::key::right);
+            break;
+
+          case SDLK_SPACE:
+            machine_.key_down(space_invaders::key::fire);
+            break;
+
+          case SDLK_1:
+            machine_.key_down(space_invaders::key::start_1player);
+            break;
+        }
+        break;
+      }
+
+      case SDL_KEYUP:
+      {
+        switch (e.key.keysym.sym)
+        {
+          case SDLK_c:
+            machine_.key_up(space_invaders::key::coin);
+            break;
+
+          case SDLK_LEFT:
+            machine_.key_up(space_invaders::key::left);
+            break;
+
+          case SDLK_RIGHT:
+            machine_.key_up(space_invaders::key::right);
+            break;
+
+          case SDLK_SPACE:
+            machine_.key_up(space_invaders::key::fire);
+            break;
+
+          case SDLK_1:
+            machine_.key_up(space_invaders::key::start_1player);
+            break;
+        }
+      }
+      break;
+    }
+  }
+
+  return true;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
-display::operator()()
+sdl::render_screen()
 {
   //  Screen is rotated 90° counterclockwise, we can't simply iterate on video memory.
   //  Rather than computing the rotation, I chose to iterate in such a way that pixels

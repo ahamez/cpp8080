@@ -6,7 +6,7 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
-class display
+class sdl
 {
 private:
 
@@ -14,14 +14,15 @@ private:
 
 public:
 
-  display(const space_invaders&);
-  ~display();
+  sdl(space_invaders&);
+  ~sdl();
 
-  void operator()();
+  bool process_events();
+  void render_screen();
 
 private:
 
-  const space_invaders& machine_;
+  space_invaders& machine_;
   SDL_Window* window_;
   SDL_Renderer* renderer_;
 };

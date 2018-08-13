@@ -6,7 +6,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "display.hh"
+#include "sdl.hh"
 #include "space_invaders.hh"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -30,86 +30,21 @@ main(int argc, char** argv)
     std::istreambuf_iterator<char>{file},
     std::istreambuf_iterator<char>{}
   };
-
-  auto render_screen = display{machine};
+  auto display = sdl{machine};
 
   machine.start();
-  for (auto quit = false; not quit;)
+  while (true)
   {
-    for (auto e = SDL_Event{}; SDL_PollEvent(&e);)
+    if (const auto run = display.process_events(); run)
     {
-      switch (e.type)
-      {
-        case SDL_QUIT:
-        {
-          quit = true;
-          break;
-        }
-
-        case SDL_KEYDOWN:
-        {
-          switch (e.key.keysym.sym)
-          {
-            case SDLK_ESCAPE:
-              quit = true;
-              break;
-
-            case SDLK_c:
-              machine.key_down(space_invaders::key::coin);
-              break;
-
-            case SDLK_LEFT:
-              machine.key_down(space_invaders::key::left);
-              break;
-
-            case SDLK_RIGHT:
-              machine.key_down(space_invaders::key::right);
-              break;
-
-            case SDLK_SPACE:
-              machine.key_down(space_invaders::key::fire);
-              break;
-
-            case SDLK_1:
-              machine.key_down(space_invaders::key::start_1player);
-              break;
-          }
-          break;
-        }
-
-        case SDL_KEYUP:
-        {
-          switch (e.key.keysym.sym)
-          {
-            case SDLK_c:
-              machine.key_up(space_invaders::key::coin);
-              break;
-
-            case SDLK_LEFT:
-              machine.key_up(space_invaders::key::left);
-              break;
-
-            case SDLK_RIGHT:
-              machine.key_up(space_invaders::key::right);
-              break;
-
-            case SDLK_SPACE:
-              machine.key_up(space_invaders::key::fire);
-              break;
-
-            case SDLK_1:
-              machine.key_up(space_invaders::key::start_1player);
-              break;
-          }
-        }
-        break;
-      }
+      machine();
+      display.render_screen();
+      std::this_thread::sleep_for(std::chrono::milliseconds{1});
     }
-
-    machine();
-    render_screen();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds{1});
+    else
+    {
+      return 0;
+    }
   }
 }
 
