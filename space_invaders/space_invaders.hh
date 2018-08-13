@@ -169,9 +169,8 @@ public:
 
     if (address >= 0x4000)
     {
-      auto ss = std::stringstream{};
-      ss << std::hex << "Attempt to write 0x" << +value << " outside of RAM at 0x" << +address;
-      throw std::runtime_error{ss.str()};
+      // Mirror RAM. What's the goal of this?
+      return; // address -= 0x2000 also works;
     }
 
     memory_[address] = value;
