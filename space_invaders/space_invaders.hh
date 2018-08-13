@@ -197,7 +197,7 @@ public:
   {
     const auto now = std::chrono::steady_clock::now();
 
-    if (state_.interrupt_enabled() and now > next_interrupt_)
+    if (now > next_interrupt_)
     {
       state_.interrupt(which_interrupt_);
       which_interrupt_ = which_interrupt_ == 0x08

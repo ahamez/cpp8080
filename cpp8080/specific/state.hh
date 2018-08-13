@@ -199,9 +199,12 @@ public:
   void
   interrupt(std::uint8_t interrupt)
   {
-    push((pc & 0xff00) >> 8, pc & 0x00ff);
-    pc = interrupt;
-    disable_interrupt();
+    if (interrupt_enabled())
+    {
+      push((pc & 0xff00) >> 8, pc & 0x00ff);
+      pc = interrupt;
+      disable_interrupt();
+    }
   }
   
   void
