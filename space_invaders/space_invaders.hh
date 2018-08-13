@@ -156,6 +156,7 @@ public:
     return memory_.at(address);
   }
 
+  //  TODO space_invaders doesn't need to know sdl type.
   void
   operator()(sdl& display)
   {
