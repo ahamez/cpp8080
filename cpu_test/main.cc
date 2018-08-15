@@ -55,11 +55,13 @@ struct call_adr
 
 class cpu_test
 {
-public:
+private:
 
   using overrides = cpp8080::meta::make_instructions<
     call_adr
   >;
+
+public:
 
   using instructions = cpp8080::meta::override_instructions<
     cpp8080::specific::instructions_8080,
@@ -97,8 +99,7 @@ public:
   {
     while (true)
     {
-      const auto opcode = state_.read_memory(state_.pc);
-      step(instructions{}, opcode, state_);
+      state_.step();
       if (state_.pc == 0)
       {
         std::cout << '\n';

@@ -65,6 +65,13 @@ public:
       ;
   }
 
+  std::uint64_t
+  step()
+  {
+    const auto opcode = read_memory(pc);
+    return meta::step(typename Machine::instructions{}, opcode, *this);
+  }
+
   void
   write_memory(std::uint16_t address, std::uint8_t value)
   {

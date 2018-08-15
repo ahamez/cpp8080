@@ -61,6 +61,8 @@ private:
     out_override
   >;
 
+public:
+
   using instructions = cpp8080::meta::override_instructions<
     cpp8080::specific::instructions_8080,
     overrides
@@ -175,9 +177,8 @@ public:
       const auto now = std::chrono::high_resolution_clock::now();
       for (auto counter = 0ul, total_cycles = 0ul; total_cycles < cycles_per_frame;)
       {
-        const auto opcode = state_.read_memory(state_.pc);
+        const auto cycles = state_.step();
 
-        const auto cycles = step(instructions{}, opcode, state_);
         counter += cycles;
         total_cycles += cycles;
 
