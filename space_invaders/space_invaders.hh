@@ -173,21 +173,7 @@ public:
     {
       const auto now = std::chrono::steady_clock::now();
 
-      for (auto process_events = true; process_events;)
-      {
-        switch (const auto [kind, event] = display.get_next_event(); kind)
-        {
-          case kind::key_up   : key_up(event);   break;
-          case kind::key_down : key_down(event); break;
-          case kind::other:
-            switch (event)
-            {
-              case event::quit : run = false; break;
-              case event::end  : process_events = false; break;
-              default          : break;
-            }
-        }
-      }
+      run = process_events(display);
 
       if (now > next_interrupt)
       {
@@ -210,6 +196,28 @@ public:
   }
 
 private:
+
+  bool
+  process_events(sdl& display)
+  {
+    for (auto process = true; process;)
+    {
+      switch (const auto [kind, event] = display.get_next_event(); kind)
+      {
+        case kind::key_up   : key_up(event);   break;
+        case kind::key_down : key_down(event); break;
+        case kind::other:
+          switch (event)
+          {
+            case event::quit : return false;
+            case event::end  : process = false; break;
+            default          : break;
+          }
+      }
+    }
+
+    return true;
+  }
 
   void
   key_down(event k)
