@@ -20,6 +20,7 @@
 static constexpr auto fps = 60;
 static constexpr auto cycles_per_second = 2'000'000; // 2 MHz
 static constexpr auto cycles_per_frame = cycles_per_second / fps;
+static constexpr auto half_cycles_per_frame = cycles_per_frame / 2;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -166,32 +167,31 @@ public:
   void
   operator()(sdl& display)
   {
-    auto which_interrupt = std::uint8_t{0x08};
-    auto next_interrupt = std::chrono::steady_clock::now() + std::chrono::microseconds{8333};
+    display.render_screen(memory_);
+    auto next_interrupt = std::uint8_t{0x08};
 
-    for (auto run = true; run;)
+    while (process_events(display))
     {
-      const auto now = std::chrono::steady_clock::now();
-
-      run = process_events(display);
-
-      if (now > next_interrupt)
-      {
-        state_.interrupt(which_interrupt);
-        which_interrupt = which_interrupt == 0x08 ? 0x10 : 0x08;
-        next_interrupt = now + std::chrono::microseconds{8333};
-      }
-
-      for (auto cycles = std::uint64_t{0}; cycles <= cycles_per_frame;)
+      const auto now = std::chrono::high_resolution_clock::now();
+      for (auto counter = 0ul, total_cycles = 0ul; total_cycles < cycles_per_frame;)
       {
         const auto opcode = state_.read_memory(state_.pc);
-        cycles += step(instructions{}, opcode, state_);
-      }
 
+        const auto cycles = step(instructions{}, opcode, state_);
+        counter += cycles;
+        total_cycles += cycles;
+
+        if (counter >= half_cycles_per_frame)
+        {
+          counter -= half_cycles_per_frame;
+          state_.interrupt(next_interrupt);
+          next_interrupt = next_interrupt == 0x08 ? 0x10 : 0x08;
+        }
+      }
       display.render_screen(memory_);
 
-      const auto duration = std::chrono::steady_clock::now() - now;
-      std::this_thread::sleep_for(std::chrono::milliseconds{1} - duration);
+      const auto duration = std::chrono::high_resolution_clock::now() - now;
+      std::this_thread::sleep_for(std::chrono::microseconds{16666} - duration);
     }
   }
 
