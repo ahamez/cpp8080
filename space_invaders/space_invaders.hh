@@ -9,7 +9,6 @@
 
 #include "cpp8080/meta/disassemble.hh"
 #include "cpp8080/meta/instructions.hh"
-#include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/state.hh"
 
 #include "events.hh"
@@ -53,18 +52,11 @@ struct out_override : cpp8080::meta::describe_instruction<0xd3, 3, 2>
 
 class space_invaders
 {
-private:
+public:
 
   using overrides = cpp8080::meta::make_instructions<
     in_override,
     out_override
-  >;
-
-public:
-
-  using instructions = cpp8080::meta::override_instructions<
-    cpp8080::specific::instructions_8080,
-    overrides
   >;
 
 public:

@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <ostream>
 
+#include "cpp8080/specific/instructions.hh"
+#include "cpp8080/specific/state_fwd.hh"
 #include "cpp8080/util/parity.hh"
 
 namespace cpp8080::specific {
@@ -23,6 +25,13 @@ struct flag_bits
 template <typename Machine>
 class state
 {
+private:
+
+  using instructions = meta::override_instructions<
+    instructions_8080,
+    typename Machine::overrides
+  >;
+
 public:
 
   state(Machine& machine)
@@ -69,7 +78,7 @@ public:
   step()
   {
     const auto opcode = read_memory(pc);
-    return meta::step(typename Machine::instructions{}, opcode, *this);
+    return meta::step(instructions{}, opcode, *this);
   }
 
   void

@@ -82,6 +82,7 @@
 		2B585A0B211F4D2A0082B965 /* instruction.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instruction.hh; sourceTree = "<group>"; };
 		2B585A0C211F4D2A0082B965 /* unimplemented.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = unimplemented.hh; sourceTree = "<group>"; };
 		2B585A0D211F4D2A0082B965 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
+		2B59DA56212545CD001E27A4 /* state_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = state_fwd.hh; sourceTree = "<group>"; };
 		2B84B0B621219E0A007CD902 /* sdl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sdl.cc; sourceTree = "<group>"; };
 		2B84B0B721219E0A007CD902 /* sdl.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sdl.hh; sourceTree = "<group>"; };
 		2B9F2F3221220EC800181D1F /* events.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = events.hh; sourceTree = "<group>"; };
@@ -152,6 +153,7 @@
 				2B585A06211F4D2A0082B965 /* halt.hh */,
 				2B585A07211F4D2A0082B965 /* instructions.hh */,
 				2B585A05211F4D2A0082B965 /* state.hh */,
+				2B59DA56212545CD001E27A4 /* state_fwd.hh */,
 			);
 			path = specific;
 			sourceTree = "<group>";

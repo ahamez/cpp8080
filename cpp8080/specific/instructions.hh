@@ -6,7 +6,7 @@
 #include "cpp8080/meta/make_instructions.hh"
 #include "cpp8080/meta/unimplemented.hh"
 #include "cpp8080/specific/halt.hh"
-#include "cpp8080/specific/state.hh"
+#include "cpp8080/specific/state_fwd.hh"
 #include "cpp8080/util/parity.hh"
 
 namespace cpp8080::specific {

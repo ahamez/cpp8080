@@ -7,6 +7,7 @@
 
 #include "cpp8080/meta/instructions.hh"
 #include "cpp8080/specific/instructions.hh"
+#include "cpp8080/specific/state.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -55,17 +56,10 @@ struct call_adr
 
 class cpu_test
 {
-private:
+public:
 
   using overrides = cpp8080::meta::make_instructions<
     call_adr
-  >;
-
-public:
-
-  using instructions = cpp8080::meta::override_instructions<
-    cpp8080::specific::instructions_8080,
-    overrides
   >;
 
 public:
