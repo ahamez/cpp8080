@@ -20,7 +20,6 @@
 static constexpr auto fps = 60;
 static constexpr auto cycles_per_second = 2'000'000; // 2 MHz
 static constexpr auto cycles_per_frame = cycles_per_second / fps;
-static constexpr auto half_cycles_per_frame = cycles_per_frame / 2;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -182,9 +181,9 @@ public:
         counter += cycles;
         total_cycles += cycles;
 
-        if (counter >= half_cycles_per_frame)
+        if (counter >= (cycles_per_frame / 2))
         {
-          counter -= half_cycles_per_frame;
+          counter -= (cycles_per_frame / 2);
           state_.interrupt(next_interrupt);
           next_interrupt = next_interrupt == 0x08 ? 0x10 : 0x08;
         }
