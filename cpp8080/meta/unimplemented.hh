@@ -10,8 +10,8 @@ struct unimplemented : meta::describe_instruction<Opcode, 255, 1>
 {
   static constexpr auto name = "unimplemented";
   
-  template <typename State>
-  void operator()(const State&) const
+  template <typename Cpu>
+  void operator()(const Cpu&) const
   {
     auto ss = std::stringstream{};
     ss << "Unimplemented instruction " << Opcode;

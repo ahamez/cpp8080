@@ -8,54 +8,54 @@ namespace cpp8080::meta {
   
 namespace detail {
   
-template <typename State, typename Instruction, std::uint8_t Bytes>
+template <typename Cpu, typename Instruction, std::uint8_t Bytes>
 struct disassemble_impl;
   
-template <typename State, typename Instruction>
-struct disassemble_impl<State, Instruction, 1>
+template <typename Cpu, typename Instruction>
+struct disassemble_impl<Cpu, Instruction, 1>
 {
   void
-  operator()(std::ostream& os, const State&)
+  operator()(std::ostream& os, const Cpu&)
   const noexcept
   {
     os << Instruction::name;
   }
 };
   
-template <typename State, typename Instruction>
-struct disassemble_impl<State, Instruction, 2>
+template <typename Cpu, typename Instruction>
+struct disassemble_impl<Cpu, Instruction, 2>
 {
   void
-  operator()(std::ostream& os, const State& state)
+  operator()(std::ostream& os, const Cpu& cpu)
   const
   {
-    os << Instruction::name << " " << std::hex << "0x" << +state.op1();
+    os << Instruction::name << " " << std::hex << "0x" << +cpu.op1();
   }
 };
   
-template <typename State, typename Instruction>
-struct disassemble_impl<State, Instruction, 3>
+template <typename Cpu, typename Instruction>
+struct disassemble_impl<Cpu, Instruction, 3>
 {
   void
-  operator()(std::ostream& os, const State& state)
+  operator()(std::ostream& os, const Cpu& cpu)
   const
   {
-    os << Instruction::name << " " << std::hex << "0x" << +state.op2() << " 0x" <<+state.op1();
+    os << Instruction::name << " " << std::hex << "0x" << +cpu.op2() << " 0x" <<+cpu.op1();
   }
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
-template <typename State, typename Instruction>
+template <typename Cpu, typename Instruction>
 struct disassemble_dispatch
 {
-  const State& state;
+  const Cpu& cpu;
   
   friend
   std::ostream&
   operator<<(std::ostream& os, const disassemble_dispatch& d)
   {
-    disassemble_impl<State, Instruction, Instruction::bytes>{}(os, d.state);
+    disassemble_impl<Cpu, Instruction, Instruction::bytes>{}(os, d.cpu);
     return os;
   }
 };
@@ -64,12 +64,12 @@ struct disassemble_dispatch
     
 /*------------------------------------------------------------------------------------------------*/
     
-template <typename State, typename Instruction>
+template <typename Cpu, typename Instruction>
 auto
-disassemble(const State& state, Instruction)
+disassemble(const Cpu& cpu, Instruction)
 noexcept
 {
-  return detail::disassemble_dispatch<State, Instruction>{state};
+  return detail::disassemble_dispatch<Cpu, Instruction>{cpu};
 }
     
 /*------------------------------------------------------------------------------------------------*/

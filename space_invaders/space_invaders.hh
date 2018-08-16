@@ -9,7 +9,7 @@
 
 #include "cpp8080/meta/disassemble.hh"
 #include "cpp8080/meta/instructions.hh"
-#include "cpp8080/specific/state.hh"
+#include "cpp8080/specific/cpu.hh"
 
 #include "events.hh"
 #include "sdl.hh"
@@ -27,11 +27,11 @@ struct in_override : cpp8080::meta::describe_instruction<0xdb, 3, 2>
   static constexpr auto name = "in";
 
   template <typename Machine>
-  void operator()(cpp8080::specific::state<Machine>& state) const
+  void operator()(cpp8080::specific::cpu<Machine>& cpu) const
   {
-    const auto port = state.op1();
-    state.a = state.machine().in(port);
-    state.pc += 1;
+    const auto port = cpu.op1();
+    cpu.a = cpu.machine().in(port);
+    cpu.pc += 1;
   }
 };
 
@@ -40,11 +40,11 @@ struct out_override : cpp8080::meta::describe_instruction<0xd3, 3, 2>
   static constexpr auto name = "out";
 
   template <typename Machine>
-  void operator()(cpp8080::specific::state<Machine>& state) const
+  void operator()(cpp8080::specific::cpu<Machine>& cpu) const
   {
-    const auto port = state.op1();
-    state.machine().out(port, state.a);
-    state.pc += 1;
+    const auto port = cpu.op1();
+    cpu.machine().out(port, cpu.a);
+    cpu.pc += 1;
   }
 };
 
@@ -63,7 +63,7 @@ public:
 
   template <typename InputIterator>
   space_invaders(InputIterator first, InputIterator last)
-    : state_{*this}
+    : cpu_{*this}
     , memory_(16384, 0)
     , shift0_{0}
     , shift1_{0}
@@ -168,7 +168,7 @@ public:
       const auto now = std::chrono::high_resolution_clock::now();
       for (auto counter = 0ul, total_cycles = 0ul; total_cycles < cycles_per_frame;)
       {
-        const auto cycles = state_.step();
+        const auto cycles = cpu_.step();
 
         counter += cycles;
         total_cycles += cycles;
@@ -176,7 +176,7 @@ public:
         if (counter >= (cycles_per_frame / 2))
         {
           counter -= (cycles_per_frame / 2);
-          state_.interrupt(next_interrupt);
+          cpu_.interrupt(next_interrupt);
           next_interrupt = next_interrupt == 0x08 ? 0x10 : 0x08;
         }
       }
@@ -244,7 +244,7 @@ private:
 
 private:
 
-  cpp8080::specific::state<space_invaders> state_;
+  cpp8080::specific::cpu<space_invaders> cpu_;
   std::vector<std::uint8_t> memory_;
   std::uint8_t shift0_;
   std::uint8_t shift1_;

@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "cpp8080/meta/instructions.hh"
+#include "cpp8080/specific/cpu.hh"
 #include "cpp8080/specific/instructions.hh"
-#include "cpp8080/specific/state.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -20,17 +20,17 @@ struct call_adr
   static constexpr auto name = "call_adr";
 
   template <typename Machine>
-  void operator()(cpp8080::specific::state<Machine>& state) const
+  void operator()(cpp8080::specific::cpu<Machine>& cpu) const
   {
-    if (((state.op2() << 8) | state.op1()) == 5)
+    if (((cpu.op2() << 8) | cpu.op1()) == 5)
     {
-      if (state.c == 9)
+      if (cpu.c == 9)
       {
-        const std::uint16_t offset = state.de();
+        const std::uint16_t offset = cpu.de();
         auto s = std::string{};
         for (auto i = std::uint16_t{0}; ; ++i)
         {
-          const auto c = state.read_memory(offset + i);
+          const auto c = cpu.read_memory(offset + i);
           if (c == '$')
           {
             break;
@@ -40,14 +40,14 @@ struct call_adr
 
         std::cout << s << '\n';
       }
-      else if (state.c == 2)
+      else if (cpu.c == 2)
       {
-        std::cout << state.e;
+        std::cout << cpu.e;
       }
     }
     else
     {
-      cpp8080::specific::call_adr{}(state);
+      cpp8080::specific::call_adr{}(cpu);
     }
   }
 };
@@ -66,12 +66,12 @@ public:
 
   template <typename InputIterator>
   cpu_test(InputIterator first, InputIterator last)
-    : state_{*this}
+    : cpu_{*this}
     , memory_(65536, 0)
   {
     // Test ROMS start at 0x100.
     std::copy(first, last, memory_.begin() + 0x100);
-    state_.pc = 0x100;
+    cpu_.pc = 0x100;
   }
 
   void
@@ -93,8 +93,8 @@ public:
   {
     while (true)
     {
-      state_.step();
-      if (state_.pc == 0)
+      cpu_.step();
+      if (cpu_.pc == 0)
       {
         std::cout << '\n';
         break;
@@ -104,7 +104,7 @@ public:
 
 private:
 
-  cpp8080::specific::state<cpu_test> state_;
+  cpp8080::specific::cpu<cpu_test> cpu_;
   std::vector<std::uint8_t> memory_;
 };
 

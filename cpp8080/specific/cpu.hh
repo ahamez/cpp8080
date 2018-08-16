@@ -4,7 +4,7 @@
 #include <ostream>
 
 #include "cpp8080/specific/instructions.hh"
-#include "cpp8080/specific/state_fwd.hh"
+#include "cpp8080/specific/cpu_fwd.hh"
 #include "cpp8080/util/parity.hh"
 
 namespace cpp8080::specific {
@@ -12,7 +12,7 @@ namespace cpp8080::specific {
 /*------------------------------------------------------------------------------------------------*/
 
 template <typename Machine>
-class state
+class cpu
 {
 private:
 
@@ -32,7 +32,7 @@ private:
 
 public:
 
-  state(Machine& machine)
+  cpu(Machine& machine)
     : a{0}
     , b{0}
     , c{0}
@@ -50,25 +50,25 @@ public:
 
   friend
   std::ostream&
-  operator<<(std::ostream& os, const state& state)
+  operator<<(std::ostream& os, const cpu& cpu)
   {
     return os
       << std::resetiosflags(std::ios_base::basefield)
       << " "
-      << (state.flags.z ? "z" : ".")
-      << (state.flags.s ? "s" : ".")
-      << (state.flags.p ? "p" : ".")
-      << (state.flags.cy ? "c" : ".")
-      << (state.flags.ac ? "a" : ".")
+      << (cpu.flags.z ? "z" : ".")
+      << (cpu.flags.s ? "s" : ".")
+      << (cpu.flags.p ? "p" : ".")
+      << (cpu.flags.cy ? "c" : ".")
+      << (cpu.flags.ac ? "a" : ".")
       << std::hex
-      << "  A $" << std::setfill('0') << std::setw(2) << +state.a
-      << " B $"  << std::setfill('0') << std::setw(2) << +state.b
-      << " C $"  << std::setfill('0') << std::setw(2) << +state.c
-      << " D $"  << std::setfill('0') << std::setw(2) << +state.d
-      << " E $"  << std::setfill('0') << std::setw(2) << +state.e
-      << " H $"  << std::setfill('0') << std::setw(2) << +state.h
-      << " L $"  << std::setfill('0') << std::setw(2) << +state.l
-      << " SP "  << std::setfill('0') << std::setw(4) << +state.sp
+      << "  A $" << std::setfill('0') << std::setw(2) << +cpu.a
+      << " B $"  << std::setfill('0') << std::setw(2) << +cpu.b
+      << " C $"  << std::setfill('0') << std::setw(2) << +cpu.c
+      << " D $"  << std::setfill('0') << std::setw(2) << +cpu.d
+      << " E $"  << std::setfill('0') << std::setw(2) << +cpu.e
+      << " H $"  << std::setfill('0') << std::setw(2) << +cpu.h
+      << " L $"  << std::setfill('0') << std::setw(2) << +cpu.l
+      << " SP "  << std::setfill('0') << std::setw(4) << +cpu.sp
       ;
   }
 
