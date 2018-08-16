@@ -11,21 +11,19 @@ namespace cpp8080::specific {
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct flag_bits
-{
-  bool cy;
-  bool p;
-  bool ac;
-  bool z;
-  bool s;
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
 template <typename Machine>
 class state
 {
 private:
+
+  struct flag_bits
+  {
+    bool cy;
+    bool p;
+    bool ac;
+    bool z;
+    bool s;
+  };
 
   using instructions = meta::override_instructions<
     instructions_8080,
