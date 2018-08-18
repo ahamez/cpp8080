@@ -1997,9 +1997,7 @@ struct cnz : meta::describe_instruction<0xc4, 17, 3>
     if (cpu.flags.z == 0)
     {
       const uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2036,11 +2034,7 @@ struct rst_0 : meta::describe_instruction<0xc7, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0000;
+    cpu.call(0x0000);
   }
 };
 
@@ -2095,9 +2089,7 @@ struct cz_adr : meta::describe_instruction<0xcc, 10, 3>
     if (cpu.flags.z == 1)
     {
       const std::uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2113,11 +2105,7 @@ struct call : meta::describe_instruction<0xcd, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = (cpu.op2() << 8) | cpu.op1();
+    cpu.call((cpu.op2() << 8) | cpu.op1());
   }
 };
 
@@ -2138,11 +2126,7 @@ struct rst_1 : meta::describe_instruction<0xcf, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0008;
+    cpu.call(0x0008);
   }
 };
 
@@ -2206,9 +2190,7 @@ struct cnc_adr : meta::describe_instruction<0xd4, 17, 3>
     if (cpu.flags.cy == 0)
     {
       const std::uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2245,11 +2227,7 @@ struct rst_2 : meta::describe_instruction<0xd7, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0010;
+    cpu.call(0x0010);
   }
 };
 
@@ -2303,9 +2281,7 @@ struct cc_adr : meta::describe_instruction<0xdc, 10, 3>
     if (cpu.flags.cy != 0)
     {
       const std::uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2332,11 +2308,7 @@ struct rst_3 : meta::describe_instruction<0xdf, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0018;
+    cpu.call(0x0018);
   }
 };
 
@@ -2405,9 +2377,7 @@ struct cpo_adr : meta::describe_instruction<0xe4, 17, 3>
     if (cpu.flags.p == 0)
     {
       const std::uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2444,11 +2414,7 @@ struct rst_4 : meta::describe_instruction<0xe7, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0020;
+    cpu.call(0x0020);
   }
 };
 
@@ -2513,9 +2479,7 @@ struct cpe_adr : meta::describe_instruction<0xec, 17, 3>
     if (cpu.flags.p != 0)
     {
       const std::uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2543,11 +2507,7 @@ struct rst_5 : meta::describe_instruction<0xef, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0028;
+    cpu.call(0x0028);
   }
 };
 
@@ -2618,9 +2578,7 @@ struct cp_adr : meta::describe_instruction<0xf4, 17, 3>
     if (cpu.flags.s == 0)
     {
       const std::uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2670,11 +2628,7 @@ struct rst_6 : meta::describe_instruction<0xf7, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0030;
+    cpu.call(0x0030);
   }
 
 };
@@ -2739,9 +2693,7 @@ struct cm_adr : meta::describe_instruction<0xfc, 17, 3>
     if (cpu.flags.s != 0)
     {
       const std::uint16_t ret = cpu.pc + 2;
-      cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-      cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-      cpu.sp -= 2;
+      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
       cpu.pc = (cpu.op2() << 8) | cpu.op1();
     }
     else
@@ -2768,11 +2720,7 @@ struct rst_7 : meta::describe_instruction<0xff, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t ret = cpu.pc + 2;
-    cpu.write_memory(cpu.sp - 1, (ret >> 8) & 0x00ff);
-    cpu.write_memory(cpu.sp - 2, ret & 0x00ff);
-    cpu.sp -= 2;
-    cpu.pc = 0x0038;
+    cpu.call(0x0038);
   }
 };
 
