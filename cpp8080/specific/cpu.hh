@@ -2,6 +2,7 @@
 
 #include <iomanip>
 #include <ostream>
+#include <tuple>
 
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/cpu_fwd.hh"
@@ -179,7 +180,7 @@ public:
   {
     return op1_;
   }
-  
+
   [[nodiscard]]
   std::uint8_t
   op2()
@@ -194,7 +195,17 @@ public:
     op1_ = read_memory(pc + 1);
     op2_ = read_memory(pc + 2);
   }
-  
+
+  [[nodiscard]]
+  std::tuple<std::uint8_t, std::uint8_t>
+  operands()
+  {
+    const auto op1 = read_memory(pc + 0);
+    const auto op2 = read_memory(pc + 1);
+    pc += 2;
+    return {op1, op2};
+  }
+
   [[nodiscard]]
   Machine&
   machine()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
 
 #include "cpp8080/meta/make_instructions.hh"
@@ -25,11 +26,9 @@ struct lxi_b : meta::describe_instruction<0x01, 10, 3>
 {
   static constexpr auto name = "lxi_b";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
+  template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.c = cpu.op1();
-    cpu.b = cpu.op2();
-    cpu.pc += 2;
+    std::tie(cpu.c, cpu.b) = cpu.operands();
   }
 };
 
@@ -185,11 +184,9 @@ struct lxi_d : meta::describe_instruction<0x11, 10, 3>
 {
   static constexpr auto name = "lxi_d";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
+  template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.e = cpu.op1();
-    cpu.d = cpu.op2();
-    cpu.pc += 2;
+    std::tie(cpu.e, cpu.d) = cpu.operands();
   }
 };
 
@@ -344,11 +341,9 @@ struct lxi_h : meta::describe_instruction<0x21, 10, 3>
 {
   static constexpr auto name = "lxi_h";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
+  template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.l = cpu.op1();
-    cpu.h = cpu.op2();
-    cpu.pc += 2;
+    std::tie(cpu.l, cpu.h) = cpu.operands();
   }
 };
 
