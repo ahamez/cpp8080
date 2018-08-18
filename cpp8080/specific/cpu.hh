@@ -75,7 +75,9 @@ public:
   std::uint64_t
   step()
   {
+    fetch_operands();
     const auto opcode = read_memory(pc);
+    pc += 1;
     return meta::step(instructions{}, opcode, *this);
   }
 

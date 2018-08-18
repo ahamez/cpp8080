@@ -15,9 +15,7 @@ template<typename Cpu, typename Fn, typename Instruction>
 std::uint64_t
 execute(Cpu& cpu, Fn&& fn)
 {
-  cpu.fetch_operands();
   fn.pre(std::as_const(cpu), Instruction{});
-  cpu.pc += 1;
   Instruction{}(cpu);
   fn.post(std::as_const(cpu), Instruction{});
   // TODO The number of cycles is not fixed for conditional instructions.
