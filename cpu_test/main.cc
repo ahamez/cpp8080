@@ -11,11 +11,11 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct call_adr
+struct call
   : cpp8080::meta::describe_instruction<
-      cpp8080::specific::call_adr::opcode,
-      cpp8080::specific::call_adr::cycles,
-      cpp8080::specific::call_adr::bytes>
+      cpp8080::specific::call::opcode,
+      cpp8080::specific::call::cycles,
+      cpp8080::specific::call::bytes>
 {
   static constexpr auto name = "call_adr";
 
@@ -47,7 +47,7 @@ struct call_adr
     }
     else
     {
-      cpp8080::specific::call_adr{}(cpu);
+      cpp8080::specific::call{}(cpu);
     }
   }
 };
@@ -59,7 +59,7 @@ class cpu_test
 public:
 
   using overrides = cpp8080::meta::make_instructions<
-    call_adr
+    call
   >;
 
 public:

@@ -2107,9 +2107,9 @@ struct cz_adr : meta::describe_instruction<0xcc, 10, 3>
   }
 };
 
-struct call_adr : meta::describe_instruction<0xcd, 17, 3>
+struct call : meta::describe_instruction<0xcd, 17, 3>
 {
-  static constexpr auto name = "call_adr";
+  static constexpr auto name = "call";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2984,7 +2984,7 @@ using instructions_8080 = meta::make_instructions<
   jz_adr,
   meta::unimplemented<0xcb>,
   cz_adr,
-  call_adr,
+  call,
   aci,
   rst_1,
   rnc,
