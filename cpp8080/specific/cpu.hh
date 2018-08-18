@@ -157,6 +157,19 @@ public:
     pc = addr;
   }
 
+  void
+  conditional_call(std::uint16_t addr, bool condition)
+  {
+    if (condition)
+    {
+      call(addr);
+    }
+    else
+    {
+      pc += 2;
+    }
+  }
+
   [[nodiscard]]
   std::uint8_t
   op1()

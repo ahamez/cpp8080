@@ -1994,16 +1994,7 @@ struct cnz : meta::describe_instruction<0xc4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.z == 0)
-    {
-      const uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.z == 0);
   }
 };
 
@@ -2086,16 +2077,7 @@ struct cz : meta::describe_instruction<0xcc, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.z == 1)
-    {
-      const std::uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.z == 1);
   }
 };
 
@@ -2187,16 +2169,7 @@ struct cnc : meta::describe_instruction<0xd4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.cy == 0)
-    {
-      const std::uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.cy == 0);
   }
 };
 
@@ -2278,16 +2251,7 @@ struct cc : meta::describe_instruction<0xdc, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.cy != 0)
-    {
-      const std::uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.cy != 0);
   }
 };
 
@@ -2374,16 +2338,7 @@ struct cpo : meta::describe_instruction<0xe4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.p == 0)
-    {
-      const std::uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.p == 0);
   }
 };
 
@@ -2476,17 +2431,7 @@ struct cpe : meta::describe_instruction<0xec, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.p != 0)
-    {
-      const std::uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
-
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.p != 0);
   }
 };
 
@@ -2575,17 +2520,7 @@ struct cp : meta::describe_instruction<0xf4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.s == 0)
-    {
-      const std::uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
-
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.s == 0);
   }
 };
 
@@ -2690,16 +2625,7 @@ struct cm : meta::describe_instruction<0xfc, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.s != 0)
-    {
-      const std::uint16_t ret = cpu.pc + 2;
-      cpu.push((ret >> 8) & 0x00ff, ret & 0x00ff);
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.s != 0);
   }
 };
 
