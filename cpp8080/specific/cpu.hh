@@ -154,7 +154,7 @@ public:
   {
     const std::uint16_t ret = pc + 2;
     push((ret >> 8) & 0x00ff, ret & 0x00ff);
-    pc = (op2() << 8) | op1();
+    pc = addr;
   }
 
   [[nodiscard]]
