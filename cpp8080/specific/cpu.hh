@@ -76,7 +76,6 @@ public:
   std::uint64_t
   step()
   {
-    fetch_operands();
     const auto opcode = read_memory(pc);
     pc += 1;
     return meta::step(instructions{}, opcode, *this);
@@ -152,11 +151,20 @@ public:
     sp += 2;
   }
 
+  [[nodiscard]]
+  std::uint16_t
+  pop_word()
+  {
+    const auto low = read_memory(sp);
+    const auto high = read_memory(sp + 1);
+    sp += 2;
+    return low | (high << 8);
+  }
+
   void
   call(std::uint16_t addr)
   {
-    const std::uint16_t ret = pc + 2;
-    push((ret >> 8) & 0x00ff, ret & 0x00ff);
+    push((pc >> 8) & 0x00ff, pc & 0x00ff);
     pc = addr;
   }
 
@@ -167,18 +175,45 @@ public:
     {
       call(addr);
     }
-    else
+  }
+
+  void
+  jump(std::uint16_t addr)
+  {
+    pc = addr;
+  }
+
+  void
+  conditional_jump(std::uint16_t addr, bool condition)
+  {
+    if (condition)
     {
-      pc += 2;
+      jump(addr);
+    }
+  }
+
+  void
+  ret()
+  {
+    pc = pop_word();
+  }
+
+  void
+  conditional_ret(bool condition)
+  {
+    if (condition)
+    {
+      ret();
     }
   }
 
   [[nodiscard]]
   std::uint8_t
   op1()
-  const noexcept
   {
-    return op1_;
+    const auto op1 = read_memory(pc + 0);
+    pc += 1;
+    return op1;
   }
 
   [[nodiscard]]
@@ -189,13 +224,6 @@ public:
     return op2_;
   }
 
-  void
-  fetch_operands()
-  {
-    op1_ = read_memory(pc + 1);
-    op2_ = read_memory(pc + 2);
-  }
-
   [[nodiscard]]
   std::tuple<std::uint8_t, std::uint8_t>
   operands()
@@ -204,6 +232,14 @@ public:
     const auto op2 = read_memory(pc + 1);
     pc += 2;
     return {op1, op2};
+  }
+
+  [[nodiscard]]
+  std::uint16_t
+  operands_word()
+  {
+    const auto [op1, op2] = operands();
+    return op1 | (op2 << 8);
   }
 
   [[nodiscard]]

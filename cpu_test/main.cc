@@ -22,7 +22,7 @@ struct call
   template <typename Machine>
   void operator()(cpp8080::specific::cpu<Machine>& cpu) const
   {
-    if (((cpu.op2() << 8) | cpu.op1()) == 5)
+    if (const auto operands = cpu.operands_word(); operands == 5)
     {
       if (cpu.c == 9)
       {
@@ -47,7 +47,7 @@ struct call
     }
     else
     {
-      cpp8080::specific::call{}(cpu);
+      cpu.call(operands);
     }
   }
 };

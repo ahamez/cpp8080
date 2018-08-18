@@ -31,7 +31,6 @@ struct in_override : cpp8080::meta::describe_instruction<0xdb, 3, 2>
   {
     const auto port = cpu.op1();
     cpu.a = cpu.machine().in(port);
-    cpu.pc += 1;
   }
 };
 
@@ -44,7 +43,6 @@ struct out_override : cpp8080::meta::describe_instruction<0xd3, 3, 2>
   {
     const auto port = cpu.op1();
     cpu.machine().out(port, cpu.a);
-    cpu.pc += 1;
   }
 };
 

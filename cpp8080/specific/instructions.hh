@@ -84,7 +84,6 @@ struct mvi_b : meta::describe_instruction<0x06, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.b = cpu.op1();
-    cpu.pc += 1;
   }
 };
 
@@ -164,7 +163,6 @@ struct mvi_c : meta::describe_instruction<0x0e, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.c = cpu.op1();
-    cpu.pc += 1;
   }
 };
 
@@ -241,7 +239,6 @@ struct mvi_d : meta::describe_instruction<0x16, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.d = cpu.op1();
-    cpu.pc += 1;
   }
 };
 
@@ -321,7 +318,6 @@ struct mvi_e : meta::describe_instruction<0x1e, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.e = cpu.op1();
-    cpu.pc += 1;
   }
 };
 
@@ -353,10 +349,9 @@ struct shld : meta::describe_instruction<0x22, 16, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t offset = cpu.op1() | (cpu.op2() << 8);
+    const std::uint16_t offset = cpu.operands_word();
     cpu.write_memory(offset, cpu.l);
     cpu.write_memory(offset + 1, cpu.h);
-    cpu.pc += 2;
   }
 };
 
@@ -401,7 +396,6 @@ struct mvi_h : meta::describe_instruction<0x26, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.h = cpu.op1();
-    cpu.pc += 1;
   }
 };
 
@@ -452,10 +446,9 @@ struct lhld : meta::describe_instruction<0x2a, 16, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t offset = cpu.op1() | (cpu.op2() << 8);
+    const std::uint16_t offset = cpu.operands_word();
     cpu.l = cpu.read_memory(offset);
     cpu.h = cpu.read_memory(offset + 1);
-    cpu.pc += 2;
   }
 };
 
@@ -500,7 +493,6 @@ struct mvi_l_d8 : meta::describe_instruction<0x2e, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
     cpu.l = cpu.op1();
-    cpu.pc += 1;
   }
 };
 
@@ -520,8 +512,7 @@ struct lxi_sp : meta::describe_instruction<0x31, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.sp = (cpu.op2() << 8) | cpu.op1();
-    cpu.pc += 2;
+    cpu.sp = cpu.operands_word();
   }
 };
 
@@ -531,9 +522,8 @@ struct sta : meta::describe_instruction<0x32, 13, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t offset = (cpu.op2() << 8) | cpu.op1();
+    const std::uint16_t offset = cpu.operands_word();
     cpu.write_memory(offset, cpu.a);
-    cpu.pc += 2;
   }
 };
 
@@ -576,7 +566,6 @@ struct mvi_m : meta::describe_instruction<0x36, 10, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
     cpu.write_hl(cpu.op1());
-    cpu.pc += 1;
   }
 };
 
@@ -609,9 +598,8 @@ struct lda : meta::describe_instruction<0x3a, 13, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t offset = (cpu.op2() << 8) | cpu.op1();
+    const std::uint16_t offset = cpu.operands_word();
     cpu.a = cpu.read_memory(offset);
-    cpu.pc += 2;
   }
 };
 
@@ -652,7 +640,6 @@ struct mvi_a : meta::describe_instruction<0x3e, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.a = cpu.op1();
-    cpu.pc += 1;
   }
 };
 
@@ -1938,11 +1925,7 @@ struct rnz : meta::describe_instruction<0xc0, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.z == 0)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(not cpu.flags.z);
   }
 };
 
@@ -1962,14 +1945,7 @@ struct jnz : meta::describe_instruction<0xc2, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    if (cpu.flags.z == 0)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), not cpu.flags.z);
   }
 };
 
@@ -1979,7 +1955,7 @@ struct jmp : meta::describe_instruction<0xc3, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.pc = (cpu.op2() << 8) | cpu.op1();
+    cpu.jump(cpu.operands_word());
   }
 };
 
@@ -1989,7 +1965,7 @@ struct cnz : meta::describe_instruction<0xc4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.z == 0);
+    cpu.conditional_call(cpu.operands_word(), not cpu.flags.z);
   }
 };
 
@@ -2010,7 +1986,6 @@ struct adi : meta::describe_instruction<0xc6, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.add(cpu.a, cpu.op1(), 0);
-    cpu.pc += 1;
   }
 };
 
@@ -2030,11 +2005,7 @@ struct rz : meta::describe_instruction<0xc8, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.z == 1)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(cpu.flags.z);
   }
 };
 
@@ -2044,8 +2015,7 @@ struct ret : meta::describe_instruction<0xc9, 10, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-    cpu.sp += 2;
+    cpu.ret();
   }
 };
 
@@ -2055,14 +2025,7 @@ struct jz : meta::describe_instruction<0xca, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.z)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), cpu.flags.z);
   }
 };
 
@@ -2072,7 +2035,7 @@ struct cz : meta::describe_instruction<0xcc, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.z == 1);
+    cpu.conditional_call(cpu.operands_word(), cpu.flags.z);
   }
 };
 
@@ -2082,7 +2045,7 @@ struct call : meta::describe_instruction<0xcd, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.call((cpu.op2() << 8) | cpu.op1());
+    cpu.call(cpu.operands_word());
   }
 };
 
@@ -2093,7 +2056,6 @@ struct aci : meta::describe_instruction<0xce, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.add(cpu.a, cpu.op1(), cpu.flags.cy);
-    cpu.pc += 1;
   }
 };
 
@@ -2113,11 +2075,7 @@ struct rnc : meta::describe_instruction<0xd0, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.cy == 0)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(not cpu.flags.cy);
   }
 };
 
@@ -2137,14 +2095,7 @@ struct jnc : meta::describe_instruction<0xd2, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.cy == 0)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), not cpu.flags.cy);
   }
 };
 
@@ -2153,9 +2104,7 @@ struct out : meta::describe_instruction<0xd3, 10, 2>
   static constexpr auto name = "out";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.pc += 1;
-  }
+  {}
 };
 
 struct cnc : meta::describe_instruction<0xd4, 17, 3>
@@ -2164,7 +2113,7 @@ struct cnc : meta::describe_instruction<0xd4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.cy == 0);
+    cpu.conditional_call(cpu.operands_word(), not cpu.flags.cy);
   }
 };
 
@@ -2185,7 +2134,6 @@ struct sui : meta::describe_instruction<0xd6, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.sub(cpu.a, cpu.op1(), 0);
-    cpu.pc += 1;
   }
 };
 
@@ -2205,11 +2153,7 @@ struct rc : meta::describe_instruction<0xd8, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.cy != 0)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(cpu.flags.cy);
   }
 };
 
@@ -2219,14 +2163,7 @@ struct jc : meta::describe_instruction<0xda, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.cy != 0)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), cpu.flags.cy);
   }
 };
 
@@ -2235,9 +2172,7 @@ struct in : meta::describe_instruction<0xdb, 10, 2>
   static constexpr auto name = "in";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.pc += 1;
-  }
+  {}
 };
 
 struct cc : meta::describe_instruction<0xdc, 10, 3>
@@ -2246,7 +2181,7 @@ struct cc : meta::describe_instruction<0xdc, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.cy != 0);
+    cpu.conditional_call(cpu.operands_word(), cpu.flags.cy != 0);
   }
 };
 
@@ -2257,7 +2192,6 @@ struct sbi : meta::describe_instruction<0xde, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.sub(cpu.a, cpu.op1(), cpu.flags.cy);
-    cpu.pc += 1;
   }
 };
 
@@ -2277,11 +2211,7 @@ struct rpo : meta::describe_instruction<0xe0, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.p == 0)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(not cpu.flags.p);
   }
 };
 
@@ -2301,14 +2231,7 @@ struct jpo : meta::describe_instruction<0xe2, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    if (cpu.flags.p == 0)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), not cpu.flags.p);
   }
 };
 
@@ -2333,7 +2256,7 @@ struct cpo : meta::describe_instruction<0xe4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.p == 0);
+    cpu.conditional_call(cpu.operands_word(), not cpu.flags.p);
   }
 };
 
@@ -2354,7 +2277,6 @@ struct ani : meta::describe_instruction<0xe6, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.ana(cpu.op1());
-    cpu.pc += 1;
   }
 };
 
@@ -2374,11 +2296,7 @@ struct rpe : meta::describe_instruction<0xe8, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.p != 0)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(cpu.flags.p);
   }
 };
 
@@ -2388,7 +2306,7 @@ struct pchl : meta::describe_instruction<0xe9, 5, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.pc = cpu.hl();
+    cpu.jump(cpu.hl());
   }
 };
 
@@ -2398,14 +2316,7 @@ struct jpe : meta::describe_instruction<0xea, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    if (cpu.flags.p != 0)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), cpu.flags.p);
   }
 };
 
@@ -2426,7 +2337,7 @@ struct cpe : meta::describe_instruction<0xec, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.p != 0);
+    cpu.conditional_call(cpu.operands_word(), cpu.flags.p != 0);
   }
 };
 
@@ -2437,7 +2348,6 @@ struct xri : meta::describe_instruction<0xee, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.xra(cpu.op1());
-    cpu.pc += 1;
   }
 };
 
@@ -2457,11 +2367,7 @@ struct rp : meta::describe_instruction<0xf0, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.s == 0)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(not cpu.flags.s);
   }
 };
 
@@ -2488,14 +2394,7 @@ struct jp : meta::describe_instruction<0xf2, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    if (cpu.flags.s == 0)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), not cpu.flags.s);
   }
 };
 
@@ -2515,7 +2414,7 @@ struct cp : meta::describe_instruction<0xf4, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.s == 0);
+    cpu.conditional_call(cpu.operands_word(), not cpu.flags.s);
   }
 };
 
@@ -2548,7 +2447,6 @@ struct ori : meta::describe_instruction<0xf6, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.ora(cpu.op1());
-    cpu.pc += 1;
   }
 };
 
@@ -2569,11 +2467,7 @@ struct rm : meta::describe_instruction<0xf8, 11, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    if (cpu.flags.s != 0)
-    {
-      cpu.pc = cpu.read_memory(cpu.sp) | (cpu.read_memory(cpu.sp + 1) << 8);
-      cpu.sp += 2;
-    }
+    cpu.conditional_ret(cpu.flags.s);
   }
 };
 
@@ -2593,14 +2487,7 @@ struct jm : meta::describe_instruction<0xfa, 10, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    if (cpu.flags.s != 0)
-    {
-      cpu.pc = (cpu.op2() << 8) | cpu.op1();
-    }
-    else
-    {
-      cpu.pc += 2;
-    }
+    cpu.conditional_jump(cpu.operands_word(), cpu.flags.s);
   }
 };
 
@@ -2620,7 +2507,7 @@ struct cm : meta::describe_instruction<0xfc, 17, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call((cpu.op2() << 8) | cpu.op1(), cpu.flags.s != 0);
+    cpu.conditional_call(cpu.operands_word(), cpu.flags.s != 0);
   }
 };
 
@@ -2631,7 +2518,6 @@ struct cpi : meta::describe_instruction<0xfe, 7, 2>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
     cpu.cmp(cpu.op1());
-    cpu.pc += 1;
   }
 };
 
