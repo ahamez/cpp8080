@@ -352,9 +352,9 @@ struct lxi_h : meta::describe_instruction<0x21, 10, 3>
   }
 };
 
-struct shld_adr : meta::describe_instruction<0x22, 16, 3>
+struct shld : meta::describe_instruction<0x22, 16, 3>
 {
-  static constexpr auto name = "shld_adr";
+  static constexpr auto name = "shld";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -451,9 +451,9 @@ struct dad_h : meta::describe_instruction<0x29, 10, 1>
   }
 };
 
-struct lhld_adr : meta::describe_instruction<0x2a, 16, 3>
+struct lhld : meta::describe_instruction<0x2a, 16, 3>
 {
- static constexpr auto name = "lhld_adr";
+ static constexpr auto name = "lhld";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -530,9 +530,9 @@ struct lxi_sp : meta::describe_instruction<0x31, 10, 3>
   }
 };
 
-struct sta_adr : meta::describe_instruction<0x32, 13, 3>
+struct sta : meta::describe_instruction<0x32, 13, 3>
 {
-  static constexpr auto name = "sta_adr";
+  static constexpr auto name = "sta";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -608,9 +608,9 @@ struct dad_sp : meta::describe_instruction<0x39, 10, 1>
   }
 };
 
-struct lda_adr : meta::describe_instruction<0x3a, 13, 3>
+struct lda : meta::describe_instruction<0x3a, 13, 3>
 {
-  static constexpr auto name = "lda_adr";
+  static constexpr auto name = "lda";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2063,9 +2063,9 @@ struct ret : meta::describe_instruction<0xc9, 10, 1>
   }
 };
 
-struct jz_adr : meta::describe_instruction<0xca, 10, 3>
+struct jz : meta::describe_instruction<0xca, 10, 3>
 {
-  static constexpr auto name = "jz_adr";
+  static constexpr auto name = "jz";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2080,9 +2080,9 @@ struct jz_adr : meta::describe_instruction<0xca, 10, 3>
   }
 };
 
-struct cz_adr : meta::describe_instruction<0xcc, 10, 3>
+struct cz : meta::describe_instruction<0xcc, 10, 3>
 {
-  static constexpr auto name = "cz_adr";
+  static constexpr auto name = "cz";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2154,9 +2154,9 @@ struct pop_d : meta::describe_instruction<0xd1, 10, 1>
   }
 };
 
-struct jnc_adr : meta::describe_instruction<0xd2, 10, 3>
+struct jnc : meta::describe_instruction<0xd2, 10, 3>
 {
-  static constexpr auto name = "jnc_adr";
+  static constexpr auto name = "jnc";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2181,9 +2181,9 @@ struct out : meta::describe_instruction<0xd3, 10, 2>
   }
 };
 
-struct cnc_adr : meta::describe_instruction<0xd4, 17, 3>
+struct cnc : meta::describe_instruction<0xd4, 17, 3>
 {
-  static constexpr auto name = "cnc_adr";
+  static constexpr auto name = "cnc";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2245,9 +2245,9 @@ struct rc : meta::describe_instruction<0xd8, 11, 1>
   }
 };
 
-struct jc_adr : meta::describe_instruction<0xda, 10, 3>
+struct jc : meta::describe_instruction<0xda, 10, 3>
 {
-  static constexpr auto name = "jc_adr";
+  static constexpr auto name = "jc";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2272,9 +2272,9 @@ struct in : meta::describe_instruction<0xdb, 10, 2>
   }
 };
 
-struct cc_adr : meta::describe_instruction<0xdc, 10, 3>
+struct cc : meta::describe_instruction<0xdc, 10, 3>
 {
-  static constexpr auto name = "cc_adr";
+  static constexpr auto name = "cc";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2336,9 +2336,9 @@ struct pop_h : meta::describe_instruction<0xe1, 10, 1>
   }
 };
 
-struct jpo_adr : meta::describe_instruction<0xe2, 10, 3>
+struct jpo : meta::describe_instruction<0xe2, 10, 3>
 {
-  static constexpr auto name = "jpo_adr";
+  static constexpr auto name = "jpo";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
@@ -2368,9 +2368,9 @@ struct xthl : meta::describe_instruction<0xe3, 18, 1>
   }
 };
 
-struct cpo_adr : meta::describe_instruction<0xe4, 17, 3>
+struct cpo : meta::describe_instruction<0xe4, 17, 3>
 {
-  static constexpr auto name = "cpo_adr";
+  static constexpr auto name = "cpo";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2470,9 +2470,9 @@ struct xchg : meta::describe_instruction<0xeb, 5, 1>
   }
 };
 
-struct cpe_adr : meta::describe_instruction<0xec, 17, 3>
+struct cpe : meta::describe_instruction<0xec, 17, 3>
 {
-  static constexpr auto name = "cpe_adr";
+  static constexpr auto name = "cpe";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2542,9 +2542,9 @@ struct pop_psw : meta::describe_instruction<0xf1, 10, 1>
   }
 };
 
-struct jp_adr : meta::describe_instruction<0xf2, 10, 3>
+struct jp : meta::describe_instruction<0xf2, 10, 3>
 {
-  static constexpr auto name = "jp_adr";
+  static constexpr auto name = "jp";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
@@ -2569,9 +2569,9 @@ struct di : meta::describe_instruction<0xf3, 4, 1>
   }
 };
 
-struct cp_adr : meta::describe_instruction<0xf4, 17, 3>
+struct cp : meta::describe_instruction<0xf4, 17, 3>
 {
-  static constexpr auto name = "cp_adr";
+  static constexpr auto name = "cp";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2657,9 +2657,9 @@ struct sphl : meta::describe_instruction<0xf9, 5, 1>
   }
 };
 
-struct jm_adr : meta::describe_instruction<0xfa, 10, 3>
+struct jm : meta::describe_instruction<0xfa, 10, 3>
 {
-  static constexpr auto name = "jm_adr";
+  static constexpr auto name = "jm";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
@@ -2684,9 +2684,9 @@ struct ei : meta::describe_instruction<0xfb, 4, 1>
   }
 };
 
-struct cm_adr : meta::describe_instruction<0xfc, 17, 3>
+struct cm : meta::describe_instruction<0xfc, 17, 3>
 {
-  static constexpr auto name = "cm_adr";
+  static constexpr auto name = "cm";
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
@@ -2761,7 +2761,7 @@ using instructions_8080 = meta::make_instructions<
   rar,
   meta::unimplemented<0x20>,
   lxi_h,
-  shld_adr,
+  shld,
   inx_h,
   inr_h,
   dcr_h,
@@ -2769,7 +2769,7 @@ using instructions_8080 = meta::make_instructions<
   daa,
   meta::unimplemented<0x28>,
   dad_h,
-  lhld_adr,
+  lhld,
   dcx_h,
   inr_l,
   dcr_l,
@@ -2777,7 +2777,7 @@ using instructions_8080 = meta::make_instructions<
   cma,
   meta::unimplemented<0x30>,
   lxi_sp,
-  sta_adr,
+  sta,
   inx_sp,
   inr_m,
   dcr_m,
@@ -2785,7 +2785,7 @@ using instructions_8080 = meta::make_instructions<
   stc,
   meta::unimplemented<0x38>,
   dad_sp,
-  lda_adr,
+  lda,
   dcx_sp,
   inr_a,
   dcr_a,
@@ -2929,33 +2929,33 @@ using instructions_8080 = meta::make_instructions<
   rst_0,
   rz,
   ret,
-  jz_adr,
+  jz,
   meta::unimplemented<0xcb>,
-  cz_adr,
+  cz,
   call,
   aci,
   rst_1,
   rnc,
   pop_d,
-  jnc_adr,
+  jnc,
   out,
-  cnc_adr,
+  cnc,
   push_d,
   sui,
   rst_2,
   rc,
   meta::unimplemented<0xd9>,
-  jc_adr,
+  jc,
   in,
-  cc_adr,
+  cc,
   meta::unimplemented<0xdd>,
   sbi,
   rst_3,
   rpo,
   pop_h,
-  jpo_adr,
+  jpo,
   xthl,
-  cpo_adr,
+  cpo,
   push_h,
   ani,
   rst_4,
@@ -2963,23 +2963,23 @@ using instructions_8080 = meta::make_instructions<
   pchl,
   jpe,
   xchg,
-  cpe_adr,
+  cpe,
   meta::unimplemented<0xed>,
   xri,
   rst_5,
   rp,
   pop_psw,
-  jp_adr,
+  jp,
   di,
-  cp_adr,
+  cp,
   push_psw,
   ori,
   rst_6,
   rm,
   sphl,
-  jm_adr,
+  jm,
   ei,
-  cm_adr,
+  cm,
   meta::unimplemented<0xfd>,
   cpi,
   rst_7
