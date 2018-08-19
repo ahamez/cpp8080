@@ -1,4 +1,5 @@
-#include <iostream>
+#include <stdexcept>
+#include <sstream>
 
 #include "sdl.hh"
 
@@ -8,16 +9,15 @@ static constexpr auto multiplier = 2;
 
 /*------------------------------------------------------------------------------------------------*/
 
-// TODO Proper handling of SDL failures.
-
 sdl::sdl()
   : window_{nullptr}
   , renderer_{nullptr}
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
   {
-    std::cerr << "SDL could not initialize. SDL_Error: " << SDL_GetError() << '\n';
-    std::exit(1);
+    auto ss = std::stringstream{};
+    ss << "SDL could not initialize. SDL_Error: " << SDL_GetError();
+    throw std::runtime_error{ss.str()};
   }
 
   window_ = SDL_CreateWindow("Space Invaders",
@@ -28,15 +28,17 @@ sdl::sdl()
 
   if (window_ == nullptr)
   {
-    std::cerr << "Window could not be created. SDL_Error: " << SDL_GetError() << '\n';
-    std::exit(1);
+    auto ss = std::stringstream{};
+    ss << "Window could not be created. SDL_Error: " << SDL_GetError();
+    throw std::runtime_error{ss.str()};
   }
 
   renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
   if (renderer_ == nullptr)
   {
-    std::cerr << "Renderer could not be created. SDL_Error: " << SDL_GetError() << '\n';
-    std::exit(1);
+    auto ss = std::stringstream{};
+    ss << "Renderer could not be created. SDL_Error: " << SDL_GetError();
+    throw std::runtime_error{ss.str()};
   }
 }
 
