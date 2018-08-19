@@ -2,7 +2,7 @@
 A 8080 emulator written in C++17 started after reading http://www.emulator101.com.
 The idea was to see what C++17 could bring to the writing of an emulator.
 The answer is: not so much. C++11/14 was helpful to [generate the jump table](https://github.com/ahamez/cpp8080/blob/bf9a7a05708fe299685fba1b94e8f5bb06e05962/cpp8080/meta/instruction.hh#L29),
-but otherwise, I didn't find a way to use effectively use C++17 new features.
+but otherwise, I didn't find a way to use effectively C++17 new features.
 
 ## Acknowledgements
 I could not have written `cpp8080` without those ressources:
