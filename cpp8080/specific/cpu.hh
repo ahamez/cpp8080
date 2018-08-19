@@ -313,6 +313,7 @@ public:
     {
       call(interrupt);
       disable_interrupt();
+      increment_cycles(11);
     }
   }
 
