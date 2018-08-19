@@ -25,6 +25,7 @@
 		2B0E15BE211F4AE300D53F74 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B0E15BD211F4AE300D53F74 /* main.cc */; };
 		2B0E15C2211F4B5100D53F74 /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDD86C6211B85E000D14E59 /* libSDL2.a */; };
 		2B0E15CB211F4C1300D53F74 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B0E15CA211F4C1300D53F74 /* main.cc */; };
+		2B1B6E4E212999B600C54B60 /* space_invaders.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B1B6E4D212999B600C54B60 /* space_invaders.cc */; };
 		2B84B0B821219E0A007CD902 /* sdl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B84B0B621219E0A007CD902 /* sdl.cc */; };
 /* End PBXBuildFile section */
 
@@ -71,6 +72,7 @@
 		2B0E15BD211F4AE300D53F74 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		2B0E15C8211F4C1300D53F74 /* cpu_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cpu_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B0E15CA211F4C1300D53F74 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
+		2B1B6E4D212999B600C54B60 /* space_invaders.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = space_invaders.cc; sourceTree = "<group>"; };
 		2B28510E2120BF30003771AE /* parity.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parity.hh; sourceTree = "<group>"; };
 		2B28510F2120BFF1003771AE /* verbose.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = verbose.hh; sourceTree = "<group>"; };
 		2B2851132120C8A8003771AE /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				2B84B0B721219E0A007CD902 /* sdl.hh */,
 				2B84B0B621219E0A007CD902 /* sdl.cc */,
 				2B2851132120C8A8003771AE /* space_invaders.hh */,
+				2B1B6E4D212999B600C54B60 /* space_invaders.cc */,
 			);
 			path = space_invaders;
 			sourceTree = "<group>";
@@ -281,6 +284,7 @@
 			files = (
 				2B84B0B821219E0A007CD902 /* sdl.cc in Sources */,
 				2B0E15BE211F4AE300D53F74 /* main.cc in Sources */,
+				2B1B6E4E212999B600C54B60 /* space_invaders.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
