@@ -1918,13 +1918,13 @@ struct cmp_a : meta::describe_instruction<0xbf, 4, 1>
   }
 };
 
-struct rnz : meta::describe_instruction<0xc0, 11, 1>
+struct rnz : meta::describe_instruction<0xc0, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rnz";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(not cpu.flags.z);
+    return cpu.conditional_ret(not cpu.flags.z);
   }
 };
 
@@ -1958,13 +1958,13 @@ struct jmp : meta::describe_instruction<0xc3, 10, 3>
   }
 };
 
-struct cnz : meta::describe_instruction<0xc4, 17, 3>
+struct cnz : meta::describe_instruction<0xc4, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cnz";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), not cpu.flags.z);
+    return cpu.conditional_call(cpu.operands_word(), not cpu.flags.z);
   }
 };
 
@@ -1998,13 +1998,13 @@ struct rst_0 : meta::describe_instruction<0xc7, 11, 1>
   }
 };
 
-struct rz : meta::describe_instruction<0xc8, 11, 1>
+struct rz : meta::describe_instruction<0xc8, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rz";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(cpu.flags.z);
+    return cpu.conditional_ret(cpu.flags.z);
   }
 };
 
@@ -2028,23 +2028,23 @@ struct jz : meta::describe_instruction<0xca, 10, 3>
   }
 };
 
-struct cz : meta::describe_instruction<0xcc, 10, 3>
+struct cz : meta::describe_instruction<0xcc, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cz";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), cpu.flags.z);
+    return cpu.conditional_call(cpu.operands_word(), cpu.flags.z);
   }
 };
 
-struct call : meta::describe_instruction<0xcd, 17, 3>
+struct call : meta::describe_instruction<0xcd, 11, 3>
 {
   static constexpr auto name = "call";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.call(cpu.operands_word());
+    return cpu.call(cpu.operands_word());
   }
 };
 
@@ -2068,13 +2068,13 @@ struct rst_1 : meta::describe_instruction<0xcf, 11, 1>
   }
 };
 
-struct rnc : meta::describe_instruction<0xd0, 11, 1>
+struct rnc : meta::describe_instruction<0xd0, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rnc";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(not cpu.flags.cy);
+    return cpu.conditional_ret(not cpu.flags.cy);
   }
 };
 
@@ -2106,13 +2106,13 @@ struct out : meta::describe_instruction<0xd3, 10, 2>
   {}
 };
 
-struct cnc : meta::describe_instruction<0xd4, 17, 3>
+struct cnc : meta::describe_instruction<0xd4, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cnc";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), not cpu.flags.cy);
+    return cpu.conditional_call(cpu.operands_word(), not cpu.flags.cy);
   }
 };
 
@@ -2146,13 +2146,13 @@ struct rst_2 : meta::describe_instruction<0xd7, 11, 1>
   }
 };
 
-struct rc : meta::describe_instruction<0xd8, 11, 1>
+struct rc : meta::describe_instruction<0xd8, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rc";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(cpu.flags.cy);
+    return cpu.conditional_ret(cpu.flags.cy);
   }
 };
 
@@ -2174,13 +2174,13 @@ struct in : meta::describe_instruction<0xdb, 10, 2>
   {}
 };
 
-struct cc : meta::describe_instruction<0xdc, 10, 3>
+struct cc : meta::describe_instruction<0xdc, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cc";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), cpu.flags.cy != 0);
+    return cpu.conditional_call(cpu.operands_word(), cpu.flags.cy != 0);
   }
 };
 
@@ -2204,13 +2204,13 @@ struct rst_3 : meta::describe_instruction<0xdf, 11, 1>
   }
 };
 
-struct rpo : meta::describe_instruction<0xe0, 11, 1>
+struct rpo : meta::describe_instruction<0xe0, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rpo";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(not cpu.flags.p);
+    return cpu.conditional_ret(not cpu.flags.p);
   }
 };
 
@@ -2249,13 +2249,13 @@ struct xthl : meta::describe_instruction<0xe3, 18, 1>
   }
 };
 
-struct cpo : meta::describe_instruction<0xe4, 17, 3>
+struct cpo : meta::describe_instruction<0xe4, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cpo";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), not cpu.flags.p);
+    return cpu.conditional_call(cpu.operands_word(), not cpu.flags.p);
   }
 };
 
@@ -2289,13 +2289,13 @@ struct rst_4 : meta::describe_instruction<0xe7, 11, 1>
   }
 };
 
-struct rpe : meta::describe_instruction<0xe8, 11, 1>
+struct rpe : meta::describe_instruction<0xe8, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rpe";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(cpu.flags.p);
+    return cpu.conditional_ret(cpu.flags.p);
   }
 };
 
@@ -2330,13 +2330,13 @@ struct xchg : meta::describe_instruction<0xeb, 5, 1>
   }
 };
 
-struct cpe : meta::describe_instruction<0xec, 17, 3>
+struct cpe : meta::describe_instruction<0xec, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cpe";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), cpu.flags.p != 0);
+    return cpu.conditional_call(cpu.operands_word(), cpu.flags.p != 0);
   }
 };
 
@@ -2360,13 +2360,13 @@ struct rst_5 : meta::describe_instruction<0xef, 11, 1>
   }
 };
 
-struct rp : meta::describe_instruction<0xf0, 11, 1>
+struct rp : meta::describe_instruction<0xf0, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rp";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(not cpu.flags.s);
+    return cpu.conditional_ret(not cpu.flags.s);
   }
 };
 
@@ -2407,13 +2407,13 @@ struct di : meta::describe_instruction<0xf3, 4, 1>
   }
 };
 
-struct cp : meta::describe_instruction<0xf4, 17, 3>
+struct cp : meta::describe_instruction<0xf4, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cp";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), not cpu.flags.s);
+    return cpu.conditional_call(cpu.operands_word(), not cpu.flags.s);
   }
 };
 
@@ -2460,13 +2460,13 @@ struct rst_6 : meta::describe_instruction<0xf7, 11, 1>
 
 };
 
-struct rm : meta::describe_instruction<0xf8, 11, 1>
+struct rm : meta::describe_instruction<0xf8, 5, 1, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "rm";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_ret(cpu.flags.s);
+    return cpu.conditional_ret(cpu.flags.s);
   }
 };
 
@@ -2500,13 +2500,13 @@ struct ei : meta::describe_instruction<0xfb, 4, 1>
   }
 };
 
-struct cm : meta::describe_instruction<0xfc, 17, 3>
+struct cm : meta::describe_instruction<0xfc, 11, 3, meta::constant_instruction<false, 6>>
 {
   static constexpr auto name = "cm";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
+  template <typename Machine> auto operator()(cpu<Machine>& cpu) const
   {
-    cpu.conditional_call(cpu.operands_word(), cpu.flags.s != 0);
+    return cpu.conditional_call(cpu.operands_word(), cpu.flags.s != 0);
   }
 };
 

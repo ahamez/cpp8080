@@ -1,7 +1,8 @@
 #pragma once
 
 #include <stdexcept>
-#include <utility> // as_const
+#include <type_traits> // enable_if_t
+#include <utility>     // as_const
 
 #include "cpp8080/meta/instructions.hh"
 
@@ -10,16 +11,15 @@ namespace cpp8080::meta {
 /*------------------------------------------------------------------------------------------------*/
 
 namespace detail {
-  
+
 template<typename Cpu, typename Fn, typename Instruction>
 std::uint64_t
 execute(Cpu& cpu, Fn&& fn)
 {
   fn.pre(std::as_const(cpu), Instruction{});
-  Instruction{}(cpu);
+  const auto cycles = Instruction{}(cpu);
   fn.post(std::as_const(cpu), Instruction{});
-  // TODO The number of cycles is not fixed for conditional instructions.
-  return Instruction::cycles;
+  return cycles;
 }
 
 } // namespace detail
@@ -73,23 +73,58 @@ struct instruction
   static constexpr auto opcode = Instruction::opcode;
 
   template <typename Cpu>
-  void
+  std::uint64_t
   operator()(Cpu& cpu)
   const noexcept(noexcept(Instruction{}(cpu)))
   {
-    cpu.increment_cycles(Instruction::cycles);
+    return impl<Cpu, Instruction>(cpu);
+  }
+
+private:
+
+  template <typename Cpu, typename Instruction_>
+  std::enable_if_t<Instruction_::constant_instruction::value, std::uint64_t>
+  impl(Cpu& cpu)
+  const noexcept(noexcept(Instruction{}(cpu)))
+  {
     Instruction{}(cpu);
+    return Instruction::cycles;
+  }
+
+  template <typename Cpu, typename Instruction_>
+  std::enable_if_t<not Instruction_::constant_instruction::value, std::uint64_t>
+  impl(Cpu& cpu)
+  const noexcept(noexcept(Instruction{}(cpu)))
+  {
+    return Instruction{}(cpu)
+         ? Instruction::cycles + Instruction_::constant_instruction::cycles
+         : Instruction::cycles;
   }
 };
 
 /*------------------------------------------------------------------------------------------------*/
+
+template <bool Constant, std::uint64_t Cycles = 0>
+struct constant_instruction
+{
+  static constexpr auto value = Constant;
+  static constexpr auto cycles = Cycles;
+};
+
+/*------------------------------------------------------------------------------------------------*/
   
-template <std::uint8_t Opcode, std::uint8_t Cycles, std::uint8_t Bytes>
+template <
+  std::uint8_t Opcode,
+  std::uint8_t Cycles,
+  std::uint8_t Bytes,
+  typename Constant = constant_instruction<true>
+  >
 struct describe_instruction
 {
   static constexpr auto bytes  = Bytes;
   static constexpr auto cycles = Cycles;
   static constexpr auto opcode = Opcode;
+  using constant_instruction   = Constant;
 };
 
 /*------------------------------------------------------------------------------------------------*/

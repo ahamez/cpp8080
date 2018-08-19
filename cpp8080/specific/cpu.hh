@@ -79,7 +79,9 @@ public:
   {
     const auto opcode = memory_read_byte(pc_);
     pc_ += 1;
-    return meta::step(instructions{}, opcode, *this);
+    const auto cycles = meta::step(instructions{}, opcode, *this);
+    increment_cycles(cycles);
+    return cycles;
   }
 
   std::uint64_t
@@ -87,7 +89,9 @@ public:
   {
     const auto opcode = memory_read_byte(pc_);
     pc_ += 1;
-    return meta::step(instructions{}, opcode, *this, cpp8080::util::verbose{os});
+    const auto cycles = meta::step(instructions{}, opcode, *this, cpp8080::util::verbose{os});
+    increment_cycles(cycles);
+    return cycles;
   }
 
   void
@@ -178,12 +182,18 @@ public:
     pc_ = addr;
   }
 
-  void
+  [[nodiscard]]
+  bool
   conditional_call(std::uint16_t addr, bool condition)
   {
     if (condition)
     {
       call(addr);
+      return true;
+    }
+    else
+    {
+      return false;
     }
   }
 
@@ -208,12 +218,18 @@ public:
     pc_ = pop_word();
   }
 
-  void
+  [[nodiscard]]
+  bool
   conditional_ret(bool condition)
   {
     if (condition)
     {
       ret();
+      return true;
+    }
+    else
+    {
+      return false;
     }
   }
 

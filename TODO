@@ -1,5 +1,3 @@
-- conditional RETs and CALLs: add +6 cycles if the condition is met
 - automatic tests
 - complete CMake
-- complete README with architecture, tests, etc.
-
+- complete README with architecture description, tests, etc.
