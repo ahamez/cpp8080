@@ -96,7 +96,6 @@ public:
       cpu_.step();
       if (cpu_.pc() == 0x0000)
       {
-        std::cout << '\n';
         break;
       }
     }
