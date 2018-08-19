@@ -71,7 +71,7 @@ public:
   {
     // Test ROMS start at 0x100.
     std::copy(first, last, memory_.begin() + 0x100);
-    cpu_.pc = 0x100;
+    cpu_.jump(0x100);
   }
 
   void
@@ -94,7 +94,7 @@ public:
     while (true)
     {
       cpu_.step();
-      if (cpu_.pc == 0)
+      if (cpu_.pc() == 0)
       {
         std::cout << '\n';
         break;

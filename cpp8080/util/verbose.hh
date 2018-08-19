@@ -20,7 +20,7 @@ struct verbose
   const
   {
     os
-      << std::setfill('0') << std::setw(4) << cpu.pc << ' '
+      << std::setfill('0') << std::setw(4) << cpu.pc() << ' '
       << meta::disassemble(cpu, Instruction{}) << ' ';
   }
 

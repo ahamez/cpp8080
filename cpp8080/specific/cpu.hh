@@ -42,11 +42,11 @@ public:
     , h{0}
     , l{0}
     , sp{0}
-    , pc{0}
     , flags{}
     , machine_{machine}
     , interrupt_{false}
     , cycles_{0}
+    , pc_{}
   {}
 
   friend
@@ -76,8 +76,8 @@ public:
   std::uint64_t
   step()
   {
-    const auto opcode = read_memory(pc);
-    pc += 1;
+    const auto opcode = read_memory(pc_);
+    pc_ += 1;
     return meta::step(instructions{}, opcode, *this);
   }
 
@@ -164,8 +164,8 @@ public:
   void
   call(std::uint16_t addr)
   {
-    push((pc >> 8) & 0x00ff, pc & 0x00ff);
-    pc = addr;
+    push((pc_ >> 8) & 0x00ff, pc_ & 0x00ff);
+    pc_ = addr;
   }
 
   void
@@ -180,7 +180,7 @@ public:
   void
   jump(std::uint16_t addr)
   {
-    pc = addr;
+    pc_ = addr;
   }
 
   void
@@ -195,7 +195,7 @@ public:
   void
   ret()
   {
-    pc = pop_word();
+    pc_ = pop_word();
   }
 
   void
@@ -211,8 +211,8 @@ public:
   std::uint8_t
   op1()
   {
-    const auto op1 = read_memory(pc + 0);
-    pc += 1;
+    const auto op1 = read_memory(pc_);
+    pc_ += 1;
     return op1;
   }
 
@@ -228,9 +228,9 @@ public:
   std::tuple<std::uint8_t, std::uint8_t>
   operands()
   {
-    const auto op1 = read_memory(pc + 0);
-    const auto op2 = read_memory(pc + 1);
-    pc += 2;
+    const auto op1 = read_memory(pc_ + 0);
+    const auto op2 = read_memory(pc_ + 1);
+    pc_ += 2;
     return {op1, op2};
   }
 
@@ -256,6 +256,14 @@ public:
   const noexcept
   {
     return machine_;
+  }
+
+  [[nodiscard]]
+  std::uint16_t
+  pc()
+  const noexcept
+  {
+    return pc_;
   }
 
   void
@@ -285,8 +293,8 @@ public:
   {
     if (interrupt_enabled())
     {
-      push((pc & 0xff00) >> 8, pc & 0x00ff);
-      pc = interrupt;
+      push((pc_ & 0xff00) >> 8, pc_ & 0x00ff);
+      pc_ = interrupt;
       disable_interrupt();
     }
   }
@@ -417,7 +425,6 @@ public:
   std::uint8_t h;
   std::uint8_t l;
   std::uint16_t sp;
-  std::uint16_t pc;
   flag_bits flags;
   
 private:
@@ -426,6 +433,7 @@ private:
   bool interrupt_;
   std::uint64_t cycles_;
 
+  std::uint16_t pc_;
   std::uint8_t op1_;
   std::uint8_t op2_;
 };
