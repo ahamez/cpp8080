@@ -7,6 +7,7 @@
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/cpu_fwd.hh"
 #include "cpp8080/util/parity.hh"
+#include "cpp8080/util/verbose.hh"
 
 namespace cpp8080::specific {
 
@@ -79,6 +80,14 @@ public:
     const auto opcode = memory_read_byte(pc_);
     pc_ += 1;
     return meta::step(instructions{}, opcode, *this);
+  }
+
+  std::uint64_t
+  step(std::ostream& os)
+  {
+    const auto opcode = memory_read_byte(pc_);
+    pc_ += 1;
+    return meta::step(instructions{}, opcode, *this, cpp8080::util::verbose{os});
   }
 
   void
