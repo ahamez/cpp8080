@@ -22,34 +22,32 @@ static constexpr auto cycles_per_frame = cycles_per_second / fps;
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct in_override : cpp8080::meta::describe_instruction<0xdb, 3, 2>
-{
-  static constexpr auto name = "in";
-
-  template <typename Machine>
-  void operator()(cpp8080::specific::cpu<Machine>& cpu) const
-  {
-    const auto port = cpu.op1();
-    cpu.a = cpu.machine().in(port);
-  }
-};
-
-struct out_override : cpp8080::meta::describe_instruction<0xd3, 3, 2>
-{
-  static constexpr auto name = "out";
-
-  template <typename Machine>
-  void operator()(cpp8080::specific::cpu<Machine>& cpu) const
-  {
-    const auto port = cpu.op1();
-    cpu.machine().out(port, cpu.a);
-  }
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
 class space_invaders
 {
+private:
+
+  struct in_override : cpp8080::meta::describe_instruction<0xdb, 3, 2>
+  {
+    static constexpr auto name = "in";
+
+    void operator()(cpp8080::specific::cpu<space_invaders>& cpu) const
+    {
+      const auto port = cpu.op1();
+      cpu.a = cpu.machine().in(port);
+    }
+  };
+
+  struct out_override : cpp8080::meta::describe_instruction<0xd3, 3, 2>
+  {
+    static constexpr auto name = "out";
+
+    void operator()(cpp8080::specific::cpu<space_invaders>& cpu) const
+    {
+      const auto port = cpu.op1();
+      cpu.machine().out(port, cpu.a);
+    }
+  };
+
 public:
 
   using overrides = cpp8080::meta::make_instructions<

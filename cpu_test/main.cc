@@ -11,51 +11,50 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct call
-  : cpp8080::meta::describe_instruction<
-      cpp8080::specific::call::opcode,
-      cpp8080::specific::call::cycles,
-      cpp8080::specific::call::bytes>
-{
-  static constexpr auto name = "call";
-
-  template <typename Machine>
-  void operator()(cpp8080::specific::cpu<Machine>& cpu) const
-  {
-    if (const auto operands = cpu.operands_word(); operands == 5)
-    {
-      if (cpu.c == 9)
-      {
-        const std::uint16_t offset = cpu.de();
-        auto s = std::string{};
-        for (auto i = std::uint16_t{0}; ; ++i)
-        {
-          const auto c = cpu.memory_read_byte(offset + i);
-          if (c == '$')
-          {
-            break;
-          }
-          s.push_back(c);
-        }
-
-        std::cout << s << '\n';
-      }
-      else if (cpu.c == 2)
-      {
-        std::cout << cpu.e;
-      }
-    }
-    else
-    {
-      cpu.call(operands);
-    }
-  }
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
 class cpu_test
 {
+private:
+
+  struct call
+    : cpp8080::meta::describe_instruction<
+        cpp8080::specific::call::opcode,
+        cpp8080::specific::call::cycles,
+        cpp8080::specific::call::bytes>
+  {
+    static constexpr auto name = "call";
+
+    void operator()(cpp8080::specific::cpu<cpu_test>& cpu) const
+    {
+      if (const auto operands = cpu.operands_word(); operands == 5)
+      {
+        if (cpu.c == 9)
+        {
+          const std::uint16_t offset = cpu.de();
+          auto s = std::string{};
+          for (auto i = std::uint16_t{0}; ; ++i)
+          {
+            const auto c = cpu.memory_read_byte(offset + i);
+            if (c == '$')
+            {
+              break;
+            }
+            s.push_back(c);
+          }
+
+          std::cout << s << '\n';
+        }
+        else if (cpu.c == 2)
+        {
+          std::cout << cpu.e;
+        }
+      }
+      else
+      {
+        cpu.call(operands);
+      }
+    }
+  };
+
 public:
 
   using overrides = cpp8080::meta::make_instructions<
