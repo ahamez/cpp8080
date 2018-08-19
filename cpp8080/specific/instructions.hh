@@ -420,7 +420,7 @@ struct daa : meta::describe_instruction<0x27, 4, 1>
       value_to_add += 0x60;
       cy = true;
     }
-    cpu.a = cpu.add(cpu.a, value_to_add, 0);
+    cpu.adda(value_to_add, 0);
     cpu.flags.p = util::parity(cpu.a);
     cpu.flags.cy = cy;
 
@@ -1285,7 +1285,7 @@ struct add_b : meta::describe_instruction<0x80, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.b, 0);
+    cpu.adda(cpu.b, 0);
   }
 };
 
@@ -1295,7 +1295,7 @@ struct add_c : meta::describe_instruction<0x81, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.c, 0);
+    cpu.adda(cpu.c, 0);
   }
 };
 
@@ -1305,7 +1305,7 @@ struct add_d : meta::describe_instruction<0x82, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.d, 0);
+    cpu.adda(cpu.d, 0);
   }
 };
 
@@ -1315,7 +1315,7 @@ struct add_e : meta::describe_instruction<0x83, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.e, 0);
+    cpu.adda(cpu.e, 0);
   }
 };
 
@@ -1325,7 +1325,7 @@ struct add_h : meta::describe_instruction<0x84, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.h, 0);
+    cpu.adda(cpu.h, 0);
   }
 };
 
@@ -1335,7 +1335,7 @@ struct add_l : meta::describe_instruction<0x85, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.l, 0);
+    cpu.adda(cpu.l, 0);
   }
 };
 
@@ -1345,7 +1345,7 @@ struct add_m : meta::describe_instruction<0x86, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.a = cpu.add(cpu.a, cpu.read_hl(), 0);
+    cpu.adda(cpu.read_hl(), 0);
   }
 };
 
@@ -1355,7 +1355,7 @@ struct add_a : meta::describe_instruction<0x87, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.a, 0);
+    cpu.adda(cpu.a, 0);
   }
 };
 
@@ -1365,7 +1365,7 @@ struct adc_b : meta::describe_instruction<0x88, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.b, cpu.flags.cy);
+    cpu.adda(cpu.b, cpu.flags.cy);
   }
 };
 
@@ -1375,7 +1375,7 @@ struct adc_c : meta::describe_instruction<0x89, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.c, cpu.flags.cy);
+    cpu.adda(cpu.c, cpu.flags.cy);
   }
 };
 
@@ -1385,7 +1385,7 @@ struct adc_d : meta::describe_instruction<0x8a, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.d, cpu.flags.cy);
+    cpu.adda(cpu.d, cpu.flags.cy);
   }
 };
 
@@ -1395,7 +1395,7 @@ struct adc_e : meta::describe_instruction<0x8b, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.e, cpu.flags.cy);
+    cpu.adda(cpu.e, cpu.flags.cy);
   }
 };
 
@@ -1405,7 +1405,7 @@ struct adc_h : meta::describe_instruction<0x8c, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.h, cpu.flags.cy);
+    cpu.adda(cpu.h, cpu.flags.cy);
   }
 };
 
@@ -1415,7 +1415,7 @@ struct adc_l : meta::describe_instruction<0x8d, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.l, cpu.flags.cy);
+    cpu.adda(cpu.l, cpu.flags.cy);
   }
 };
 
@@ -1425,7 +1425,7 @@ struct adc_m : meta::describe_instruction<0x8e, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.a = cpu.add(cpu.a, cpu.read_hl(), cpu.flags.cy);
+    cpu.adda(cpu.read_hl(), cpu.flags.cy);
   }
 };
 
@@ -1435,7 +1435,7 @@ struct adc_a : meta::describe_instruction<0x8f, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.a, cpu.flags.cy);
+    cpu.adda(cpu.a, cpu.flags.cy);
   }
 };
 
@@ -1445,7 +1445,7 @@ struct sub_b : meta::describe_instruction<0x90, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.b, 0);
+    cpu.suba(cpu.b, 0);
   }
 };
 
@@ -1455,7 +1455,7 @@ struct sub_c : meta::describe_instruction<0x91, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.c, 0);
+    cpu.suba(cpu.c, 0);
   }
 };
 
@@ -1465,7 +1465,7 @@ struct sub_d : meta::describe_instruction<0x92, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.d, 0);
+    cpu.suba(cpu.d, 0);
   }
 };
 
@@ -1475,7 +1475,7 @@ struct sub_e : meta::describe_instruction<0x93, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.e, 0);
+    cpu.suba(cpu.e, 0);
   }
 };
 
@@ -1485,7 +1485,7 @@ struct sub_h : meta::describe_instruction<0x94, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.h, 0);
+    cpu.suba(cpu.h, 0);
   }
 };
 
@@ -1495,7 +1495,7 @@ struct sub_l : meta::describe_instruction<0x95, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.l, 0);
+    cpu.suba(cpu.l, 0);
   }
 };
 
@@ -1505,7 +1505,7 @@ struct sub_m : meta::describe_instruction<0x96, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.a = cpu.sub(cpu.a, cpu.read_hl(), 0);
+    cpu.suba(cpu.read_hl(), 0);
   }
 };
 
@@ -1515,7 +1515,7 @@ struct sub_a : meta::describe_instruction<0x97, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.a, 0);
+    cpu.suba(cpu.a, 0);
   }
 };
 
@@ -1525,7 +1525,7 @@ struct sbb_b : meta::describe_instruction<0x98, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.b, cpu.flags.cy);
+    cpu.suba(cpu.b, cpu.flags.cy);
   }
 };
 
@@ -1535,7 +1535,7 @@ struct sbb_c : meta::describe_instruction<0x99, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.c, cpu.flags.cy);
+    cpu.suba(cpu.c, cpu.flags.cy);
   }
 };
 
@@ -1545,7 +1545,7 @@ struct sbb_d : meta::describe_instruction<0x9a, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.d, cpu.flags.cy);
+    cpu.suba(cpu.d, cpu.flags.cy);
   }
 };
 
@@ -1555,7 +1555,7 @@ struct sbb_e : meta::describe_instruction<0x9b, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.e, cpu.flags.cy);
+    cpu.suba(cpu.e, cpu.flags.cy);
   }
 };
 
@@ -1565,7 +1565,7 @@ struct sbb_h : meta::describe_instruction<0x9c, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.h, cpu.flags.cy);
+    cpu.suba(cpu.h, cpu.flags.cy);
   }
 };
 
@@ -1575,7 +1575,7 @@ struct sbb_l : meta::describe_instruction<0x9d, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.l, cpu.flags.cy);
+    cpu.suba(cpu.l, cpu.flags.cy);
   }
 };
 
@@ -1585,7 +1585,7 @@ struct sbb_m : meta::describe_instruction<0x9e, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.a = cpu.sub(cpu.a, cpu.read_hl(), cpu.flags.cy);
+    cpu.suba(cpu.read_hl(), cpu.flags.cy);
   }
 };
 
@@ -1595,7 +1595,7 @@ struct sbb_a : meta::describe_instruction<0x9f, 4, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.a, cpu.flags.cy);
+    cpu.suba(cpu.a, cpu.flags.cy);
   }
 };
 
@@ -1985,7 +1985,7 @@ struct adi : meta::describe_instruction<0xc6, 7, 2>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.op1(), 0);
+    cpu.adda(cpu.op1(), 0);
   }
 };
 
@@ -2055,7 +2055,7 @@ struct aci : meta::describe_instruction<0xce, 7, 2>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.add(cpu.a, cpu.op1(), cpu.flags.cy);
+    cpu.adda(cpu.op1(), cpu.flags.cy);
   }
 };
 
@@ -2133,7 +2133,7 @@ struct sui : meta::describe_instruction<0xd6, 7, 2>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.op1(), 0);
+    cpu.suba(cpu.op1(), 0);
   }
 };
 
@@ -2191,7 +2191,7 @@ struct sbi : meta::describe_instruction<0xde, 7, 2>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.sub(cpu.a, cpu.op1(), cpu.flags.cy);
+    cpu.suba(cpu.op1(), cpu.flags.cy);
   }
 };
 

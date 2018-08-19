@@ -334,32 +334,30 @@ public:
     return res;
   }
 
-  [[nodiscard]]
-  std::uint8_t
-  add(std::uint8_t x1, std::uint8_t x2, bool carry)
+  void
+  adda(std::uint8_t val, bool carry)
   noexcept
   {
-    const std::uint16_t res = x1 + x2 + carry;
+    const std::uint16_t res = a + val + carry;
     flags.z  = (res & 0xff) == 0;
     flags.s  = (res & 0b10000000) != 0;
     flags.cy = (res & 0b100000000) != 0;
-    flags.ac = (x1 ^ res ^ x2) & 0x10;
+    flags.ac = (a ^ res ^ val) & 0x10;
     flags.p  = util::parity(res & 0xff);
-    return res & 0xff;
+    a = res & 0xff;
   }
 
-  [[nodiscard]]
-  std::uint8_t
-  sub(std::uint8_t x1, std::uint8_t x2, bool carry)
+  void
+  suba(std::uint8_t val, bool carry)
   noexcept
   {
-    const std::int16_t res = x1 - x2 - carry;
+    const std::int16_t res = a - val - carry;
     flags.z = (res & 0xff) == 0;
     flags.s = (res & 0b10000000) != 0;
     flags.cy = (res & 0b100000000) != 0;
-    flags.ac = ~(x1 ^ res ^ x2) & 0x10;
+    flags.ac = ~(a ^ res ^ val) & 0x10;
     flags.p = util::parity(res & 0xff);
-    return res & 0xff;
+    a = res & 0xff;
   }
 
   void
