@@ -74,6 +74,10 @@
 		2B0E15CA211F4C1300D53F74 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		2B1B6E4D212999B600C54B60 /* space_invaders.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = space_invaders.cc; sourceTree = "<group>"; };
 		2B1B6E4F21299BD100C54B60 /* arcade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = arcade.hh; sourceTree = "<group>"; };
+		2B1B6E502129A2AB00C54B60 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		2B1B6E512129A2AB00C54B60 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2B1B6E522129A2AC00C54B60 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		2B1B6E532129A2B900C54B60 /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		2B28510E2120BF30003771AE /* parity.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parity.hh; sourceTree = "<group>"; };
 		2B28510F2120BFF1003771AE /* verbose.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = verbose.hh; sourceTree = "<group>"; };
 		2B2851132120C8A8003771AE /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
@@ -178,6 +182,10 @@
 		2BB1B078211B743000E0DD8F = {
 			isa = PBXGroup;
 			children = (
+				2B1B6E502129A2AB00C54B60 /* CMakeLists.txt */,
+				2B1B6E522129A2AC00C54B60 /* LICENSE */,
+				2B1B6E512129A2AB00C54B60 /* README.md */,
+				2B1B6E532129A2B900C54B60 /* TODO */,
 				2B585A03211F4D2A0082B965 /* cpp8080 */,
 				2B0E15C9211F4C1300D53F74 /* cpu_test */,
 				2B0E15BC211F4AE300D53F74 /* space_invaders */,
