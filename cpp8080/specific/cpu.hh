@@ -217,14 +217,6 @@ public:
   }
 
   [[nodiscard]]
-  std::uint8_t
-  op2()
-  const noexcept
-  {
-    return op2_;
-  }
-
-  [[nodiscard]]
   std::tuple<std::uint8_t, std::uint8_t>
   operands()
   {
@@ -434,8 +426,6 @@ private:
   std::uint64_t cycles_;
 
   std::uint16_t pc_;
-  std::uint8_t op1_;
-  std::uint8_t op2_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
