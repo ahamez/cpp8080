@@ -17,7 +17,7 @@ struct call
       cpp8080::specific::call::cycles,
       cpp8080::specific::call::bytes>
 {
-  static constexpr auto name = "call_adr";
+  static constexpr auto name = "call";
 
   template <typename Machine>
   void operator()(cpp8080::specific::cpu<Machine>& cpu) const
