@@ -143,12 +143,14 @@ public:
     sp -= 2;
   }
 
-  void
-  pop(std::uint8_t& high, std::uint8_t& low)
+  [[nodiscard]]
+  std::tuple<std::uint8_t, std::uint8_t>
+  pop()
   {
-    low = read_memory(sp);
-    high = read_memory(sp + 1);
+    const auto low = read_memory(sp);
+    const auto high = read_memory(sp + 1);
     sp += 2;
+    return {high, low};
   }
 
   [[nodiscard]]
@@ -332,30 +334,32 @@ public:
     return res;
   }
 
-  void
-  add(std::uint8_t& reg, std::uint8_t val, bool carry)
+  [[nodiscard]]
+  std::uint8_t
+  add(std::uint8_t x1, std::uint8_t x2, bool carry)
   noexcept
   {
-    const std::uint16_t res = reg + val + carry;
+    const std::uint16_t res = x1 + x2 + carry;
     flags.z  = (res & 0xff) == 0;
     flags.s  = (res & 0b10000000) != 0;
     flags.cy = (res & 0b100000000) != 0;
-    flags.ac = (reg ^ res ^ val) & 0x10;
+    flags.ac = (x1 ^ res ^ x2) & 0x10;
     flags.p  = util::parity(res & 0xff);
-    reg = res & 0xff;
+    return res & 0xff;
   }
 
-  void
-  sub(std::uint8_t& reg, std::uint8_t val, bool carry)
+  [[nodiscard]]
+  std::uint8_t
+  sub(std::uint8_t x1, std::uint8_t x2, bool carry)
   noexcept
   {
-    const std::int16_t res = reg - val - carry;
+    const std::int16_t res = x1 - x2 - carry;
     flags.z = (res & 0xff) == 0;
     flags.s = (res & 0b10000000) != 0;
     flags.cy = (res & 0b100000000) != 0;
-    flags.ac = ~(reg ^ res ^ val) & 0x10;
+    flags.ac = ~(x1 ^ res ^ x2) & 0x10;
     flags.p = util::parity(res & 0xff);
-    reg = res & 0xff;
+    return res & 0xff;
   }
 
   void
