@@ -182,8 +182,7 @@ public:
 
       const auto duration = std::chrono::high_resolution_clock::now() - now;
       // A frame lasts 1/60s.
-//      std::this_thread::sleep_for(std::chrono::microseconds{16666} - duration);
-      std::this_thread::sleep_for(std::chrono::microseconds{8333} - duration);
+      std::this_thread::sleep_for(std::chrono::microseconds{16666} - duration);
     }
   }
 
