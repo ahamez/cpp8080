@@ -39,7 +39,7 @@ struct stax_b : meta::describe_instruction<0x02, 7, 1>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
     const std::uint16_t offset = cpu.bc();
-    cpu.write_memory(offset, cpu.a);
+    cpu.memory_write_byte(offset, cpu.a);
   }
 };
 
@@ -118,7 +118,7 @@ struct ldax_b : meta::describe_instruction<0x0a, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
   {
-    cpu.a = cpu.read_memory(cpu.bc());
+    cpu.a = cpu.memory_read_byte(cpu.bc());
   }
 };
 
@@ -194,7 +194,7 @@ struct stax_d : meta::describe_instruction<0x12, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.write_memory(cpu.de(), cpu.a);
+    cpu.memory_write_byte(cpu.de(), cpu.a);
   }
 };
 
@@ -273,7 +273,7 @@ struct ldax_d : meta::describe_instruction<0x1a, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.a = cpu.read_memory(cpu.de());
+    cpu.a = cpu.memory_read_byte(cpu.de());
   }
 };
 
@@ -350,8 +350,8 @@ struct shld : meta::describe_instruction<0x22, 16, 3>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
     const std::uint16_t offset = cpu.operands_word();
-    cpu.write_memory(offset, cpu.l);
-    cpu.write_memory(offset + 1, cpu.h);
+    cpu.memory_write_byte(offset, cpu.l);
+    cpu.memory_write_byte(offset + 1, cpu.h);
   }
 };
 
@@ -447,8 +447,8 @@ struct lhld : meta::describe_instruction<0x2a, 16, 3>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
     const std::uint16_t offset = cpu.operands_word();
-    cpu.l = cpu.read_memory(offset);
-    cpu.h = cpu.read_memory(offset + 1);
+    cpu.l = cpu.memory_read_byte(offset);
+    cpu.h = cpu.memory_read_byte(offset + 1);
   }
 };
 
@@ -522,7 +522,7 @@ struct sta : meta::describe_instruction<0x32, 13, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    cpu.write_memory(cpu.operands_word(), cpu.a);
+    cpu.memory_write_byte(cpu.operands_word(), cpu.a);
   }
 };
 
@@ -598,7 +598,7 @@ struct lda : meta::describe_instruction<0x3a, 13, 3>
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
     const std::uint16_t offset = cpu.operands_word();
-    cpu.a = cpu.read_memory(offset);
+    cpu.a = cpu.memory_read_byte(offset);
   }
 };
 
@@ -2242,10 +2242,10 @@ struct xthl : meta::describe_instruction<0xe3, 18, 1>
   {
     const auto h = cpu.h;
     const auto l = cpu.l;
-    cpu.l = cpu.read_memory(cpu.sp);
-    cpu.h = cpu.read_memory(cpu.sp + 1);
-    cpu.write_memory(cpu.sp, l);
-    cpu.write_memory(cpu.sp + 1, h);
+    cpu.l = cpu.memory_read_byte(cpu.sp);
+    cpu.h = cpu.memory_read_byte(cpu.sp + 1);
+    cpu.memory_write_byte(cpu.sp, l);
+    cpu.memory_write_byte(cpu.sp + 1, h);
   }
 };
 

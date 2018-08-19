@@ -128,7 +128,7 @@ public:
   }
 
   void
-  write_memory(std::uint16_t address, std::uint8_t value)
+  memory_write_byte(std::uint16_t address, std::uint8_t value)
   {
     if (address < 0x2000)
     {
@@ -148,7 +148,7 @@ public:
 
   [[nodiscard]]
   std::uint8_t
-  read_memory(std::uint16_t address)
+  memory_read_byte(std::uint16_t address)
   const
   {
     return memory_.at(address);

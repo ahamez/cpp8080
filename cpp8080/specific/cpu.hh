@@ -76,30 +76,29 @@ public:
   std::uint64_t
   step()
   {
-    const auto opcode = read_memory(pc_);
+    const auto opcode = memory_read_byte(pc_);
     pc_ += 1;
     return meta::step(instructions{}, opcode, *this);
   }
 
   void
-  write_memory(std::uint16_t address, std::uint8_t value)
+  memory_write_byte(std::uint16_t address, std::uint8_t value)
   {
-    machine_.write_memory(address, value);
+    machine_.memory_write_byte(address, value);
   }
 
   [[nodiscard]]
   std::uint8_t
-  read_memory(std::uint16_t address)
+  memory_read_byte(std::uint16_t address)
   const
   {
-    return machine_.read_memory(address);
+    return machine_.memory_read_byte(address);
   }
 
   void
   write_hl(std::uint8_t value)
   {
-    const auto offset = hl();
-    write_memory(offset, value);
+    memory_write_byte(hl(), value);
   }
 
   [[nodiscard]]
@@ -108,7 +107,7 @@ public:
   const
   {
     const auto offset = hl();
-    return read_memory(offset);
+    return memory_read_byte(offset);
   }
 
   [[nodiscard]]
@@ -138,8 +137,8 @@ public:
   void
   push(std::uint8_t high, std::uint8_t low)
   {
-    write_memory(sp - 1, high);
-    write_memory(sp - 2, low);
+    memory_write_byte(sp - 1, high);
+    memory_write_byte(sp - 2, low);
     sp -= 2;
   }
 
@@ -147,8 +146,8 @@ public:
   std::tuple<std::uint8_t, std::uint8_t>
   pop()
   {
-    const auto low = read_memory(sp);
-    const auto high = read_memory(sp + 1);
+    const auto low = memory_read_byte(sp);
+    const auto high = memory_read_byte(sp + 1);
     sp += 2;
     return {high, low};
   }
@@ -157,8 +156,8 @@ public:
   std::uint16_t
   pop_word()
   {
-    const auto low = read_memory(sp);
-    const auto high = read_memory(sp + 1);
+    const auto low = memory_read_byte(sp);
+    const auto high = memory_read_byte(sp + 1);
     sp += 2;
     return low | (high << 8);
   }
@@ -213,7 +212,7 @@ public:
   std::uint8_t
   op1()
   {
-    const auto op1 = read_memory(pc_);
+    const auto op1 = memory_read_byte(pc_);
     pc_ += 1;
     return op1;
   }
@@ -222,8 +221,8 @@ public:
   std::tuple<std::uint8_t, std::uint8_t>
   operands()
   {
-    const auto op1 = read_memory(pc_ + 0);
-    const auto op2 = read_memory(pc_ + 1);
+    const auto op1 = memory_read_byte(pc_ + 0);
+    const auto op2 = memory_read_byte(pc_ + 1);
     pc_ += 2;
     return {op1, op2};
   }

@@ -30,7 +30,7 @@ struct call
         auto s = std::string{};
         for (auto i = std::uint16_t{0}; ; ++i)
         {
-          const auto c = cpu.read_memory(offset + i);
+          const auto c = cpu.memory_read_byte(offset + i);
           if (c == '$')
           {
             break;
@@ -75,14 +75,14 @@ public:
   }
 
   void
-  write_memory(std::uint16_t address, std::uint8_t value)
+  memory_write_byte(std::uint16_t address, std::uint8_t value)
   {
     memory_.at(address) = value;
   }
 
   [[nodiscard]]
   std::uint8_t
-  read_memory(std::uint16_t address)
+  memory_read_byte(std::uint16_t address)
   const
   {
     return memory_.at(address);
