@@ -107,7 +107,7 @@ void
 space_invaders::operator()()
 {
   arcade_->render_screen(memory_);
-  auto next_interrupt = std::uint8_t{0x08};
+  auto next_interrupt = std::uint16_t{0x08};
 
   while (process_events())
   {

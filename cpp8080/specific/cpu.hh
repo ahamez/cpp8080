@@ -307,7 +307,7 @@ public:
   }
 
   void
-  interrupt(std::uint8_t interrupt)
+  interrupt(std::uint16_t interrupt)
   {
     if (interrupt_enabled())
     {
