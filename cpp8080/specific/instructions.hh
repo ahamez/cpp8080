@@ -522,8 +522,7 @@ struct sta : meta::describe_instruction<0x32, 13, 3>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t offset = cpu.operands_word();
-    cpu.write_memory(offset, cpu.a);
+    cpu.write_memory(cpu.operands_word(), cpu.a);
   }
 };
 
