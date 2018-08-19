@@ -5,11 +5,17 @@ The answer is: not so much. C++11/14 was helpful to [generate the jump table](ht
 but otherwise, I didn't find a way to use effectively use C++17 new features.
 
 ## Acknowledgements
+I could not have written `cpp8080` without those ressources:
 - http://www.emulator101.com
 - https://github.com/superzazu/invaders
 
+## Architecture
+`cpp8080` is a C++17 library. The repository contains two examples built on this emulator:
+- Space Invaders (without sounds)
+- a test that exercices the emulated CPU
+
 ## Dependencies
-- A C++17 compiler.
+- A C++17 compiler
 - SDL2
 
 ## Build
