@@ -1,13 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "cpp8080/meta/instructions.hh"
 #include "cpp8080/specific/cpu.hh"
 
+#include "arcade.hh"
 #include "events.hh"
-#include "sdl.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -47,8 +48,9 @@ public:
 public:
 
   template <typename InputIterator>
-  space_invaders(InputIterator first, InputIterator last)
-    : cpu_{*this}
+  space_invaders(std::unique_ptr<arcade>&& arcade, InputIterator first, InputIterator last)
+    : arcade_{std::move(arcade)}
+    , cpu_{*this}
     , memory_(16384, 0)
     , shift0_{0}
     , shift1_{0}
@@ -76,14 +78,13 @@ public:
   memory_read_byte(std::uint16_t address)
   const;
 
-  //  TODO space_invaders doesn't need to know sdl type.
   void
-  operator()(sdl&);
+  operator()();
 
 private:
 
   bool
-  process_events(sdl&);
+  process_events();
 
   void
   key_down(event)
@@ -95,6 +96,7 @@ private:
 
 private:
 
+  std::unique_ptr<arcade> arcade_;
   cpp8080::specific::cpu<space_invaders> cpu_;
   std::vector<std::uint8_t> memory_;
   std::uint8_t shift0_;

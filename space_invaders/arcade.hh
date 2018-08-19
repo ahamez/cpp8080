@@ -3,34 +3,24 @@
 #include <utility> // pair
 #include <vector>
 
-#include <SDL2/SDL.h>
-
-#include "arcade.hh"
 #include "events.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
-class sdl
-  : public arcade
+class arcade
 {
 public:
 
-  sdl();
-  ~sdl();
+  virtual ~arcade() {};
 
   [[nodiscard]]
+  virtual
   std::pair<kind, event>
-  get_next_event()
-  override;
+  get_next_event()= 0;
 
+  virtual
   void
-  render_screen(const std::vector<std::uint8_t>&)
-  override;
-
-private:
-
-  SDL_Window* window_;
-  SDL_Renderer* renderer_;
+  render_screen(const std::vector<std::uint8_t>&) = 0;
 };
 
 /*------------------------------------------------------------------------------------------------*/

@@ -4,6 +4,7 @@
 
 #include <SDL2/SDL.h>
 
+#include "arcade.hh"
 #include "sdl.hh"
 #include "space_invaders.hh"
 
@@ -17,6 +18,7 @@ main(int argc, char** argv)
     std::cerr << "Usage: " << argv[0] << " /path/to/file\n";
     return 1;
   }
+
   auto file = std::ifstream{argv[1], std::ios::binary};
   if (not file.is_open())
   {
@@ -24,13 +26,13 @@ main(int argc, char** argv)
     return 1;
   }
 
-  auto display = sdl{};
   auto machine = space_invaders{
+    std::unique_ptr<arcade>{new sdl{}},
     std::istreambuf_iterator<char>{file},
     std::istreambuf_iterator<char>{}
   };
 
-  machine(display);
+  machine();
 }
 
 /*------------------------------------------------------------------------------------------------*/

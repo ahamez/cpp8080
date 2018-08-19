@@ -73,6 +73,7 @@
 		2B0E15C8211F4C1300D53F74 /* cpu_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cpu_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B0E15CA211F4C1300D53F74 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		2B1B6E4D212999B600C54B60 /* space_invaders.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = space_invaders.cc; sourceTree = "<group>"; };
+		2B1B6E4F21299BD100C54B60 /* arcade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = arcade.hh; sourceTree = "<group>"; };
 		2B28510E2120BF30003771AE /* parity.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parity.hh; sourceTree = "<group>"; };
 		2B28510F2120BFF1003771AE /* verbose.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = verbose.hh; sourceTree = "<group>"; };
 		2B2851132120C8A8003771AE /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
@@ -113,6 +114,7 @@
 		2B0E15BC211F4AE300D53F74 /* space_invaders */ = {
 			isa = PBXGroup;
 			children = (
+				2B1B6E4F21299BD100C54B60 /* arcade.hh */,
 				2B9F2F3221220EC800181D1F /* events.hh */,
 				2B0E15BD211F4AE300D53F74 /* main.cc */,
 				2B84B0B721219E0A007CD902 /* sdl.hh */,

@@ -106,12 +106,12 @@ const
 /*------------------------------------------------------------------------------------------------*/
 
 void
-space_invaders::operator()(sdl& display)
+space_invaders::operator()()
 {
-  display.render_screen(memory_);
+  arcade_->render_screen(memory_);
   auto next_interrupt = std::uint8_t{0x08};
 
-  while (process_events(display))
+  while (process_events())
   {
     const auto now = std::chrono::high_resolution_clock::now();
     for (auto counter = 0ul, total_cycles = 0ul; total_cycles < cycles_per_frame;)
@@ -128,7 +128,7 @@ space_invaders::operator()(sdl& display)
         next_interrupt = next_interrupt == 0x08 ? 0x10 : 0x08;
       }
     }
-    display.render_screen(memory_);
+    arcade_->render_screen(memory_);
 
     const auto duration = std::chrono::high_resolution_clock::now() - now;
     // A frame lasts 1/60s.
@@ -139,11 +139,11 @@ space_invaders::operator()(sdl& display)
 /*------------------------------------------------------------------------------------------------*/
 
 bool
-space_invaders::process_events(sdl& display)
+space_invaders::process_events()
 {
   for (auto process = true; process;)
   {
-    switch (const auto [kind, event] = display.get_next_event(); kind)
+    switch (const auto [kind, event] = arcade_->get_next_event(); kind)
     {
       case kind::key_up   : key_up(event);   break;
       case kind::key_down : key_down(event); break;
