@@ -3,8 +3,6 @@
 #include <sstream>
 #include <thread>
 
-#include "cpp8080/meta/disassemble.hh"
-
 #include "space_invaders.hh"
 
 /*------------------------------------------------------------------------------------------------*/
