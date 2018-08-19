@@ -311,8 +311,7 @@ public:
   {
     if (interrupt_enabled())
     {
-      push((pc_ & 0xff00) >> 8, pc_ & 0x00ff);
-      pc_ = interrupt;
+      call(interrupt);
       disable_interrupt();
     }
   }
