@@ -166,11 +166,11 @@ noexcept
 {
   switch (k)
   {
-    case event::coin  : port1_ |= 0x01; break;
-    case event::left  : port1_ |= 0x20; break;
-    case event::right : port1_ |= 0x40; break;
-    case event::fire  : port1_ |= 0x10; break;
-    case event::start_1player : port1_ |= 0x04; break;
+    case event::coin    : port1_ |= 0x01; break;
+    case event::left    : port1_ |= 0x20; break;
+    case event::right   : port1_ |= 0x40; break;
+    case event::fire    : port1_ |= 0x10; break;
+    case event::player1 : port1_ |= 0x04; break;
     default: break;
   }
 }
@@ -183,11 +183,11 @@ noexcept
 {
   switch (k)
   {
-    case event::coin  : port1_ &= ~0x01; break;
-    case event::left  : port1_ &= ~0x20; break;
-    case event::right : port1_ &= ~0x40; break;
-    case event::fire  : port1_ &= ~0x10; break;
-    case event::start_1player : port1_ &= ~0x04; break;
+    case event::coin    : port1_ &= ~0x01; break;
+    case event::left    : port1_ &= ~0x20; break;
+    case event::right   : port1_ &= ~0x40; break;
+    case event::fire    : port1_ &= ~0x10; break;
+    case event::player1 : port1_ &= ~0x04; break;
     default: break;
   }
 }

@@ -13,7 +13,7 @@ enum class event {
   left,
   right,
   fire,
-  start_1player,
+  player1,
   quit,
   none,
   end

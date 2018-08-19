@@ -78,7 +78,7 @@ sdl::get_next_event()
         case SDLK_LEFT   : return {kind::key_down, event::left};
         case SDLK_RIGHT  : return {kind::key_down, event::right};
         case SDLK_SPACE  : return {kind::key_down, event::fire};
-        case SDLK_1      : return {kind::key_down, event::start_1player};
+        case SDLK_1      : return {kind::key_down, event::player1};
         default          : break;
       }
       break;
@@ -92,7 +92,7 @@ sdl::get_next_event()
         case SDLK_LEFT  : return {kind::key_up, event::left};
         case SDLK_RIGHT : return {kind::key_up, event::right};
         case SDLK_SPACE : return {kind::key_up, event::fire};
-        case SDLK_1     : return {kind::key_up, event::start_1player};
+        case SDLK_1     : return {kind::key_up, event::player1};
         default         : break;
       }
       break;
