@@ -29,7 +29,8 @@ struct disassemble_impl<Cpu, Instruction, 2>
   operator()(std::ostream& os, const Cpu& cpu)
   const
   {
-    os << Instruction::name << " " << std::hex << "0x" << +cpu.op1();
+    const auto op1 = cpu.memory_read_byte(cpu.pc());
+    os << Instruction::name << " " << std::hex << "0x" << +op1;
   }
 };
   
@@ -40,7 +41,9 @@ struct disassemble_impl<Cpu, Instruction, 3>
   operator()(std::ostream& os, const Cpu& cpu)
   const
   {
-    os << Instruction::name << " " << std::hex << "0x" << +cpu.op2() << " 0x" <<+cpu.op1();
+    const auto op1 = cpu.memory_read_byte(cpu.pc());
+    const auto op2 = cpu.memory_read_byte(cpu.pc() + 1);
+    os << Instruction::name << " " << std::hex << "0x" << +op2 << " 0x" <<+op1;
   }
 };
 
