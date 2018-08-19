@@ -315,14 +315,7 @@ public:
       disable_interrupt();
     }
   }
-  
-  void
-  increment_cycles(std::uint64_t nb_cycles)
-  noexcept
-  {
-    cycles_ += nb_cycles;
-  }
-  
+
   [[nodiscard]]
   std::uint64_t
   cycles()
@@ -430,6 +423,15 @@ public:
     flags.z = (res & 0xff) == 0;
     flags.s = (res & 0x80) != 0;
     flags.p = util::parity(res);
+  }
+
+private:
+
+  void
+  increment_cycles(std::uint64_t nb_cycles)
+  noexcept
+  {
+    cycles_ += nb_cycles;
   }
 
 public:
