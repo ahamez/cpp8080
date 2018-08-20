@@ -16,7 +16,7 @@ I could not have written `cpp8080` without those ressources:
 
 ## Dependencies
 - A C++17 compiler
-- SDL2
+- SDL2 (needed for Space Invaders)
 
 ## Build
 
