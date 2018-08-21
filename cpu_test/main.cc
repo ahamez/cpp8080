@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <fstream>
+#include <future>
 #include <iostream>
 #include <istream> // istreambuf_iterator
 #include <vector>
@@ -126,27 +127,41 @@ main(int argc, char** argv)
     return 1;
   }
 
+  auto tasks = std::vector<std::packaged_task<std::string()>>{};
+  auto futures = std::vector<std::future<std::string>>{};
+
   for (auto i = 1ul; i < argc; ++i)
   {
     const auto filename = std::string{argv[i]};
 
-    auto file = std::ifstream{filename, std::ios::binary};
-    if (not file.is_open())
+    auto& task = tasks.emplace_back([filename]() mutable
     {
-      std::cerr << "Cannot open ROM file " << filename << '\n';
-      return 1;
-    }
+      auto file = std::ifstream{filename, std::ios::binary};
+      if (not file.is_open())
+      {
+        const auto ss = std::ostringstream{} << "Cannot open ROM file " << filename;
+        throw std::runtime_error{ss.str()};
+      }
 
-    auto tester = cpu_test{
-      std::istreambuf_iterator<char>{file},
-      std::istreambuf_iterator<char>{},
-      std::cout
-    };
+      auto oss = std::ostringstream{};
+      auto tester = cpu_test{
+        std::istreambuf_iterator<char>{file},
+        std::istreambuf_iterator<char>{},
+        oss
+      };
 
-    tester();
+      tester();
+      return oss.str();
+    });
 
-    std::cout << "End of test with ROM " << argv[i] << "\n";
+    futures.emplace_back(task.get_future());
+    task();
   }
+
+  std::for_each(begin(futures), end(futures), [](auto& future)
+                {
+                  std::cout << future.get() << '\n';
+                });
 }
 
 /*------------------------------------------------------------------------------------------------*/
