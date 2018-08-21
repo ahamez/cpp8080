@@ -16,8 +16,7 @@ public:
   halt(const std::string& reason)
     : reason_{}
   {
-    auto ss = std::stringstream{};
-    ss << "CPU halted: " << reason;
+    const auto ss = std::ostringstream{} << "CPU halted: " << reason;
     reason_ = ss.str();
   }
 

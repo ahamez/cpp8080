@@ -15,8 +15,8 @@ sdl::sdl()
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
   {
-    auto ss = std::stringstream{};
-    ss << "SDL could not initialize. SDL_Error: " << SDL_GetError();
+    const auto ss = std::ostringstream{}
+      << "SDL could not initialize. SDL_Error: " << SDL_GetError();
     throw std::runtime_error{ss.str()};
   }
 
@@ -28,16 +28,16 @@ sdl::sdl()
 
   if (window_ == nullptr)
   {
-    auto ss = std::stringstream{};
-    ss << "Window could not be created. SDL_Error: " << SDL_GetError();
+    const auto ss = std::ostringstream{}
+      << "Window could not be created. SDL_Error: " << SDL_GetError();
     throw std::runtime_error{ss.str()};
   }
 
   renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
   if (renderer_ == nullptr)
   {
-    auto ss = std::stringstream{};
-    ss << "Renderer could not be created. SDL_Error: " << SDL_GetError();
+    const auto ss = std::ostringstream{}
+      << "Renderer could not be created. SDL_Error: " << SDL_GetError();
     throw std::runtime_error{ss.str()};
   }
 }

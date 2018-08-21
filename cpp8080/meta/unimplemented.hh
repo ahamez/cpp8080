@@ -13,8 +13,7 @@ struct unimplemented : meta::describe_instruction<Opcode, 255, 1>
   template <typename Cpu>
   void operator()(const Cpu&) const
   {
-    auto ss = std::stringstream{};
-    ss << "Unimplemented instruction " << Opcode;
+    const auto ss = std::ostringstream{} << "Unimplemented instruction " << Opcode;
     throw std::runtime_error{ss.str()};
   }
 };
