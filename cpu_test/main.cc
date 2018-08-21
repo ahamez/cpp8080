@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <fstream>
 #include <functional> // function
@@ -13,6 +14,8 @@
 #include "cpp8080/specific/cpu.hh"
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/util/concat.hh"
+
+#include "md5.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -68,14 +71,13 @@ public:
 
 public:
 
-  template <typename InputIterator>
-  cpu_test(InputIterator first, InputIterator last, std::ostream& os)
+  cpu_test(const std::vector<std::uint8_t>& rom, std::ostream& os)
     : cpu_{*this}
     , memory_(65536, 0)
     , os_{os}
   {
     // Test ROMS start at 0x100.
-    std::copy(first, last, memory_.begin() + 0x100);
+    std::copy(begin(rom), end(rom), memory_.begin() + 0x100);
     cpu_.jump(0x100);
   }
 
@@ -122,50 +124,31 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
-bool
-ends_with(const std::string& s, const std::string& ending)
-{
-  if (s.length() >= ending.length())
-  {
-    return s.compare(s.length() - ending.length(), ending.length(), ending) == 0;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-/*------------------------------------------------------------------------------------------------*/
+static constexpr auto md5_8080PRE = "cdf1c368dd49e9d0b9a61081cf48c9d6";
+static constexpr auto md5_8080EXM = "748ac4f67c0a1f03831f6547c101b8dc";
+static constexpr auto md5_CPUTEST = "bfd431d8caf4439180bfdef190e1ed49";
+static constexpr auto md5_TST8080 = "b69f2dc4c0c95935d7f71ff1cb67dbdb";
 
 using test_result_type = std::pair<bool, std::string>;
 using checker_type = std::function<test_result_type (const std::string&)>;
 
+// TODO Implement checkers
 const auto checkers = std::unordered_map<std::string, checker_type>
 {
-  {"8080EXM.COM", [](const auto&){return std::make_pair(true, "");}},
-  {"8080PRE.COM", [](const auto&){return std::make_pair(true, "");}},
-  {"CPUTEST.COM", [](const auto&){return std::make_pair(true, "");}},
-  {"TST8080.COM", [](const auto&){return std::make_pair(true, "");}},
+  {md5_8080EXM, [](const auto&){return std::make_pair(true, "");}},
+  {md5_8080PRE, [](const auto&){return std::make_pair(true, "");}},
+  {md5_CPUTEST, [](const auto&){return std::make_pair(true, "");}},
+  {md5_TST8080, [](const auto&){return std::make_pair(true, "");}},
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
 auto
-get_checker(const std::string& filename)
+get_checker(const std::vector<std::uint8_t>& rom)
 {
-  const auto supported_test = ends_with(filename, "8080EXM.COM")
-                           or ends_with(filename, "8080PRE.COM")
-                           or ends_with(filename, "CPUTEST.COM")
-                           or ends_with(filename, "TST8080.COM");
-
-  if (supported_test)
-  {
-    return checkers.at(filename.substr(filename.size() - 11));
-  }
-  else
-  {
-    throw std::runtime_error{"Unsupported test ROM"};
-  }
+  auto compute_md5 = md5{};
+  const auto checksum = compute_md5.update(rom.data(), rom.size())();
+  return checkers.at(md5::digest(checksum));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -194,17 +177,19 @@ main(int argc, char** argv)
         throw std::runtime_error{cpp8080::util::concat("Cannot open ROM file ", filename)};
       }
 
-      auto oss = std::ostringstream{};
-      auto tester = cpu_test{
+      const auto rom = std::vector<std::uint8_t>{
         std::istreambuf_iterator<char>{file},
-        std::istreambuf_iterator<char>{},
-        oss
+        std::istreambuf_iterator<char>{}
       };
+
+      auto oss = std::ostringstream{};
+      auto tester = cpu_test{rom, oss};
 
       try
       {
+        const auto checker = get_checker(rom);
         tester();
-        return get_checker(filename)(oss.str());
+        return checker(oss.str());
       }
       catch (const std::exception& e)
       {

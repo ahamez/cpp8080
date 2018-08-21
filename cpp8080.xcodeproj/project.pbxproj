@@ -26,6 +26,7 @@
 		2B0E15C2211F4B5100D53F74 /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDD86C6211B85E000D14E59 /* libSDL2.a */; };
 		2B0E15CB211F4C1300D53F74 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B0E15CA211F4C1300D53F74 /* main.cc */; };
 		2B1B6E4E212999B600C54B60 /* space_invaders.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B1B6E4D212999B600C54B60 /* space_invaders.cc */; };
+		2B70D6FD212CA99C00A38DFA /* md5.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B70D6FC212CA99C00A38DFA /* md5.cc */; };
 		2B84B0B821219E0A007CD902 /* sdl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B84B0B621219E0A007CD902 /* sdl.cc */; };
 /* End PBXBuildFile section */
 
@@ -91,6 +92,8 @@
 		2B585A0C211F4D2A0082B965 /* unimplemented.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = unimplemented.hh; sourceTree = "<group>"; };
 		2B585A0D211F4D2A0082B965 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
 		2B59DA56212545CD001E27A4 /* cpu_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cpu_fwd.hh; sourceTree = "<group>"; };
+		2B70D6FB212CA99C00A38DFA /* md5.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = md5.hh; sourceTree = "<group>"; };
+		2B70D6FC212CA99C00A38DFA /* md5.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md5.cc; sourceTree = "<group>"; };
 		2B84B0B621219E0A007CD902 /* sdl.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sdl.cc; sourceTree = "<group>"; };
 		2B84B0B721219E0A007CD902 /* sdl.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sdl.hh; sourceTree = "<group>"; };
 		2B9F2F3221220EC800181D1F /* events.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = events.hh; sourceTree = "<group>"; };
@@ -134,6 +137,8 @@
 			isa = PBXGroup;
 			children = (
 				2B0E15CA211F4C1300D53F74 /* main.cc */,
+				2B70D6FC212CA99C00A38DFA /* md5.cc */,
+				2B70D6FB212CA99C00A38DFA /* md5.hh */,
 			);
 			path = cpu_test;
 			sourceTree = "<group>";
@@ -304,6 +309,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B70D6FD212CA99C00A38DFA /* md5.cc in Sources */,
 				2B0E15CB211F4C1300D53F74 /* main.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
