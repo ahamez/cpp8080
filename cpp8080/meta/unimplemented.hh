@@ -1,5 +1,5 @@
 #include <cstdint>
-#include <sstream>
+#include "cpp8080/util/concat.hh"
 
 namespace cpp8080::meta {
 
@@ -13,8 +13,7 @@ struct unimplemented : meta::describe_instruction<Opcode, 255, 1>
   template <typename Cpu>
   void operator()(const Cpu&) const
   {
-    const auto ss = std::ostringstream{} << "Unimplemented instruction " << Opcode;
-    throw std::runtime_error{ss.str()};
+    throw std::runtime_error{util::concat("Unimplemented instruction ", Opcode)};
   }
 };
 

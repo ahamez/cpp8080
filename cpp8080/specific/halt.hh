@@ -1,8 +1,9 @@
 #pragma once
 
 #include <exception>
-#include <sstream>
 #include <string>
+
+#include "cpp8080/util/concat.hh"
 
 namespace cpp8080::specific {
 
@@ -14,11 +15,8 @@ class halt
 public:
 
   halt(const std::string& reason)
-    : reason_{}
-  {
-    const auto ss = std::ostringstream{} << "CPU halted: " << reason;
-    reason_ = ss.str();
-  }
+    : reason_{util::concat("CPU halted: ", reason)}
+  {}
 
   const char* what() const noexcept override
   {

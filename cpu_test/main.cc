@@ -4,11 +4,13 @@
 #include <future>
 #include <iostream>
 #include <istream> // istreambuf_iterator
+#include <sstream>
 #include <vector>
 
 #include "cpp8080/meta/instructions.hh"
 #include "cpp8080/specific/cpu.hh"
 #include "cpp8080/specific/instructions.hh"
+#include "cpp8080/util/concat.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -139,8 +141,7 @@ main(int argc, char** argv)
       auto file = std::ifstream{filename, std::ios::binary};
       if (not file.is_open())
       {
-        const auto ss = std::ostringstream{} << "Cannot open ROM file " << filename;
-        throw std::runtime_error{ss.str()};
+        throw std::runtime_error{cpp8080::util::concat("Cannot open ROM file ", filename)};
       }
 
       auto oss = std::ostringstream{};

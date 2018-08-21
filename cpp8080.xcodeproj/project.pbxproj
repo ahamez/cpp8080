@@ -81,6 +81,7 @@
 		2B28510E2120BF30003771AE /* parity.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parity.hh; sourceTree = "<group>"; };
 		2B28510F2120BFF1003771AE /* verbose.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = verbose.hh; sourceTree = "<group>"; };
 		2B2851132120C8A8003771AE /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
+		2B2C9F16212C451A0068C3DE /* concat.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = concat.hh; sourceTree = "<group>"; };
 		2B585A05211F4D2A0082B965 /* cpu.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cpu.hh; sourceTree = "<group>"; };
 		2B585A06211F4D2A0082B965 /* halt.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = halt.hh; sourceTree = "<group>"; };
 		2B585A07211F4D2A0082B965 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
@@ -140,6 +141,7 @@
 		2B28510D2120BF30003771AE /* util */ = {
 			isa = PBXGroup;
 			children = (
+				2B2C9F16212C451A0068C3DE /* concat.hh */,
 				2B28510E2120BF30003771AE /* parity.hh */,
 				2B28510F2120BFF1003771AE /* verbose.hh */,
 			);

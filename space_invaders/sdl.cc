@@ -1,5 +1,6 @@
 #include <stdexcept>
-#include <sstream>
+
+#include "cpp8080/util/concat.hh"
 
 #include "sdl.hh"
 
@@ -15,9 +16,9 @@ sdl::sdl()
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
   {
-    const auto ss = std::ostringstream{}
-      << "SDL could not initialize. SDL_Error: " << SDL_GetError();
-    throw std::runtime_error{ss.str()};
+    throw std::runtime_error{
+      cpp8080::util::concat("SDL could not initialize. SDL_Error: ", SDL_GetError())
+    };
   }
 
   window_ = SDL_CreateWindow("Space Invaders",
@@ -28,17 +29,17 @@ sdl::sdl()
 
   if (window_ == nullptr)
   {
-    const auto ss = std::ostringstream{}
-      << "Window could not be created. SDL_Error: " << SDL_GetError();
-    throw std::runtime_error{ss.str()};
+    throw std::runtime_error{
+      cpp8080::util::concat("Window could not be created. SDL_Error: ", SDL_GetError())
+    };
   }
 
   renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
   if (renderer_ == nullptr)
   {
-    const auto ss = std::ostringstream{}
-      << "Renderer could not be created. SDL_Error: " << SDL_GetError();
-    throw std::runtime_error{ss.str()};
+    throw std::runtime_error{
+      cpp8080::util::concat("Renderer could not be created. SDL_Error: ", SDL_GetError())
+    };
   }
 }
 
