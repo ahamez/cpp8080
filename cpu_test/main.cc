@@ -1,10 +1,12 @@
 #include <algorithm>
 #include <cstdint>
 #include <fstream>
-#include <future>
+#include <functional> // function
+#include <future>     // future, packaged_task
 #include <iostream>
-#include <istream> // istreambuf_iterator
+#include <istream>    // istreambuf_iterator
 #include <sstream>
+#include <unordered_map>
 #include <vector>
 
 #include "cpp8080/meta/instructions.hh"
@@ -120,6 +122,54 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
+bool
+ends_with(const std::string& s, const std::string& ending)
+{
+  if (s.length() >= ending.length())
+  {
+    return s.compare(s.length() - ending.length(), ending.length(), ending) == 0;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+using test_result_type = std::pair<bool, std::string>;
+using checker_type = std::function<test_result_type (const std::string&)>;
+
+const auto checkers = std::unordered_map<std::string, checker_type>
+{
+  {"8080EXM.COM", [](const auto&){return std::make_pair(true, "");}},
+  {"8080PRE.COM", [](const auto&){return std::make_pair(true, "");}},
+  {"CPUTEST.COM", [](const auto&){return std::make_pair(true, "");}},
+  {"TST8080.COM", [](const auto&){return std::make_pair(true, "");}},
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+auto
+get_checker(const std::string& filename)
+{
+  const auto supported_test = ends_with(filename, "8080EXM.COM")
+                           or ends_with(filename, "8080PRE.COM")
+                           or ends_with(filename, "CPUTEST.COM")
+                           or ends_with(filename, "TST8080.COM");
+
+  if (supported_test)
+  {
+    return checkers.at(filename.substr(filename.size() - 11));
+  }
+  else
+  {
+    throw std::runtime_error{"Unsupported test ROM"};
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 int
 main(int argc, char** argv)
 {
@@ -129,8 +179,8 @@ main(int argc, char** argv)
     return 1;
   }
 
-  auto tasks = std::vector<std::packaged_task<std::string()>>{};
-  auto futures = std::vector<std::future<std::string>>{};
+  auto tasks = std::vector<std::packaged_task<test_result_type()>>{};
+  auto futures = std::unordered_map<std::string, std::future<test_result_type>>{};
 
   for (auto i = 1ul; i < argc; ++i)
   {
@@ -151,17 +201,38 @@ main(int argc, char** argv)
         oss
       };
 
-      tester();
-      return oss.str();
+      try
+      {
+        tester();
+        return get_checker(filename)(oss.str());
+      }
+      catch (const std::exception& e)
+      {
+        return std::make_pair(false, std::string{e.what()});
+      }
+      catch (...)
+      {
+        return std::make_pair(false, std::string{"Unknown exception"});
+      }
+
     });
 
-    futures.emplace_back(task.get_future());
+    futures.emplace(filename, task.get_future());
     task();
   }
 
-  std::for_each(begin(futures), end(futures), [](auto& future)
+  // TODO return bool to tell if all tests pass.
+  std::for_each(begin(futures), end(futures), [](auto& test_future)
                 {
-                  std::cout << future.get() << '\n';
+                  const auto [success, msg] = test_future.second.get();
+                  if (success)
+                  {
+                    std::cout << test_future.first << " passed\n";
+                  }
+                  else
+                  {
+                    std::cout << test_future.first << " failure:\n" << msg;
+                  }
                 });
 }
 
