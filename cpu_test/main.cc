@@ -41,11 +41,11 @@ private:
             s.push_back(c);
           }
 
-          std::cout << s << '\n';
+          cpu.machine().ostream() << s << '\n';
         }
         else if (cpu.c == 2)
         {
-          std::cout << cpu.e;
+          cpu.machine().ostream() << cpu.e;
         }
       }
       else
@@ -64,9 +64,10 @@ public:
 public:
 
   template <typename InputIterator>
-  cpu_test(InputIterator first, InputIterator last)
+  cpu_test(InputIterator first, InputIterator last, std::ostream& os)
     : cpu_{*this}
     , memory_(65536, 0)
+    , os_{os}
   {
     // Test ROMS start at 0x100.
     std::copy(first, last, memory_.begin() + 0x100);
@@ -100,10 +101,18 @@ public:
     }
   }
 
+  std::ostream&
+  ostream()
+  noexcept
+  {
+    return os_;
+  }
+
 private:
 
   cpp8080::specific::cpu<cpu_test> cpu_;
   std::vector<std::uint8_t> memory_;
+  std::ostream& os_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -119,18 +128,19 @@ main(int argc, char** argv)
 
   for (auto i = 1ul; i < argc; ++i)
   {
-    std::cout << "\n--------------------------\nTest with ROM " << argv[i] << '\n';
+    const auto filename = std::string{argv[i]};
 
-    auto file = std::ifstream{argv[i], std::ios::binary};
+    auto file = std::ifstream{filename, std::ios::binary};
     if (not file.is_open())
     {
-      std::cerr << "Cannot open ROM file " << argv[i] << '\n';
+      std::cerr << "Cannot open ROM file " << filename << '\n';
       return 1;
     }
 
     auto tester = cpu_test{
       std::istreambuf_iterator<char>{file},
-      std::istreambuf_iterator<char>{}
+      std::istreambuf_iterator<char>{},
+      std::cout
     };
 
     tester();
