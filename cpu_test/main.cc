@@ -205,14 +205,14 @@ main(int argc, char** argv)
   // TODO return bool to tell if all tests pass.
   std::for_each(begin(futures), end(futures), [](auto& test_future)
                 {
-                  const auto [success, msg] = test_future.second.get();
-                  if (success)
+                  auto& [test_name, future] = test_future;
+                  if (const auto [success, msg] = future.get(); success)
                   {
-                    std::cout << test_future.first << " passed\n";
+                    std::cout << test_name << " passed\n";
                   }
                   else
                   {
-                    std::cout << test_future.first << " failure:\n" << msg;
+                    std::cout << test_name << " failure:\n" << msg;
                   }
                 });
 }
