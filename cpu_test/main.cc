@@ -198,16 +198,14 @@ main(int argc, const char** argv)
       {
         return std::make_pair(false, std::string{"Unknown exception"});
       }
-
     }));
   }
 
-  const auto test_passed = std::count_if(begin(futures), end(futures), [](auto& test_future)
+  const auto failures = std::count_if(begin(futures), end(futures), [](auto& test_future)
   {
     auto& [test_name, future] = test_future;
     if (const auto [success, msg] = future.get(); success)
     {
-      std::cout << test_name << " passed\n";
       return false;
     }
     else
@@ -217,7 +215,16 @@ main(int argc, const char** argv)
     }
   });
 
-  return test_passed == 0 ? 0 : 1;
+  if (failures == 0)
+  {
+    std::cout << "All tests succeeded.\n";
+    return 0;
+  }
+  else
+  {
+    std::cout << failures << " tests failed\n";
+    return 1;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
