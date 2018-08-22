@@ -33,6 +33,18 @@ struct verbose
   }
 };
 
+/*------------------------------------------------------------------------------------------------*/
+
+struct dummy
+{
+  template <typename Cpu, typename Instruction>
+  void pre(const Cpu&, Instruction) const noexcept
+  {}
+
+  template <typename Cpu, typename Instruction>
+  void post(const Cpu&, Instruction) const noexcept
+  {}
+};
 
 /*------------------------------------------------------------------------------------------------*/
 

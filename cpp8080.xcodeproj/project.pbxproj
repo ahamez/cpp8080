@@ -80,7 +80,7 @@
 		2B1B6E522129A2AC00C54B60 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		2B1B6E532129A2B900C54B60 /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		2B28510E2120BF30003771AE /* parity.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parity.hh; sourceTree = "<group>"; };
-		2B28510F2120BFF1003771AE /* verbose.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = verbose.hh; sourceTree = "<group>"; };
+		2B28510F2120BFF1003771AE /* hooks.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hooks.hh; sourceTree = "<group>"; };
 		2B2851132120C8A8003771AE /* space_invaders.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = space_invaders.hh; sourceTree = "<group>"; };
 		2B2C9F16212C451A0068C3DE /* concat.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = concat.hh; sourceTree = "<group>"; };
 		2B585A05211F4D2A0082B965 /* cpu.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cpu.hh; sourceTree = "<group>"; };
@@ -147,8 +147,8 @@
 			isa = PBXGroup;
 			children = (
 				2B2C9F16212C451A0068C3DE /* concat.hh */,
+				2B28510F2120BFF1003771AE /* hooks.hh */,
 				2B28510E2120BF30003771AE /* parity.hh */,
-				2B28510F2120BFF1003771AE /* verbose.hh */,
 			);
 			path = util;
 			sourceTree = "<group>";

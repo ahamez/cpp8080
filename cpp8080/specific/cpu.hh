@@ -6,8 +6,8 @@
 
 #include "cpp8080/specific/instructions.hh"
 #include "cpp8080/specific/cpu_fwd.hh"
+#include "cpp8080/util/hooks.hh"
 #include "cpp8080/util/parity.hh"
-#include "cpp8080/util/verbose.hh"
 
 namespace cpp8080::specific {
 
@@ -77,19 +77,16 @@ public:
   std::uint64_t
   step()
   {
-    const auto opcode = memory_read_byte(pc_);
-    pc_ += 1;
-    const auto cycles = meta::step(instructions{}, opcode, *this);
-    increment_cycles(cycles);
-    return cycles;
+    return step(util::dummy{});
   }
 
+  template <typename Fn>
   std::uint64_t
-  step(std::ostream& os)
+  step(Fn&& fn)
   {
     const auto opcode = memory_read_byte(pc_);
     pc_ += 1;
-    const auto cycles = meta::step(instructions{}, opcode, *this, cpp8080::util::verbose{os});
+    const auto cycles = meta::step(instructions{}, opcode, *this, std::forward<Fn>(fn));
     increment_cycles(cycles);
     return cycles;
   }

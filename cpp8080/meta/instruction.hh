@@ -39,30 +39,6 @@ step(instructions<Instructions...>, std::uint8_t opcode, Cpu& cpu, Fn&& fn)
 }
 
 /*------------------------------------------------------------------------------------------------*/
-
-namespace detail {
-
-struct dummy_hook
-{
-  template <typename Cpu, typename Instruction>
-  void pre(const Cpu&, Instruction) const noexcept
-  {}
-  
-  template <typename Cpu, typename Instruction>
-  void post(const Cpu&, Instruction) const noexcept
-  {}
-};
-  
-} // namespace detail
-  
-template <typename Cpu, typename... Instructions>
-std::uint64_t
-step(instructions<Instructions...>, std::uint8_t opcode, Cpu& cpu)
-{
-  return step(instructions<Instructions...>{}, opcode, cpu, detail::dummy_hook{});
-}
-
-/*------------------------------------------------------------------------------------------------*/
   
 template <typename Instruction>
 struct instruction
