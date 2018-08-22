@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <fstream>
 #include <functional> // function
-#include <future>     // future, packaged_task
+#include <future>     // async, future
 #include <iostream>
 #include <istream>    // istreambuf_iterator
 #include <sstream>
@@ -162,14 +162,13 @@ main(int argc, char** argv)
     return 1;
   }
 
-  auto tasks = std::vector<std::packaged_task<test_result_type()>>{};
   auto futures = std::unordered_map<std::string, std::future<test_result_type>>{};
 
   for (auto i = 1ul; i < argc; ++i)
   {
     const auto filename = std::string{argv[i]};
 
-    auto& task = tasks.emplace_back([filename]() mutable
+    futures.emplace(filename, std::async(std::launch::async, [filename]() mutable
     {
       auto file = std::ifstream{filename, std::ios::binary};
       if (not file.is_open())
@@ -200,10 +199,7 @@ main(int argc, char** argv)
         return std::make_pair(false, std::string{"Unknown exception"});
       }
 
-    });
-
-    futures.emplace(filename, task.get_future());
-    task();
+    }));
   }
 
   // TODO return bool to tell if all tests pass.
