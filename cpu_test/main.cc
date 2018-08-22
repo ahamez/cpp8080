@@ -154,7 +154,7 @@ get_checker(const std::vector<std::uint8_t>& rom)
 /*------------------------------------------------------------------------------------------------*/
 
 int
-main(int argc, char** argv)
+main(int argc, const char** argv)
 {
   if (argc < 2)
   {
