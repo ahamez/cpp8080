@@ -202,19 +202,22 @@ main(int argc, char** argv)
     }));
   }
 
-  // TODO return bool to tell if all tests pass.
-  std::for_each(begin(futures), end(futures), [](auto& test_future)
-                {
-                  auto& [test_name, future] = test_future;
-                  if (const auto [success, msg] = future.get(); success)
-                  {
-                    std::cout << test_name << " passed\n";
-                  }
-                  else
-                  {
-                    std::cout << test_name << " failure:\n" << msg;
-                  }
-                });
+  const auto test_passed = std::count_if(begin(futures), end(futures), [](auto& test_future)
+  {
+    auto& [test_name, future] = test_future;
+    if (const auto [success, msg] = future.get(); success)
+    {
+      std::cout << test_name << " passed\n";
+      return false;
+    }
+    else
+    {
+      std::cout << test_name << " failure: " << msg << '\n';
+      return true;
+    }
+  });
+
+  return test_passed == 0 ? 0 : 1;
 }
 
 /*------------------------------------------------------------------------------------------------*/
