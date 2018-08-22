@@ -6,6 +6,7 @@
 #include <future>     // async, future
 #include <iostream>
 #include <istream>    // istreambuf_iterator
+#include <regex>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -132,13 +133,60 @@ static constexpr auto md5_TST8080 = "b69f2dc4c0c95935d7f71ff1cb67dbdb";
 using test_result_type = std::pair<bool, std::string>;
 using checker_type = std::function<test_result_type (const std::string&)>;
 
-// TODO Implement checkers
 const auto checkers = std::unordered_map<std::string, checker_type>
 {
-  {md5_8080EXM, [](const auto&){return std::make_pair(true, "");}},
-  {md5_8080PRE, [](const auto&){return std::make_pair(true, "");}},
-  {md5_CPUTEST, [](const auto&){return std::make_pair(true, "");}},
-  {md5_TST8080, [](const auto&){return std::make_pair(true, "");}},
+  {md5_8080EXM, [](const auto& output)
+    {
+      auto match = std::smatch{};
+      if (std::regex_search(output, match, std::regex{"ERROR"}))
+      {
+        return std::make_pair(false, output);
+      }
+      else
+      {
+        return std::make_pair(true, std::string{});
+      }
+    }
+  },
+  {md5_8080PRE, [](const auto& output)
+    {
+      auto match = std::smatch{};
+      if (std::regex_search(output, match, std::regex{"8080 Preliminary tests complete"}))
+      {
+        return std::make_pair(true, std::string{});
+      }
+      else
+      {
+        return std::make_pair(false, output);
+      }
+    }
+  },
+  {md5_CPUTEST, [](const auto& output)
+    {
+      auto match = std::smatch{};
+      if (std::regex_search(output, match, std::regex{"CPU TESTS OK"}))
+      {
+        return std::make_pair(true, std::string{});
+      }
+      else
+      {
+        return std::make_pair(false, output);
+      }
+    }
+  },
+  {md5_TST8080, [](const auto& output)
+    {
+      auto match = std::smatch{};
+      if (std::regex_search(output, match, std::regex{"CPU IS OPERATIONAL"}))
+      {
+        return std::make_pair(true, std::string{});
+      }
+      else
+      {
+        return std::make_pair(false, output);
+      }
+    }
+  },
 };
 
 /*------------------------------------------------------------------------------------------------*/
