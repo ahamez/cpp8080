@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <functional> // function
@@ -7,6 +9,7 @@
 #include <istream>    // istreambuf_iterator
 #include <regex>
 #include <sstream>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -16,6 +19,26 @@
 #include "cpp8080/util/concat.hh"
 
 #include "md5.hh"
+
+/*------------------------------------------------------------------------------------------------*/
+
+struct timeout
+{
+  std::atomic<bool>& stop;
+
+  template <typename Cpu, typename Instruction>
+  void pre(const Cpu&, Instruction) const
+  {
+    if (stop)
+    {
+      throw std::runtime_error{"Timeout"};
+    }
+  }
+
+  template <typename Cpu, typename Instruction>
+  void post(const Cpu&, Instruction) const noexcept
+  {}
+};
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -71,10 +94,11 @@ public:
 
 public:
 
-  cpu_test(const std::vector<std::uint8_t>& rom, std::ostream& os)
+  cpu_test(const std::vector<std::uint8_t>& rom, std::ostream& os, std::atomic<bool>& stop)
     : cpu_{*this}
     , memory_(65536, 0)
     , os_{os}
+    , stop_{stop}
   {
     // Test ROMS start at 0x100.
     std::copy(begin(rom), end(rom), memory_.begin() + 0x100);
@@ -100,7 +124,7 @@ public:
   {
     while (true)
     {
-      cpu_.step();
+      cpu_.step(timeout{stop_});
       if (cpu_.pc() == 0x0000)
       {
         break;
@@ -120,6 +144,7 @@ private:
   cpp8080::specific::cpu<cpu_test> cpu_;
   std::vector<std::uint8_t> memory_;
   std::ostream& os_;
+  std::atomic<bool>& stop_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -203,19 +228,51 @@ get_checker(const std::vector<std::uint8_t>& rom)
 int
 main(int argc, const char** argv)
 {
-  if (argc < 2)
+  if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " /path/to/rom_1 ... /path/to/rom_n\n";
+    std::cerr << "Usage: " << argv[0] << "timer /path/to/rom_1 ... /path/to/rom_n\n";
     return 1;
   }
 
-  auto futures = std::unordered_map<std::string, std::future<test_result_type>>{};
+  const auto timeout = [&]
+  {
+    try
+    {
+      return std::chrono::seconds{std::stoi(argv[1])};
+    }
+    catch (...)
+    {
+      std::cerr << "Cannot convert timer to an integer\n";
+      std::exit(1);
+    }
+  }();
 
-  for (auto i = 1ul; i < argc; ++i)
+  auto futures = std::unordered_map<std::string, std::future<test_result_type>>{};
+  auto stop = std::atomic{false};
+
+  auto timer_future = std::async(std::launch::async, [&stop, timeout]
+  {
+    const auto begin = std::chrono::steady_clock::now();
+    while (true)
+    {
+      if (const auto now = std::chrono::steady_clock::now(); now - begin > timeout)
+      {
+        stop = true;
+        break;
+      }
+      if (stop)
+      {
+        break;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds{500});
+    }
+  });
+
+  for (auto i = 2ul; i < argc; ++i)
   {
     const auto filename = std::string{argv[i]};
 
-    futures.emplace(filename, std::async(std::launch::async, [filename]() mutable
+    futures.emplace(filename, std::async(std::launch::async, [filename, &stop]() mutable
     {
       auto file = std::ifstream{filename, std::ios::binary};
       if (not file.is_open())
@@ -229,7 +286,7 @@ main(int argc, const char** argv)
       };
 
       auto oss = std::ostringstream{};
-      auto tester = cpu_test{rom, oss};
+      auto tester = cpu_test{rom, oss, stop};
 
       try
       {
@@ -261,6 +318,9 @@ main(int argc, const char** argv)
       return true;
     }
   });
+
+  stop = true;
+  timer_future.get();
 
   if (failures == 0)
   {
