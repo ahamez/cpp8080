@@ -88,9 +88,7 @@ private:
 
 public:
 
-  using overrides = cpp8080::meta::make_instructions<
-    call
-  >;
+  using overrides = cpp8080::meta::make_instructions<call>;
 
 public:
 
@@ -230,7 +228,7 @@ main(int argc, const char** argv)
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << "timer /path/to/rom_1 ... /path/to/rom_n\n";
+    std::cerr << "Usage: " << argv[0] << " timer /path/to/rom_1 ... /path/to/rom_n\n";
     return 1;
   }
 
@@ -242,7 +240,7 @@ main(int argc, const char** argv)
     }
     catch (...)
     {
-      std::cerr << "Cannot convert timer to an integer\n";
+      std::cerr << "Cannot convert timer parameter to an integer\n";
       std::exit(1);
     }
   }();
