@@ -41,7 +41,7 @@ step(instructions<Instructions...>, std::uint8_t opcode, Cpu& cpu, Fn&& fn)
 /*------------------------------------------------------------------------------------------------*/
   
 template <typename Instruction>
-struct instruction
+struct instruction final
 {
   static constexpr auto bytes  = Instruction::bytes;
   static constexpr auto cycles = Instruction::cycles;
@@ -81,7 +81,7 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 template <bool Constant, std::uint64_t Cycles = 0>
-struct constant_instruction
+struct constant_instruction final
 {
   static constexpr auto value = Constant;
   static constexpr auto cycles = Cycles;

@@ -9,7 +9,7 @@ namespace cpp8080::specific {
 
 /*------------------------------------------------------------------------------------------------*/
 
-class halt
+class halt final
   : std::exception
 {
 public:

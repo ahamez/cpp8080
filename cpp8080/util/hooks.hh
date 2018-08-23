@@ -10,7 +10,7 @@ namespace cpp8080::util {
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct verbose
+struct verbose final
 {
   std::ostream& os;
 
@@ -35,7 +35,7 @@ struct verbose
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct dummy
+struct dummy final
 {
   template <typename Cpu, typename Instruction>
   void pre(const Cpu&, Instruction) const noexcept

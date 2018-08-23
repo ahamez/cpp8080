@@ -14,7 +14,7 @@ namespace cpp8080::specific {
 /*------------------------------------------------------------------------------------------------*/
 
 template <typename Machine>
-class cpu
+class cpu final
 {
 private:
 

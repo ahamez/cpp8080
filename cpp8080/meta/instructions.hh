@@ -7,7 +7,7 @@ namespace cpp8080::meta {
 /*------------------------------------------------------------------------------------------------*/
 
 template <typename... Is>
-struct instructions
+struct instructions final
 {};
 
 /*------------------------------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ struct override_instruction_impl<false, Override, instructions<Current, I, Is...
 };
 
 template <typename Override, typename I, typename... Is>
-struct override_instruction
+struct override_instruction final
 {
   using type = typename override_instruction_impl<
     Override::opcode == I::opcode,
