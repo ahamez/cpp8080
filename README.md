@@ -35,4 +35,5 @@ conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-co
 conan install ..
 cmake ..
 make -j
+make test
 ```
