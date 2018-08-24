@@ -16,7 +16,7 @@ namespace cpp8080::specific {
 template <typename Machine>
 class cpu final
 {
-private:
+public:
 
   struct flag_bits
   {
@@ -27,8 +27,30 @@ private:
     bool s;
   };
 
+public:
+
+  std::uint8_t a;
+  std::uint8_t b;
+  std::uint8_t c;
+  std::uint8_t d;
+  std::uint8_t e;
+  std::uint8_t h;
+  std::uint8_t l;
+  std::uint16_t sp;
+  flag_bits flags;
+
+  static constexpr auto register_a = &cpu::a;
+  static constexpr auto register_b = &cpu::b;
+  static constexpr auto register_c = &cpu::c;
+  static constexpr auto register_d = &cpu::d;
+  static constexpr auto register_e = &cpu::e;
+  static constexpr auto register_h = &cpu::h;
+  static constexpr auto register_l = &cpu::l;
+
+private:
+
   using instructions = meta::override_instructions<
-    instructions_8080,
+    instructions_8080<cpu>,
     typename Machine::overrides
   >;
 
@@ -432,24 +454,11 @@ private:
     cycles_ += nb_cycles;
   }
 
-public:
-
-  std::uint8_t a;
-  std::uint8_t b;
-  std::uint8_t c;
-  std::uint8_t d;
-  std::uint8_t e;
-  std::uint8_t h;
-  std::uint8_t l;
-  std::uint16_t sp;
-  flag_bits flags;
-  
 private:
 
   Machine& machine_;
   bool interrupt_;
   std::uint64_t cycles_;
-
   std::uint16_t pc_;
 };
 

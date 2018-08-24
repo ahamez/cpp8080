@@ -14,6 +14,98 @@ namespace cpp8080::specific {
 
 /*------------------------------------------------------------------------------------------------*/
 
+template <std::uint8_t, auto>
+struct dcr;
+
+template <std::uint8_t Opcode, typename Cpu, auto Cpu::* reg>
+struct dcr<Opcode, reg> : meta::describe_instruction<Opcode, 5, 1>
+{
+  void operator()(Cpu& cpu) const noexcept
+  {
+    cpu.*reg = cpu.dcr(cpu.*reg);
+  }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+template <std::uint8_t, auto, auto>
+struct dcx;
+
+template <std::uint8_t Opcode, typename Cpu, auto Cpu::* reg1, auto Cpu::* reg2>
+struct dcx<Opcode, reg1, reg2> : meta::describe_instruction<Opcode, 5, 1>
+{
+  void operator()(Cpu& cpu) const noexcept
+  {
+    cpu.*reg1 -= 1;
+    if (cpu.*reg1 == 0x00ff)
+    {
+      cpu.*reg2 -= 1;
+    }
+  }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+template <std::uint8_t, auto>
+struct inr;
+
+template <std::uint8_t Opcode, typename Cpu, auto Cpu::* reg>
+struct inr<Opcode, reg> : meta::describe_instruction<Opcode, 5, 1>
+{
+  void operator()(Cpu& cpu) const noexcept
+  {
+    cpu.*reg = cpu.inr(cpu.*reg);
+  }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+template <std::uint8_t, auto, auto>
+struct inx;
+
+template <std::uint8_t Opcode, typename Cpu, auto Cpu::* reg1, auto Cpu::* reg2>
+struct inx<Opcode, reg1, reg2> : meta::describe_instruction<Opcode, 5, 1>
+{
+  void operator()(Cpu& cpu) const noexcept
+  {
+    cpu.*reg1 += 1;
+    if (cpu.*reg1 == 0)
+    {
+      cpu.*reg2 += 1;
+    }
+  }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+template <std::uint8_t, auto, auto>
+struct lxi;
+
+template <std::uint8_t Opcode, typename Cpu, auto Cpu::* reg1, auto Cpu::* reg2>
+struct lxi<Opcode, reg1, reg2> : meta::describe_instruction<Opcode, 10, 3>
+{
+  void operator()(Cpu& cpu) const
+  {
+    std::tie(cpu.*reg1, cpu.*reg2) = cpu.operands();
+  }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+template <std::uint8_t, auto, auto>
+struct mov;
+
+template <std::uint8_t Opcode, typename Cpu, auto Cpu::* reg1, auto Cpu::* reg2>
+struct mov<Opcode, reg1, reg2> : meta::describe_instruction<Opcode, 5, 1>
+{
+  void operator()(Cpu& cpu) const noexcept
+  {
+    cpu.*reg1 = cpu.*reg2;
+  }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
 struct nop : meta::describe_instruction<0x00, 4, 1>
 {
   static constexpr auto name = "nop";
@@ -22,14 +114,10 @@ struct nop : meta::describe_instruction<0x00, 4, 1>
   {}
 };
 
-struct lxi_b : meta::describe_instruction<0x01, 10, 3>
+template <typename Cpu>
+struct lxi_b : lxi<0x01, Cpu::register_c, Cpu::register_b>
 {
   static constexpr auto name = "lxi_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
-  {
-    std::tie(cpu.c, cpu.b) = cpu.operands();
-  }
 };
 
 struct stax_b : meta::describe_instruction<0x02, 7, 1>
@@ -42,38 +130,22 @@ struct stax_b : meta::describe_instruction<0x02, 7, 1>
   }
 };
 
-struct inx_b : meta::describe_instruction<0x03, 5, 1>
+template <typename Cpu>
+struct inx_b : inx<0x03, Cpu::register_c, Cpu::register_b>
 {
   static constexpr auto name = "inx_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c += 1;
-    if (cpu.c == 0)
-    {
-      cpu.b += 1;
-    }
-  }
 };
 
-struct inr_b : meta::describe_instruction<0x04, 5, 1>
+template <typename Cpu>
+struct inr_b : inr<0x04, Cpu::register_b>
 {
   static constexpr auto name = "inr_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.b = cpu.inr(cpu.b);
-  }
 };
 
-struct dcr_b : meta::describe_instruction<0x05, 5, 1>
+template <typename Cpu>
+struct dcr_b : dcr<0x05, Cpu::register_b>
 {
   static constexpr auto name = "dcr_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.b = cpu.dcr(cpu.b);
-  }
 };
 
 struct mvi_b : meta::describe_instruction<0x06, 7, 2>
@@ -121,38 +193,22 @@ struct ldax_b : meta::describe_instruction<0x0a, 7, 1>
   }
 };
 
-struct dcx_b : meta::describe_instruction<0x0b, 5, 1>
+template <typename Cpu>
+struct dcx_b : dcx<0x0b, Cpu::register_c, Cpu::register_b>
 {
   static constexpr auto name = "dcx_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c -= 1;
-    if (cpu.c == 0x00ff)
-    {
-      cpu.b -= 1;
-    }
-  }
 };
 
-struct inr_c : meta::describe_instruction<0x0c, 5, 1>
+template <typename Cpu>
+struct inr_c : inr<0x0c, Cpu::register_c>
 {
   static constexpr auto name = "inr_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.inr(cpu.c);
-  }
 };
 
-struct dcr_c : meta::describe_instruction<0x0d, 5, 1>
+template <typename Cpu>
+struct dcr_c : dcr<0x0d, Cpu::register_c>
 {
-  static constexpr auto name = "dcr_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.dcr(cpu.c);
-  }
+  static constexpr auto name = "dcr_b";
 };
 
 struct mvi_c : meta::describe_instruction<0x0e, 7, 2>
@@ -177,14 +233,10 @@ struct rrc : meta::describe_instruction<0x0f, 4, 1>
   }
 };
 
-struct lxi_d : meta::describe_instruction<0x11, 10, 3>
+template <typename Cpu>
+struct lxi_d : lxi<0x11, Cpu::register_e, Cpu::register_d>
 {
   static constexpr auto name = "lxi_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
-  {
-    std::tie(cpu.e, cpu.d) = cpu.operands();
-  }
 };
 
 struct stax_d : meta::describe_instruction<0x12, 7, 1>
@@ -197,38 +249,23 @@ struct stax_d : meta::describe_instruction<0x12, 7, 1>
   }
 };
 
-struct inx_d : meta::describe_instruction<0x13, 5, 1>
+template <typename Cpu>
+struct inx_d : inx<0x13, Cpu::register_e, Cpu::register_d>
 {
-  static constexpr auto name = "inx_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e += 1;
-    if (cpu.e == 0)
-    {
-      cpu.d += 1;
-    }
-  }
+  static constexpr auto name = "inx_b";
 };
 
-struct inr_d : meta::describe_instruction<0x14, 5, 1>
+template <typename Cpu>
+struct inr_d : inr<0x14, Cpu::register_d>
 {
   static constexpr auto name = "inr_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.inr(cpu.d);
-  }
 };
 
-struct dcr_d : meta::describe_instruction<0x15, 5, 1>
-{
-  static constexpr auto name = "dcr_d";
 
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.dcr(cpu.d);
-  }
+template <typename Cpu>
+struct dcr_d : dcr<0x15, Cpu::register_d>
+{
+  static constexpr auto name = "dcr_b";
 };
 
 struct mvi_d : meta::describe_instruction<0x16, 7, 2>
@@ -276,38 +313,22 @@ struct ldax_d : meta::describe_instruction<0x1a, 7, 1>
   }
 };
 
-struct dcx_d : meta::describe_instruction<0x1b, 5, 1>
+template <typename Cpu>
+struct dcx_d : dcx<0x1b, Cpu::register_e, Cpu::register_d>
 {
   static constexpr auto name = "dcx_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e -= 1;
-    if (cpu.e == 0x00ff)
-    {
-      cpu.d -= 1;
-    }
-  }
 };
 
-struct inr_e : meta::describe_instruction<0x1c, 5, 1>
+template <typename Cpu>
+struct inr_e : inr<0x1c, Cpu::register_e>
 {
   static constexpr auto name = "inr_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.inr(cpu.e);
-  }
 };
 
-struct dcr_e : meta::describe_instruction<0x1d, 5, 1>
+template <typename Cpu>
+struct dcr_e : dcr<0x1d, Cpu::register_e>
 {
-  static constexpr auto name = "dcr_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.dcr(cpu.e);
-  }
+  static constexpr auto name = "dcr_b";
 };
 
 struct mvi_e : meta::describe_instruction<0x1e, 7, 2>
@@ -332,14 +353,10 @@ struct rar : meta::describe_instruction<0x1f, 4, 1>
   }
 };
 
-struct lxi_h : meta::describe_instruction<0x21, 10, 3>
+template <typename Cpu>
+struct lxi_h : lxi<0x21, Cpu::register_l, Cpu::register_h>
 {
-  static constexpr auto name = "lxi_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
-  {
-    std::tie(cpu.l, cpu.h) = cpu.operands();
-  }
+  static constexpr auto name = "lxi_b";
 };
 
 struct shld : meta::describe_instruction<0x22, 16, 3>
@@ -354,38 +371,22 @@ struct shld : meta::describe_instruction<0x22, 16, 3>
   }
 };
 
-struct inx_h : meta::describe_instruction<0x23, 5, 1>
+template <typename Cpu>
+struct inx_h : inx<0x23, Cpu::register_l, Cpu::register_h>
 {
   static constexpr auto name = "inx_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l += 1;
-    if (cpu.l == 0)
-    {
-      cpu.h += 1;
-    }
-  }
 };
 
-struct inr_h : meta::describe_instruction<0x24, 5, 1>
+template <typename Cpu>
+struct inr_h : inr<0x24, Cpu::register_h>
 {
   static constexpr auto name = "inr_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.inr(cpu.h);
-  }
 };
 
-struct dcr_h : meta::describe_instruction<0x25, 5, 1>
+template <typename Cpu>
+struct dcr_h : dcr<0x25, Cpu::register_h>
 {
   static constexpr auto name = "dcr_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.dcr(cpu.h);
-  }
 };
 
 struct mvi_h : meta::describe_instruction<0x26, 7, 2>
@@ -451,38 +452,22 @@ struct lhld : meta::describe_instruction<0x2a, 16, 3>
   }
 };
 
-struct dcx_h : meta::describe_instruction<0x2b, 5, 1>
+template <typename Cpu>
+struct dcx_h : dcx<0x2b, Cpu::register_l, Cpu::register_h>
 {
-  static constexpr auto name = "dcx_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l -= 1;
-    if (cpu.l == 0x00ff)
-    {
-      cpu.h -= 1;
-    }
-  }
+  static constexpr auto name = "dcx_b";
 };
 
-struct inr_l : meta::describe_instruction<0x2c, 5, 1>
+template <typename Cpu>
+struct inr_l : inr<0x2c, Cpu::register_l>
 {
   static constexpr auto name = "inr_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l = cpu.inr(cpu.l);
-  }
 };
 
-struct dcr_l : meta::describe_instruction<0x2d, 5, 1>
+template <typename Cpu>
+struct dcr_l : dcr<0x2d, Cpu::register_l>
 {
   static constexpr auto name = "dcr_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const
-  {
-    cpu.l = cpu.dcr(cpu.l);
-  }
 };
 
 struct mvi_l_d8 : meta::describe_instruction<0x2e, 7, 2>
@@ -621,14 +606,10 @@ struct inr_a : meta::describe_instruction<0x3c, 5, 1>
   }
 };
 
-struct dcr_a : meta::describe_instruction<0x3d, 5, 1>
+template <typename Cpu>
+struct dcr_a : dcr<0x3d, Cpu::register_a>
 {
   static constexpr auto name = "dcr_a";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.a = cpu.dcr(cpu.a);
-  }
 };
 
 struct mvi_a : meta::describe_instruction<0x3e, 7, 2>
@@ -651,62 +632,40 @@ struct cmc : meta::describe_instruction<0x3f, 4, 1>
   }
 };
 
-struct mov_b_b : meta::describe_instruction<0x40, 5, 1>
+template <typename Cpu>
+struct mov_b_b : mov<0x40, Cpu::register_b, Cpu::register_b>
 {
   static constexpr auto name = "mov_b_b";
-
-  template <typename Machine> void operator()(cpu<Machine>&) const noexcept
-  {}
 };
 
-struct mov_b_c : meta::describe_instruction<0x41, 5, 1>
+template <typename Cpu>
+struct mov_b_c : mov<0x41, Cpu::register_b, Cpu::register_c>
 {
   static constexpr auto name = "mov_b_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-   cpu.b = cpu.c;
-  }
 };
 
-struct mov_b_d : meta::describe_instruction<0x42, 5, 1>
+template <typename Cpu>
+struct mov_b_d : mov<0x42, Cpu::register_b, Cpu::register_d>
 {
   static constexpr auto name = "mov_b_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.b = cpu.d;
-  }
 };
 
-struct mov_b_e : meta::describe_instruction<0x43, 5, 1>
+template <typename Cpu>
+struct mov_b_e : mov<0x43, Cpu::register_b, Cpu::register_e>
 {
   static constexpr auto name = "mov_b_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.b = cpu.e;
-  }
 };
 
-struct mov_b_h : meta::describe_instruction<0x44, 5, 1>
+template <typename Cpu>
+struct mov_b_h : mov<0x44, Cpu::register_b, Cpu::register_h>
 {
   static constexpr auto name = "mov_b_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.b = cpu.h;
-  }
 };
 
-struct mov_b_l : meta::describe_instruction<0x45, 5, 1>
+template <typename Cpu>
+struct mov_b_l : mov<0x45, Cpu::register_b, Cpu::register_l>
 {
   static constexpr auto name = "mov_b_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.b = cpu.l;
-  }
 };
 
 struct mov_b_m : meta::describe_instruction<0x46, 7, 1>
@@ -719,72 +678,46 @@ struct mov_b_m : meta::describe_instruction<0x46, 7, 1>
   }
 };
 
-struct mov_b_a : meta::describe_instruction<0x47, 5, 1>
+template <typename Cpu>
+struct mov_b_a : mov<0x47, Cpu::register_b, Cpu::register_a>
 {
   static constexpr auto name = "mov_b_a";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.b = cpu.a;
-  }
 };
 
-struct mov_c_b : meta::describe_instruction<0x48, 5, 1>
+template <typename Cpu>
+struct mov_c_b : mov<0x48, Cpu::register_c, Cpu::register_b>
 {
   static constexpr auto name = "mov_c_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.b;
-  }
 };
 
-struct mov_c_c : meta::describe_instruction<0x49, 5, 1>
+template <typename Cpu>
+struct mov_c_c : mov<0x49, Cpu::register_c, Cpu::register_c>
 {
   static constexpr auto name = "mov_c_c";
-
-  template <typename Machine> void operator()(cpu<Machine>&) const noexcept
-  {}
 };
 
-struct mov_c_d : meta::describe_instruction<0x4a, 5, 1>
+template <typename Cpu>
+struct mov_c_d : mov<0x4a, Cpu::register_c, Cpu::register_d>
 {
   static constexpr auto name = "mov_c_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.d;
-  }
 };
 
-struct mov_c_e : meta::describe_instruction<0x4b, 5, 1>
+template <typename Cpu>
+struct mov_c_e : mov<0x4b, Cpu::register_c, Cpu::register_e>
 {
   static constexpr auto name = "mov_c_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.e;
-  }
 };
 
-struct mov_c_h : meta::describe_instruction<0x4c, 5, 1>
+template <typename Cpu>
+struct mov_c_h : mov<0x4c, Cpu::register_c, Cpu::register_h>
 {
   static constexpr auto name = "mov_c_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.h;
-  }
 };
 
-struct mov_c_l : meta::describe_instruction<0x4d, 5, 1>
+template <typename Cpu>
+struct mov_c_l : mov<0x4d, Cpu::register_c, Cpu::register_l>
 {
   static constexpr auto name = "mov_c_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.l;
-  }
 };
 
 struct mov_c_m : meta::describe_instruction<0x4e, 7, 1>
@@ -797,72 +730,46 @@ struct mov_c_m : meta::describe_instruction<0x4e, 7, 1>
   }
 };
 
-struct mov_c_a : meta::describe_instruction<0x4f, 5, 1>
+template <typename Cpu>
+struct mov_c_a : mov<0x4f, Cpu::register_c, Cpu::register_a>
 {
   static constexpr auto name = "mov_c_a";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.c = cpu.a;
-  }
 };
 
-struct mov_d_b : meta::describe_instruction<0x50, 5, 1>
+template <typename Cpu>
+struct mov_d_b : mov<0x50, Cpu::register_d, Cpu::register_b>
 {
   static constexpr auto name = "mov_d_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.b;
-  }
 };
 
-struct mov_d_c : meta::describe_instruction<0x51, 5, 1>
+template <typename Cpu>
+struct mov_d_c : mov<0x51, Cpu::register_d, Cpu::register_c>
 {
   static constexpr auto name = "mov_d_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.c;
-  }
 };
 
-struct mov_d_d : meta::describe_instruction<0x52, 5, 1>
+template <typename Cpu>
+struct mov_d_d : mov<0x52, Cpu::register_b, Cpu::register_b>
 {
   static constexpr auto name = "mov_d_d";
-
-  template <typename Machine> void operator()(cpu<Machine>&) const noexcept
-  {}
 };
 
-struct mov_d_e : meta::describe_instruction<0x53, 5, 1>
+template <typename Cpu>
+struct mov_d_e : mov<0x53, Cpu::register_d, Cpu::register_e>
 {
   static constexpr auto name = "mov_d_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.e;
-  }
 };
 
-struct mov_d_h : meta::describe_instruction<0x54, 5, 1>
+template <typename Cpu>
+struct mov_d_h : mov<0x54, Cpu::register_d, Cpu::register_h>
 {
   static constexpr auto name = "mov_d_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.h;
-  }
 };
 
-struct mov_d_l : meta::describe_instruction<0x55, 5, 1>
+template <typename Cpu>
+struct mov_d_l : mov<0x55, Cpu::register_d, Cpu::register_l>
 {
   static constexpr auto name = "mov_d_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.l;
-  }
 };
 
 struct mov_d_m : meta::describe_instruction<0x56, 7, 1>
@@ -875,72 +782,46 @@ struct mov_d_m : meta::describe_instruction<0x56, 7, 1>
   }
 };
 
-struct mov_d_a : meta::describe_instruction<0x57, 5, 1>
+template <typename Cpu>
+struct mov_d_a : mov<0x57, Cpu::register_d, Cpu::register_a>
 {
   static constexpr auto name = "mov_d_a";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.d = cpu.a;
-  }
 };
 
-struct mov_e_b : meta::describe_instruction<0x58, 5, 1>
+template <typename Cpu>
+struct mov_e_b : mov<0x58, Cpu::register_e, Cpu::register_b>
 {
   static constexpr auto name = "mov_e_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.b;
-  }
 };
 
-struct mov_e_c : meta::describe_instruction<0x59, 5, 1>
+template <typename Cpu>
+struct mov_e_c : mov<0x59, Cpu::register_e, Cpu::register_c>
 {
   static constexpr auto name = "mov_e_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.c;
-  }
 };
 
-struct mov_e_d : meta::describe_instruction<0x5a, 5, 1>
+template <typename Cpu>
+struct mov_e_d : mov<0x5a, Cpu::register_e, Cpu::register_d>
 {
   static constexpr auto name = "mov_e_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.d;
-  }
 };
 
-struct mov_e_e : meta::describe_instruction<0x5b, 5, 1>
+template <typename Cpu>
+struct mov_e_e : mov<0x5b, Cpu::register_e, Cpu::register_e>
 {
   static constexpr auto name = "mov_e_e";
-
-  template <typename Machine> void operator()(cpu<Machine>&) const noexcept
-  {}
 };
 
-struct mov_e_h : meta::describe_instruction<0x5c, 5, 1>
+template <typename Cpu>
+struct mov_e_h : mov<0x5c, Cpu::register_e, Cpu::register_h>
 {
   static constexpr auto name = "mov_e_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.h;
-  }
 };
 
-struct mov_e_l : meta::describe_instruction<0x5d, 5, 1>
+template <typename Cpu>
+struct mov_e_l : mov<0x5d, Cpu::register_e, Cpu::register_l>
 {
   static constexpr auto name = "mov_e_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.l;
-  }
 };
 
 struct mov_e_m : meta::describe_instruction<0x5e, 7, 1>
@@ -953,72 +834,46 @@ struct mov_e_m : meta::describe_instruction<0x5e, 7, 1>
   }
 };
 
-struct mov_e_a : meta::describe_instruction<0x5f, 5, 1>
+template <typename Cpu>
+struct mov_e_a : mov<0x5f, Cpu::register_e, Cpu::register_a>
 {
   static constexpr auto name = "mov_e_a";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.e = cpu.a;
-  }
 };
 
-struct mov_h_b : meta::describe_instruction<0x60, 5, 1>
+template <typename Cpu>
+struct mov_h_b : mov<0x60, Cpu::register_h, Cpu::register_b>
 {
   static constexpr auto name = "mov_h_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.b;
-  }
 };
 
-struct mov_h_c : meta::describe_instruction<0x61, 5, 1>
+template <typename Cpu>
+struct mov_h_c : mov<0x61, Cpu::register_h, Cpu::register_c>
 {
   static constexpr auto name = "mov_h_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.c;
-  }
 };
 
-struct mov_h_d : meta::describe_instruction<0x62, 5, 1>
+template <typename Cpu>
+struct mov_h_d : mov<0x62, Cpu::register_h, Cpu::register_d>
 {
   static constexpr auto name = "mov_h_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.d;
-  }
 };
 
-struct mov_h_e : meta::describe_instruction<0x63, 5, 1>
+template <typename Cpu>
+struct mov_h_e : mov<0x63, Cpu::register_h, Cpu::register_e>
 {
   static constexpr auto name = "mov_h_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.e;
-  }
 };
 
-struct mov_h_h : meta::describe_instruction<0x64, 5, 1>
+template <typename Cpu>
+struct mov_h_h : mov<0x64, Cpu::register_h, Cpu::register_h>
 {
   static constexpr auto name = "mov_h_h";
-
-  template <typename Machine> void operator()(cpu<Machine>&) const noexcept
-  {}
 };
 
-struct mov_h_l : meta::describe_instruction<0x65, 5, 1>
+template <typename Cpu>
+struct mov_h_l : mov<0x65, Cpu::register_h, Cpu::register_l>
 {
   static constexpr auto name = "mov_h_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.l;
-  }
 };
 
 struct mov_h_m : meta::describe_instruction<0x66, 7, 1>
@@ -1031,72 +886,46 @@ struct mov_h_m : meta::describe_instruction<0x66, 7, 1>
   }
 };
 
-struct mov_h_a : meta::describe_instruction<0x67, 5, 1>
+template <typename Cpu>
+struct mov_h_a : mov<0x67, Cpu::register_h, Cpu::register_a>
 {
   static constexpr auto name = "mov_h_a";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.h = cpu.a;
-  }
 };
 
-struct mov_l_b : meta::describe_instruction<0x68, 5, 1>
+template <typename Cpu>
+struct mov_l_b : mov<0x68, Cpu::register_l, Cpu::register_b>
 {
   static constexpr auto name = "mov_l_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l = cpu.b;
-  }
 };
 
-struct mov_l_c : meta::describe_instruction<0x69, 5, 1>
+template <typename Cpu>
+struct mov_l_c : mov<0x69, Cpu::register_l, Cpu::register_c>
 {
   static constexpr auto name = "mov_l_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l = cpu.c;
-  }
 };
 
-struct mov_l_d : meta::describe_instruction<0x6a, 5, 1>
+template <typename Cpu>
+struct mov_l_d : mov<0x6a, Cpu::register_l, Cpu::register_d>
 {
   static constexpr auto name = "mov_l_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l = cpu.d;
-  }
 };
 
-struct mov_l_e : meta::describe_instruction<0x6b, 5, 1>
+template <typename Cpu>
+struct mov_l_e : mov<0x6b, Cpu::register_l, Cpu::register_e>
 {
   static constexpr auto name = "mov_l_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l = cpu.e;
-  }
 };
 
-struct mov_l_h : meta::describe_instruction<0x6c, 5, 1>
+template <typename Cpu>
+struct mov_l_h : mov<0x6c, Cpu::register_l, Cpu::register_h>
 {
   static constexpr auto name = "mov_l_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l = cpu.h;
-  }
 };
 
-struct mov_l_l : meta::describe_instruction<0x6d, 5, 1>
+template <typename Cpu>
+struct mov_l_l : mov<0x40, Cpu::register_l, Cpu::register_l>
 {
   static constexpr auto name = "mov_l_l";
-
-  template <typename Machine> void operator()(cpu<Machine>&) const noexcept
-  {}
 };
 
 struct mov_l_m : meta::describe_instruction<0x6e, 7, 1>
@@ -1109,14 +938,10 @@ struct mov_l_m : meta::describe_instruction<0x6e, 7, 1>
   }
 };
 
-struct mov_l_a : meta::describe_instruction<0x6f, 5, 1>
+template <typename Cpu>
+struct mov_l_a : mov<0x6f, Cpu::register_l, Cpu::register_a>
 {
   static constexpr auto name = "mov_l_a";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.l = cpu.a;
-  }
 };
 
 struct mov_m_b : meta::describe_instruction<0x70, 7, 1>
@@ -1199,64 +1024,40 @@ struct mov_m_a : meta::describe_instruction<0x77, 7, 1>
   }
 };
 
-struct mov_a_b : meta::describe_instruction<0x78, 5, 1>
+template <typename Cpu>
+struct mov_a_b : mov<0x78, Cpu::register_a, Cpu::register_b>
 {
   static constexpr auto name = "mov_a_b";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.a = cpu.b;
-  }
 };
 
-struct mov_a_c : meta::describe_instruction<0x79, 5, 1>
+template <typename Cpu>
+struct mov_a_c : mov<0x79, Cpu::register_a, Cpu::register_c>
 {
   static constexpr auto name = "mov_a_c";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.a = cpu.c;
-  }
 };
 
-struct mov_a_d : meta::describe_instruction<0x7a, 5, 1>
+template <typename Cpu>
+struct mov_a_d : mov<0x7a, Cpu::register_a, Cpu::register_d>
 {
   static constexpr auto name = "mov_a_d";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.a = cpu.d;
-  }
 };
 
-struct mov_a_e : meta::describe_instruction<0x7b, 5, 1>
+template <typename Cpu>
+struct mov_a_e : mov<0x7b, Cpu::register_a, Cpu::register_e>
 {
   static constexpr auto name = "mov_a_e";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.a = cpu.e;
-  }
 };
 
-struct mov_a_h : meta::describe_instruction<0x7c, 5, 1>
+template <typename Cpu>
+struct mov_a_h : mov<0x7c, Cpu::register_a, Cpu::register_h>
 {
   static constexpr auto name = "mov_a_h";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.a = cpu.h;
-  }
 };
 
-struct mov_a_l : meta::describe_instruction<0x7d, 5, 1>
+template <typename Cpu>
+struct mov_a_l : mov<0x7d, Cpu::register_a, Cpu::register_l>
 {
   static constexpr auto name = "mov_a_l";
-
-  template <typename Machine> void operator()(cpu<Machine>& cpu) const noexcept
-  {
-    cpu.a = cpu.l;
-  }
 };
 
 struct mov_a_m : meta::describe_instruction<0x7e, 7, 1>
@@ -1269,12 +1070,10 @@ struct mov_a_m : meta::describe_instruction<0x7e, 7, 1>
   }
 };
 
-struct mov_a_a : meta::describe_instruction<0x7f, 5, 1>
+template <typename Cpu>
+struct mov_a_a : mov<0x7f, Cpu::register_a, Cpu::register_a>
 {
   static constexpr auto name = "mov_a_a";
-
-  template <typename Machine> void operator()(cpu<Machine>&) const noexcept
-  {}
 };
 
 struct add_b : meta::describe_instruction<0x80, 4, 1>
@@ -2531,53 +2330,54 @@ struct rst_7 : meta::describe_instruction<0xff, 11, 1>
 
 /*------------------------------------------------------------------------------------------------*/
 
+template <typename Cpu>
 using instructions_8080 = meta::make_instructions<
   nop,
-  lxi_b,
+  lxi_b<Cpu>,
   stax_b,
-  inx_b,
-  inr_b,
-  dcr_b,
+  inx_b<Cpu>,
+  inr_b<Cpu>,
+  dcr_b<Cpu>,
   mvi_b,
   rlc,
   meta::unimplemented<0x08>,
   dad_b,
   ldax_b,
-  dcx_b,
-  inr_c,
-  dcr_c,
+  dcx_b<Cpu>,
+  inr_c<Cpu>,
+  dcr_c<Cpu>,
   mvi_c,
   rrc,
   meta::unimplemented<0x10>,
-  lxi_d,
+  lxi_d<Cpu>,
   stax_d,
-  inx_d,
-  inr_d,
-  dcr_d,
+  inx_d<Cpu>,
+  inr_d<Cpu>,
+  dcr_d<Cpu>,
   mvi_d,
   ral,
   meta::unimplemented<0x18>,
   dad_d,
   ldax_d,
-  dcx_d,
-  inr_e,
-  dcr_e,
+  dcx_d<Cpu>,
+  inr_e<Cpu>,
+  dcr_e<Cpu>,
   mvi_e,
   rar,
   meta::unimplemented<0x20>,
-  lxi_h,
+  lxi_h<Cpu>,
   shld,
-  inx_h,
-  inr_h,
-  dcr_h,
+  inx_h<Cpu>,
+  inr_h<Cpu>,
+  dcr_h<Cpu>,
   mvi_h,
   daa,
   meta::unimplemented<0x28>,
   dad_h,
   lhld,
-  dcx_h,
-  inr_l,
-  dcr_l,
+  dcx_h<Cpu>,
+  inr_l<Cpu>,
+  dcr_l<Cpu>,
   mvi_l_d8,
   cma,
   meta::unimplemented<0x30>,
@@ -2593,57 +2393,57 @@ using instructions_8080 = meta::make_instructions<
   lda,
   dcx_sp,
   inr_a,
-  dcr_a,
+  dcr_a<Cpu>,
   mvi_a,
   cmc,
-  mov_b_b,
-  mov_b_c,
-  mov_b_d,
-  mov_b_e,
-  mov_b_h,
-  mov_b_l,
+  mov_b_b<Cpu>,
+  mov_b_c<Cpu>,
+  mov_b_d<Cpu>,
+  mov_b_e<Cpu>,
+  mov_b_h<Cpu>,
+  mov_b_l<Cpu>,
   mov_b_m,
-  mov_b_a,
-  mov_c_b,
-  mov_c_c,
-  mov_c_d,
-  mov_c_e,
-  mov_c_h,
-  mov_c_l,
+  mov_b_a<Cpu>,
+  mov_c_b<Cpu>,
+  mov_c_c<Cpu>,
+  mov_c_d<Cpu>,
+  mov_c_e<Cpu>,
+  mov_c_h<Cpu>,
+  mov_c_l<Cpu>,
   mov_c_m,
-  mov_c_a,
-  mov_d_b,
-  mov_d_c,
-  mov_d_d,
-  mov_d_e,
-  mov_d_h,
-  mov_d_l,
+  mov_c_a<Cpu>,
+  mov_d_b<Cpu>,
+  mov_d_c<Cpu>,
+  mov_d_d<Cpu>,
+  mov_d_e<Cpu>,
+  mov_d_h<Cpu>,
+  mov_d_l<Cpu>,
   mov_d_m,
-  mov_d_a,
-  mov_e_b,
-  mov_e_c,
-  mov_e_d,
-  mov_e_e,
-  mov_e_h,
-  mov_e_l,
+  mov_d_a<Cpu>,
+  mov_e_b<Cpu>,
+  mov_e_c<Cpu>,
+  mov_e_d<Cpu>,
+  mov_e_e<Cpu>,
+  mov_e_h<Cpu>,
+  mov_e_l<Cpu>,
   mov_e_m,
-  mov_e_a,
-  mov_h_b,
-  mov_h_c,
-  mov_h_d,
-  mov_h_e,
-  mov_h_h,
-  mov_h_l,
+  mov_e_a<Cpu>,
+  mov_h_b<Cpu>,
+  mov_h_c<Cpu>,
+  mov_h_d<Cpu>,
+  mov_h_e<Cpu>,
+  mov_h_h<Cpu>,
+  mov_h_l<Cpu>,
   mov_h_m,
-  mov_h_a,
-  mov_l_b,
-  mov_l_c,
-  mov_l_d,
-  mov_l_e,
-  mov_l_h,
-  mov_l_l,
+  mov_h_a<Cpu>,
+  mov_l_b<Cpu>,
+  mov_l_c<Cpu>,
+  mov_l_d<Cpu>,
+  mov_l_e<Cpu>,
+  mov_l_h<Cpu>,
+  mov_l_l<Cpu>,
   mov_l_m,
-  mov_l_a,
+  mov_l_a<Cpu>,
   mov_m_b,
   mov_m_c,
   mov_m_d,
@@ -2652,14 +2452,14 @@ using instructions_8080 = meta::make_instructions<
   mov_m_l,
   hlt,
   mov_m_a,
-  mov_a_b,
-  mov_a_c,
-  mov_a_d,
-  mov_a_e,
-  mov_a_h,
-  mov_a_l,
+  mov_a_b<Cpu>,
+  mov_a_c<Cpu>,
+  mov_a_d<Cpu>,
+  mov_a_e<Cpu>,
+  mov_a_h<Cpu>,
+  mov_a_l<Cpu>,
   mov_a_m,
-  mov_a_a,
+  mov_a_a<Cpu>,
   add_b,
   add_c,
   add_d,
