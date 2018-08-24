@@ -38,8 +38,7 @@ struct stax_b : meta::describe_instruction<0x02, 7, 1>
 
   template <typename Machine> void operator()(cpu<Machine>& cpu) const
   {
-    const std::uint16_t offset = cpu.bc();
-    cpu.memory_write_byte(offset, cpu.a);
+    cpu.memory_write_byte(cpu.bc(), cpu.a);
   }
 };
 
