@@ -4,7 +4,7 @@
 #include <ostream>
 
 #include "cpp8080/meta/disassemble.hh"
-#include "cpp8080/specific/cpu.hh"
+#include "cpp8080/specific/cpu_fwd.hh"
 
 namespace cpp8080::util {
 

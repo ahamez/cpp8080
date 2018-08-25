@@ -84,7 +84,6 @@
 		2B2C9F16212C451A0068C3DE /* concat.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = concat.hh; sourceTree = "<group>"; };
 		2B585A05211F4D2A0082B965 /* cpu.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cpu.hh; sourceTree = "<group>"; };
 		2B585A06211F4D2A0082B965 /* halt.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = halt.hh; sourceTree = "<group>"; };
-		2B585A07211F4D2A0082B965 /* instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instructions.hh; sourceTree = "<group>"; };
 		2B585A09211F4D2A0082B965 /* disassemble.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = disassemble.hh; sourceTree = "<group>"; };
 		2B585A0A211F4D2A0082B965 /* make_instructions.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = make_instructions.hh; sourceTree = "<group>"; };
 		2B585A0B211F4D2A0082B965 /* instruction.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = instruction.hh; sourceTree = "<group>"; };
@@ -168,7 +167,6 @@
 				2B585A05211F4D2A0082B965 /* cpu.hh */,
 				2B59DA56212545CD001E27A4 /* cpu_fwd.hh */,
 				2B585A06211F4D2A0082B965 /* halt.hh */,
-				2B585A07211F4D2A0082B965 /* instructions.hh */,
 			);
 			path = specific;
 			sourceTree = "<group>";

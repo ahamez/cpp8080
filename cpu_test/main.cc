@@ -15,7 +15,6 @@
 
 #include "cpp8080/meta/instructions.hh"
 #include "cpp8080/specific/cpu.hh"
-#include "cpp8080/specific/instructions.hh"
 #include "cpp8080/util/concat.hh"
 
 #include "md5.hh"
@@ -46,11 +45,7 @@ class cpu_test
 {
 private:
 
-  struct call
-    : cpp8080::meta::describe_instruction<
-        cpp8080::specific::call::opcode,
-        cpp8080::specific::call::cycles,
-        cpp8080::specific::call::bytes>
+  struct call : cpp8080::meta::describe_instruction<0xcd, 11, 3>
   {
     static constexpr auto name = "call";
 
