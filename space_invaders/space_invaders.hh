@@ -23,7 +23,7 @@ private:
     void operator()(cpp8080::specific::cpu<space_invaders>& cpu) const
     {
       const auto port = cpu.op1();
-      cpu.a = cpu.machine().in(port);
+      cpu.a() = cpu.machine().in(port);
     }
   };
 
@@ -34,7 +34,7 @@ private:
     void operator()(cpp8080::specific::cpu<space_invaders>& cpu) const
     {
       const auto port = cpu.op1();
-      cpu.machine().out(port, cpu.a);
+      cpu.machine().out(port, cpu.a());
     }
   };
 

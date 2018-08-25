@@ -19,28 +19,25 @@ namespace cpp8080::specific {
 template <typename Machine>
 class cpu final
 {
-public:
+private:
 
-  struct flag_bits
-  {
-    bool cy;
-    bool p;
-    bool ac;
-    bool z;
-    bool s;
-  };
-
-public:
-
-  std::uint8_t a;
-  std::uint8_t b;
-  std::uint8_t c;
-  std::uint8_t d;
-  std::uint8_t e;
-  std::uint8_t h;
-  std::uint8_t l;
-  std::uint16_t sp;
-  flag_bits flags;
+  std::uint8_t a_;
+  std::uint8_t b_;
+  std::uint8_t c_;
+  std::uint8_t d_;
+  std::uint8_t e_;
+  std::uint8_t h_;
+  std::uint8_t l_;
+  std::uint16_t sp_;
+  bool cy_;
+  bool p_;
+  bool ac_;
+  bool z_;
+  bool s_;
+  Machine& machine_;
+  bool interrupt_;
+  std::uint64_t cycles_;
+  std::uint16_t pc_;
 
 private:
 
@@ -116,7 +113,7 @@ private:
     {}
   };
 
-  struct lxi_b : lxi<0x01, &cpu::c, &cpu::b>
+  struct lxi_b : lxi<0x01, &cpu::c_, &cpu::b_>
   {
     static constexpr auto name = "lxi_b";
   };
@@ -127,21 +124,21 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.memory_write_byte(cpu.bc(), cpu.a);
+      cpu.memory_write_byte(cpu.bc(), cpu.a_);
     }
   };
 
-  struct inx_b : inx<0x03, &cpu::c, &cpu::b>
+  struct inx_b : inx<0x03, &cpu::c_, &cpu::b_>
   {
     static constexpr auto name = "inx_b";
   };
 
-  struct inr_b : iinr<0x04, &cpu::b>
+  struct inr_b : iinr<0x04, &cpu::b_>
   {
     static constexpr auto name = "inr_b";
   };
 
-  struct dcr_b : idcr<0x05, &cpu::b>
+  struct dcr_b : idcr<0x05, &cpu::b_>
   {
     static constexpr auto name = "dcr_b";
   };
@@ -152,7 +149,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.b = cpu.op1();
+      cpu.b_ = cpu.op1();
     }
   };
 
@@ -162,9 +159,9 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      const auto x = cpu.a;
-      cpu.a = ((x & 0x80) >> 7) | (x << 1);
-      cpu.flags.cy = (0x80 == (x & 0x80));
+      const auto x = cpu.a_;
+      cpu.a_ = ((x & 0x80) >> 7) | (x << 1);
+      cpu.cy_ = (0x80 == (x & 0x80));
     }
   };
 
@@ -175,9 +172,9 @@ private:
     void operator()(cpu& cpu) const noexcept
     {
       const std::uint32_t res = cpu.hl() + cpu.bc();
-      cpu.h = (res & 0xff00) >> 8;
-      cpu.l = res & 0x00ff;
-      cpu.flags.cy = ((res & 0xffff0000) != 0);
+      cpu.h_= (res & 0xff00) >> 8;
+      cpu.l_= res & 0x00ff;
+      cpu.cy_ = ((res & 0xffff0000) != 0);
     }
   };
 
@@ -187,21 +184,21 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.a = cpu.memory_read_byte(cpu.bc());
+      cpu.a_ = cpu.memory_read_byte(cpu.bc());
     }
   };
 
-  struct dcx_b : idcx<0x0b, &cpu::c, &cpu::b>
+  struct dcx_b : idcx<0x0b, &cpu::c_, &cpu::b_>
   {
     static constexpr auto name = "dcx_b";
   };
 
-  struct inr_c : iinr<0x0c, &cpu::c>
+  struct inr_c : iinr<0x0c, &cpu::c_>
   {
     static constexpr auto name = "inr_c";
   };
 
-  struct dcr_c : idcr<0x0d, &cpu::c>
+  struct dcr_c : idcr<0x0d, &cpu::c_>
   {
     static constexpr auto name = "dcr_b";
   };
@@ -212,7 +209,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.c = cpu.op1();
+      cpu.c_= cpu.op1();
     }
   };
 
@@ -222,13 +219,13 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      const auto x = cpu.a;
-      cpu.a = ((x & 1) << 7) | (x >> 1);
-      cpu.flags.cy = (1 == (x & 1));
+      const auto x = cpu.a_;
+      cpu.a_ = ((x & 1) << 7) | (x >> 1);
+      cpu.cy_ = (1 == (x & 1));
     }
   };
 
-  struct lxi_d : lxi<0x11, &cpu::e, &cpu::d>
+  struct lxi_d : lxi<0x11, &cpu::e_, &cpu::d_>
   {
     static constexpr auto name = "lxi_d";
   };
@@ -239,21 +236,21 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.memory_write_byte(cpu.de(), cpu.a);
+      cpu.memory_write_byte(cpu.de(), cpu.a_);
     }
   };
 
-  struct inx_d : inx<0x13, &cpu::e, &cpu::d>
+  struct inx_d : inx<0x13, &cpu::e_, &cpu::d_>
   {
     static constexpr auto name = "inx_b";
   };
 
-  struct inr_d : iinr<0x14, &cpu::d>
+  struct inr_d : iinr<0x14, &cpu::d_>
   {
     static constexpr auto name = "inr_d";
   };
 
-  struct dcr_d : idcr<0x15, &cpu::d>
+  struct dcr_d : idcr<0x15, &cpu::d_>
   {
     static constexpr auto name = "dcr_b";
   };
@@ -264,7 +261,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.d = cpu.op1();
+      cpu.d_= cpu.op1();
     }
   };
 
@@ -274,9 +271,9 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      const auto a = cpu.a;
-      cpu.a = cpu.flags.cy | (a << 1);
-      cpu.flags.cy = (0x80 == (a & 0x80));
+      const auto a = cpu.a_;
+      cpu.a_ = cpu.cy_ | (a << 1);
+      cpu.cy_ = (0x80 == (a & 0x80));
     }
   };
 
@@ -287,9 +284,9 @@ private:
     void operator()(cpu& cpu) const noexcept
     {
       const std::uint32_t res = cpu.hl() + cpu.de();
-      cpu.h = (res & 0xff00) >> 8;
-      cpu.l = res & 0x00ff;
-      cpu.flags.cy = ((res & 0xffff0000) != 0);
+      cpu.h_= (res & 0xff00) >> 8;
+      cpu.l_= res & 0x00ff;
+      cpu.cy_ = ((res & 0xffff0000) != 0);
     }
   };
 
@@ -299,21 +296,21 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.a = cpu.memory_read_byte(cpu.de());
+      cpu.a_ = cpu.memory_read_byte(cpu.de());
     }
   };
 
-  struct dcx_d : idcx<0x1b, &cpu::e, &cpu::d>
+  struct dcx_d : idcx<0x1b, &cpu::e_, &cpu::d_>
   {
     static constexpr auto name = "dcx_d";
   };
 
-  struct inr_e : iinr<0x1c, &cpu::e>
+  struct inr_e : iinr<0x1c, &cpu::e_>
   {
     static constexpr auto name = "inr_e";
   };
 
-  struct dcr_e : idcr<0x1d, &cpu::e>
+  struct dcr_e : idcr<0x1d, &cpu::e_>
   {
     static constexpr auto name = "dcr_b";
   };
@@ -324,7 +321,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.e = cpu.op1();
+      cpu.e_= cpu.op1();
     }
   };
 
@@ -334,13 +331,13 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      const auto a = cpu.a;
-      cpu.a = (cpu.flags.cy << 7) | (a >> 1);
-      cpu.flags.cy = (1 == (a & 1));
+      const auto a = cpu.a_;
+      cpu.a_ = (cpu.cy_ << 7) | (a >> 1);
+      cpu.cy_ = (1 == (a & 1));
     }
   };
 
-  struct lxi_h : lxi<0x21, &cpu::l, &cpu::h>
+  struct lxi_h : lxi<0x21, &cpu::l_, &cpu::h_>
   {
     static constexpr auto name = "lxi_b";
   };
@@ -352,22 +349,22 @@ private:
     void operator()(cpu& cpu) const
     {
       const std::uint16_t offset = cpu.operands_word();
-      cpu.memory_write_byte(offset, cpu.l);
-      cpu.memory_write_byte(offset + 1, cpu.h);
+      cpu.memory_write_byte(offset, cpu.l_);
+      cpu.memory_write_byte(offset + 1, cpu.h_);
     }
   };
 
-  struct inx_h : inx<0x23, &cpu::l, &cpu::h>
+  struct inx_h : inx<0x23, &cpu::l_, &cpu::h_>
   {
     static constexpr auto name = "inx_h";
   };
 
-  struct inr_h : iinr<0x24, &cpu::h>
+  struct inr_h : iinr<0x24, &cpu::h_>
   {
     static constexpr auto name = "inr_h";
   };
 
-  struct dcr_h : idcr<0x25, &cpu::h>
+  struct dcr_h : idcr<0x25, &cpu::h_>
   {
     static constexpr auto name = "dcr_h";
   };
@@ -378,7 +375,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.h = cpu.op1();
+      cpu.h_= cpu.op1();
     }
   };
 
@@ -388,24 +385,24 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      auto cy = cpu.flags.cy;
+      auto cy = cpu.cy_;
       auto value_to_add = std::uint8_t{0};
 
-      const std::uint8_t lsb = cpu.a & 0x0f;
-      const std::uint8_t msb = cpu.a >> 4;
+      const std::uint8_t lsb = cpu.a_ & 0x0f;
+      const std::uint8_t msb = cpu.a_ >> 4;
 
-      if (cpu.flags.ac or lsb > 9)
+      if (cpu.ac_ or lsb > 9)
       {
         value_to_add += 0x06;
       }
-      if (cpu.flags.cy or msb > 9 or (msb >= 9 and lsb > 9))
+      if (cpu.cy_ or msb > 9 or (msb >= 9 and lsb > 9))
       {
         value_to_add += 0x60;
         cy = true;
       }
       cpu.adda(value_to_add, 0);
-      cpu.flags.p = util::parity(cpu.a);
-      cpu.flags.cy = cy;
+      cpu.p_ = util::parity(cpu.a_);
+      cpu.cy_ = cy;
 
     }
   };
@@ -417,9 +414,9 @@ private:
     void operator()(cpu& cpu) const noexcept
     {
       const std::uint32_t res = 2 * cpu.hl();
-      cpu.h = (res & 0xff00) >> 8;
-      cpu.l = res & 0x00ff;
-      cpu.flags.cy = ((res & 0xffff0000) != 0);
+      cpu.h_= (res & 0xff00) >> 8;
+      cpu.l_= res & 0x00ff;
+      cpu.cy_ = ((res & 0xffff0000) != 0);
     }
   };
 
@@ -430,22 +427,22 @@ private:
     void operator()(cpu& cpu) const
     {
       const std::uint16_t offset = cpu.operands_word();
-      cpu.l = cpu.memory_read_byte(offset);
-      cpu.h = cpu.memory_read_byte(offset + 1);
+      cpu.l_= cpu.memory_read_byte(offset);
+      cpu.h_= cpu.memory_read_byte(offset + 1);
     }
   };
 
-  struct dcx_h : idcx<0x2b, &cpu::l, &cpu::h>
+  struct dcx_h : idcx<0x2b, &cpu::l_, &cpu::h_>
   {
     static constexpr auto name = "dcx_b";
   };
 
-  struct inr_l : iinr<0x2c, &cpu::l>
+  struct inr_l : iinr<0x2c, &cpu::l_>
   {
     static constexpr auto name = "inr_l";
   };
 
-  struct dcr_l : idcr<0x2d, &cpu::l>
+  struct dcr_l : idcr<0x2d, &cpu::l_>
   {
     static constexpr auto name = "dcr_l";
   };
@@ -456,7 +453,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.l = cpu.op1();
+      cpu.l_= cpu.op1();
     }
   };
 
@@ -466,7 +463,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.a ^= 0xff;
+      cpu.a_ ^= 0xff;
     }
   };
 
@@ -476,7 +473,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.sp = cpu.operands_word();
+      cpu.sp_ = cpu.operands_word();
     }
   };
 
@@ -486,7 +483,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.memory_write_byte(cpu.operands_word(), cpu.a);
+      cpu.memory_write_byte(cpu.operands_word(), cpu.a_);
     }
   };
 
@@ -496,7 +493,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.sp += 1;
+      cpu.sp_ += 1;
     }
   };
 
@@ -538,7 +535,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.flags.cy = true;
+      cpu.cy_ = true;
     }
   };
 
@@ -548,10 +545,10 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      const std::uint32_t res = cpu.hl() + cpu.sp;
-      cpu.h = (res & 0xff00) >> 8;
-      cpu.l = res & 0x00ff;
-      cpu.flags.cy = ((res & 0xffff0000) > 0);
+      const std::uint32_t res = cpu.hl() + cpu.sp_;
+      cpu.h_= (res & 0xff00) >> 8;
+      cpu.l_= res & 0x00ff;
+      cpu.cy_ = ((res & 0xffff0000) > 0);
     }
   };
 
@@ -562,7 +559,7 @@ private:
     void operator()(cpu& cpu) const
     {
       const std::uint16_t offset = cpu.operands_word();
-      cpu.a = cpu.memory_read_byte(offset);
+      cpu.a_ = cpu.memory_read_byte(offset);
     }
   };
 
@@ -572,7 +569,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.sp -= 1;
+      cpu.sp_ -= 1;
     }
   };
 
@@ -582,11 +579,11 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.a = cpu.inr(cpu.a);
+      cpu.a_ = cpu.inr(cpu.a_);
     }
   };
 
-  struct dcr_a : idcr<0x3d, &cpu::a>
+  struct dcr_a : idcr<0x3d, &cpu::a_>
   {
     static constexpr auto name = "dcr_a";
   };
@@ -597,7 +594,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.a = cpu.op1();
+      cpu.a_ = cpu.op1();
     }
   };
 
@@ -607,36 +604,36 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.flags.cy = not(cpu.flags.cy);
+      cpu.cy_ = not(cpu.cy_);
     }
   };
 
-  struct mov_b_b : mov<0x40, &cpu::b, &cpu::b>
+  struct mov_b_b : mov<0x40, &cpu::b_, &cpu::b_>
   {
     static constexpr auto name = "mov_b_b";
   };
 
-  struct mov_b_c : mov<0x41, &cpu::b, &cpu::c>
+  struct mov_b_c : mov<0x41, &cpu::b_, &cpu::c_>
   {
     static constexpr auto name = "mov_b_c";
   };
 
-  struct mov_b_d : mov<0x42, &cpu::b, &cpu::d>
+  struct mov_b_d : mov<0x42, &cpu::b_, &cpu::d_>
   {
     static constexpr auto name = "mov_b_d";
   };
 
-  struct mov_b_e : mov<0x43, &cpu::b, &cpu::e>
+  struct mov_b_e : mov<0x43, &cpu::b_, &cpu::e_>
   {
     static constexpr auto name = "mov_b_e";
   };
 
-  struct mov_b_h : mov<0x44, &cpu::b, &cpu::h>
+  struct mov_b_h : mov<0x44, &cpu::b_, &cpu::h_>
   {
     static constexpr auto name = "mov_b_h";
   };
 
-  struct mov_b_l : mov<0x45, &cpu::b, &cpu::l>
+  struct mov_b_l : mov<0x45, &cpu::b_, &cpu::l_>
   {
     static constexpr auto name = "mov_b_l";
   };
@@ -647,41 +644,41 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.b = cpu.read_hl();
+      cpu.b_ = cpu.read_hl();
     }
   };
 
-  struct mov_b_a : mov<0x47, &cpu::b, &cpu::a>
+  struct mov_b_a : mov<0x47, &cpu::b_, &cpu::a_>
   {
     static constexpr auto name = "mov_b_a";
   };
 
-  struct mov_c_b : mov<0x48, &cpu::c, &cpu::b>
+  struct mov_c_b : mov<0x48, &cpu::c_, &cpu::b_>
   {
     static constexpr auto name = "mov_c_b";
   };
 
-  struct mov_c_c : mov<0x49, &cpu::c, &cpu::c>
+  struct mov_c_c : mov<0x49, &cpu::c_, &cpu::c_>
   {
     static constexpr auto name = "mov_c_c";
   };
 
-  struct mov_c_d : mov<0x4a, &cpu::c, &cpu::d>
+  struct mov_c_d : mov<0x4a, &cpu::c_, &cpu::d_>
   {
     static constexpr auto name = "mov_c_d";
   };
 
-  struct mov_c_e : mov<0x4b, &cpu::c, &cpu::e>
+  struct mov_c_e : mov<0x4b, &cpu::c_, &cpu::e_>
   {
     static constexpr auto name = "mov_c_e";
   };
 
-  struct mov_c_h : mov<0x4c, &cpu::c, &cpu::h>
+  struct mov_c_h : mov<0x4c, &cpu::c_, &cpu::h_>
   {
     static constexpr auto name = "mov_c_h";
   };
 
-  struct mov_c_l : mov<0x4d, &cpu::c, &cpu::l>
+  struct mov_c_l : mov<0x4d, &cpu::c_, &cpu::l_>
   {
     static constexpr auto name = "mov_c_l";
   };
@@ -692,41 +689,41 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.c = cpu.read_hl();
+      cpu.c_= cpu.read_hl();
     }
   };
 
-  struct mov_c_a : mov<0x4f, &cpu::c, &cpu::a>
+  struct mov_c_a : mov<0x4f, &cpu::c_, &cpu::a_>
   {
     static constexpr auto name = "mov_c_a";
   };
 
-  struct mov_d_b : mov<0x50, &cpu::d, &cpu::b>
+  struct mov_d_b : mov<0x50, &cpu::d_, &cpu::b_>
   {
     static constexpr auto name = "mov_d_b";
   };
 
-  struct mov_d_c : mov<0x51, &cpu::d, &cpu::c>
+  struct mov_d_c : mov<0x51, &cpu::d_, &cpu::c_>
   {
     static constexpr auto name = "mov_d_c";
   };
 
-  struct mov_d_d : mov<0x52, &cpu::b, &cpu::b>
+  struct mov_d_d : mov<0x52, &cpu::b_, &cpu::b_>
   {
     static constexpr auto name = "mov_d_d";
   };
 
-  struct mov_d_e : mov<0x53, &cpu::d, &cpu::e>
+  struct mov_d_e : mov<0x53, &cpu::d_, &cpu::e_>
   {
     static constexpr auto name = "mov_d_e";
   };
 
-  struct mov_d_h : mov<0x54, &cpu::d, &cpu::h>
+  struct mov_d_h : mov<0x54, &cpu::d_, &cpu::h_>
   {
     static constexpr auto name = "mov_d_h";
   };
 
-  struct mov_d_l : mov<0x55, &cpu::d, &cpu::l>
+  struct mov_d_l : mov<0x55, &cpu::d_, &cpu::l_>
   {
     static constexpr auto name = "mov_d_l";
   };
@@ -737,41 +734,41 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.d = cpu.read_hl();
+      cpu.d_= cpu.read_hl();
     }
   };
 
-  struct mov_d_a : mov<0x57, &cpu::d, &cpu::a>
+  struct mov_d_a : mov<0x57, &cpu::d_, &cpu::a_>
   {
     static constexpr auto name = "mov_d_a";
   };
 
-  struct mov_e_b : mov<0x58, &cpu::e, &cpu::b>
+  struct mov_e_b : mov<0x58, &cpu::e_, &cpu::b_>
   {
     static constexpr auto name = "mov_e_b";
   };
 
-  struct mov_e_c : mov<0x59, &cpu::e, &cpu::c>
+  struct mov_e_c : mov<0x59, &cpu::e_, &cpu::c_>
   {
     static constexpr auto name = "mov_e_c";
   };
 
-  struct mov_e_d : mov<0x5a, &cpu::e, &cpu::d>
+  struct mov_e_d : mov<0x5a, &cpu::e_, &cpu::d_>
   {
     static constexpr auto name = "mov_e_d";
   };
 
-  struct mov_e_e : mov<0x5b, &cpu::e, &cpu::e>
+  struct mov_e_e : mov<0x5b, &cpu::e_, &cpu::e_>
   {
     static constexpr auto name = "mov_e_e";
   };
 
-  struct mov_e_h : mov<0x5c, &cpu::e, &cpu::h>
+  struct mov_e_h : mov<0x5c, &cpu::e_, &cpu::h_>
   {
     static constexpr auto name = "mov_e_h";
   };
 
-  struct mov_e_l : mov<0x5d, &cpu::e, &cpu::l>
+  struct mov_e_l : mov<0x5d, &cpu::e_, &cpu::l_>
   {
     static constexpr auto name = "mov_e_l";
   };
@@ -782,41 +779,41 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.e = cpu.read_hl();
+      cpu.e_= cpu.read_hl();
     }
   };
 
-  struct mov_e_a : mov<0x5f, &cpu::e, &cpu::a>
+  struct mov_e_a : mov<0x5f, &cpu::e_, &cpu::a_>
   {
     static constexpr auto name = "mov_e_a";
   };
 
-  struct mov_h_b : mov<0x60, &cpu::h, &cpu::b>
+  struct mov_h_b : mov<0x60, &cpu::h_, &cpu::b_>
   {
     static constexpr auto name = "mov_h_b";
   };
 
-  struct mov_h_c : mov<0x61, &cpu::h, &cpu::c>
+  struct mov_h_c : mov<0x61, &cpu::h_, &cpu::c_>
   {
     static constexpr auto name = "mov_h_c";
   };
 
-  struct mov_h_d : mov<0x62, &cpu::h, &cpu::d>
+  struct mov_h_d : mov<0x62, &cpu::h_, &cpu::d_>
   {
     static constexpr auto name = "mov_h_d";
   };
 
-  struct mov_h_e : mov<0x63, &cpu::h, &cpu::e>
+  struct mov_h_e : mov<0x63, &cpu::h_, &cpu::e_>
   {
     static constexpr auto name = "mov_h_e";
   };
 
-  struct mov_h_h : mov<0x64, &cpu::h, &cpu::h>
+  struct mov_h_h : mov<0x64, &cpu::h_, &cpu::h_>
   {
     static constexpr auto name = "mov_h_h";
   };
 
-  struct mov_h_l : mov<0x65, &cpu::h, &cpu::l>
+  struct mov_h_l : mov<0x65, &cpu::h_, &cpu::l_>
   {
     static constexpr auto name = "mov_h_l";
   };
@@ -827,41 +824,41 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.h = cpu.read_hl();
+      cpu.h_= cpu.read_hl();
     }
   };
 
-  struct mov_h_a : mov<0x67, &cpu::h, &cpu::a>
+  struct mov_h_a : mov<0x67, &cpu::h_, &cpu::a_>
   {
     static constexpr auto name = "mov_h_a";
   };
 
-  struct mov_l_b : mov<0x68, &cpu::l, &cpu::b>
+  struct mov_l_b : mov<0x68, &cpu::l_, &cpu::b_>
   {
     static constexpr auto name = "mov_l_b";
   };
 
-  struct mov_l_c : mov<0x69, &cpu::l, &cpu::c>
+  struct mov_l_c : mov<0x69, &cpu::l_, &cpu::c_>
   {
     static constexpr auto name = "mov_l_c";
   };
 
-  struct mov_l_d : mov<0x6a, &cpu::l, &cpu::d>
+  struct mov_l_d : mov<0x6a, &cpu::l_, &cpu::d_>
   {
     static constexpr auto name = "mov_l_d";
   };
 
-  struct mov_l_e : mov<0x6b, &cpu::l, &cpu::e>
+  struct mov_l_e : mov<0x6b, &cpu::l_, &cpu::e_>
   {
     static constexpr auto name = "mov_l_e";
   };
 
-  struct mov_l_h : mov<0x6c, &cpu::l, &cpu::h>
+  struct mov_l_h : mov<0x6c, &cpu::l_, &cpu::h_>
   {
     static constexpr auto name = "mov_l_h";
   };
 
-  struct mov_l_l : mov<0x40, &cpu::l, &cpu::l>
+  struct mov_l_l : mov<0x40, &cpu::l_, &cpu::l_>
   {
     static constexpr auto name = "mov_l_l";
   };
@@ -872,11 +869,11 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.l = cpu.read_hl();
+      cpu.l_= cpu.read_hl();
     }
   };
 
-  struct mov_l_a : mov<0x6f, &cpu::l, &cpu::a>
+  struct mov_l_a : mov<0x6f, &cpu::l_, &cpu::a_>
   {
     static constexpr auto name = "mov_l_a";
   };
@@ -887,7 +884,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.write_hl(cpu.b);
+      cpu.write_hl(cpu.b_);
     }
   };
 
@@ -897,7 +894,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.write_hl(cpu.c);
+      cpu.write_hl(cpu.c_);
     }
   };
 
@@ -907,7 +904,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.write_hl(cpu.d);
+      cpu.write_hl(cpu.d_);
     }
   };
 
@@ -917,7 +914,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.write_hl(cpu.e);
+      cpu.write_hl(cpu.e_);
     }
   };
 
@@ -927,7 +924,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.write_hl(cpu.h);
+      cpu.write_hl(cpu.h_);
     }
   };
 
@@ -937,7 +934,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.write_hl(cpu.l);
+      cpu.write_hl(cpu.l_);
     }
   };
 
@@ -957,36 +954,36 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.write_hl(cpu.a);
+      cpu.write_hl(cpu.a_);
     }
   };
 
-  struct mov_a_b : mov<0x78, &cpu::a, &cpu::b>
+  struct mov_a_b : mov<0x78, &cpu::a_, &cpu::b_>
   {
     static constexpr auto name = "mov_a_b";
   };
 
-  struct mov_a_c : mov<0x79, &cpu::a, &cpu::c>
+  struct mov_a_c : mov<0x79, &cpu::a_, &cpu::c_>
   {
     static constexpr auto name = "mov_a_c";
   };
 
-  struct mov_a_d : mov<0x7a, &cpu::a, &cpu::d>
+  struct mov_a_d : mov<0x7a, &cpu::a_, &cpu::d_>
   {
     static constexpr auto name = "mov_a_d";
   };
 
-  struct mov_a_e : mov<0x7b, &cpu::a, &cpu::e>
+  struct mov_a_e : mov<0x7b, &cpu::a_, &cpu::e_>
   {
     static constexpr auto name = "mov_a_e";
   };
 
-  struct mov_a_h : mov<0x7c, &cpu::a, &cpu::h>
+  struct mov_a_h : mov<0x7c, &cpu::a_, &cpu::h_>
   {
     static constexpr auto name = "mov_a_h";
   };
 
-  struct mov_a_l : mov<0x7d, &cpu::a, &cpu::l>
+  struct mov_a_l : mov<0x7d, &cpu::a_, &cpu::l_>
   {
     static constexpr auto name = "mov_a_l";
   };
@@ -997,11 +994,11 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.a = cpu.read_hl();
+      cpu.a_ = cpu.read_hl();
     }
   };
 
-  struct mov_a_a : mov<0x7f, &cpu::a, &cpu::a>
+  struct mov_a_a : mov<0x7f, &cpu::a_, &cpu::a_>
   {
     static constexpr auto name = "mov_a_a";
   };
@@ -1012,7 +1009,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.b, 0);
+      cpu.adda(cpu.b_, 0);
     }
   };
 
@@ -1022,7 +1019,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.c, 0);
+      cpu.adda(cpu.c_, 0);
     }
   };
 
@@ -1032,7 +1029,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.d, 0);
+      cpu.adda(cpu.d_, 0);
     }
   };
 
@@ -1042,7 +1039,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.e, 0);
+      cpu.adda(cpu.e_, 0);
     }
   };
 
@@ -1052,7 +1049,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.h, 0);
+      cpu.adda(cpu.h_, 0);
     }
   };
 
@@ -1062,7 +1059,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.l, 0);
+      cpu.adda(cpu.l_, 0);
     }
   };
 
@@ -1082,7 +1079,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.a, 0);
+      cpu.adda(cpu.a_, 0);
     }
   };
 
@@ -1092,7 +1089,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.b, cpu.flags.cy);
+      cpu.adda(cpu.b_, cpu.cy_);
     }
   };
 
@@ -1102,7 +1099,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.c, cpu.flags.cy);
+      cpu.adda(cpu.c_, cpu.cy_);
     }
   };
 
@@ -1112,7 +1109,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.d, cpu.flags.cy);
+      cpu.adda(cpu.d_, cpu.cy_);
     }
   };
 
@@ -1122,7 +1119,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.e, cpu.flags.cy);
+      cpu.adda(cpu.e_, cpu.cy_);
     }
   };
 
@@ -1132,7 +1129,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.h, cpu.flags.cy);
+      cpu.adda(cpu.h_, cpu.cy_);
     }
   };
 
@@ -1142,7 +1139,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.l, cpu.flags.cy);
+      cpu.adda(cpu.l_, cpu.cy_);
     }
   };
 
@@ -1152,7 +1149,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.adda(cpu.read_hl(), cpu.flags.cy);
+      cpu.adda(cpu.read_hl(), cpu.cy_);
     }
   };
 
@@ -1162,7 +1159,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.a, cpu.flags.cy);
+      cpu.adda(cpu.a_, cpu.cy_);
     }
   };
 
@@ -1172,7 +1169,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.b, 0);
+      cpu.suba(cpu.b_, 0);
     }
   };
 
@@ -1182,7 +1179,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.c, 0);
+      cpu.suba(cpu.c_, 0);
     }
   };
 
@@ -1192,7 +1189,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.d, 0);
+      cpu.suba(cpu.d_, 0);
     }
   };
 
@@ -1202,7 +1199,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.e, 0);
+      cpu.suba(cpu.e_, 0);
     }
   };
 
@@ -1212,7 +1209,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.h, 0);
+      cpu.suba(cpu.h_, 0);
     }
   };
 
@@ -1222,7 +1219,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.l, 0);
+      cpu.suba(cpu.l_, 0);
     }
   };
 
@@ -1242,7 +1239,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.a, 0);
+      cpu.suba(cpu.a_, 0);
     }
   };
 
@@ -1252,7 +1249,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.b, cpu.flags.cy);
+      cpu.suba(cpu.b_, cpu.cy_);
     }
   };
 
@@ -1262,7 +1259,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.c, cpu.flags.cy);
+      cpu.suba(cpu.c_, cpu.cy_);
     }
   };
 
@@ -1272,7 +1269,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.d, cpu.flags.cy);
+      cpu.suba(cpu.d_, cpu.cy_);
     }
   };
 
@@ -1282,7 +1279,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.e, cpu.flags.cy);
+      cpu.suba(cpu.e_, cpu.cy_);
     }
   };
 
@@ -1292,7 +1289,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.h, cpu.flags.cy);
+      cpu.suba(cpu.h_, cpu.cy_);
     }
   };
 
@@ -1302,7 +1299,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.l, cpu.flags.cy);
+      cpu.suba(cpu.l_, cpu.cy_);
     }
   };
 
@@ -1312,7 +1309,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.suba(cpu.read_hl(), cpu.flags.cy);
+      cpu.suba(cpu.read_hl(), cpu.cy_);
     }
   };
 
@@ -1322,7 +1319,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.a, cpu.flags.cy);
+      cpu.suba(cpu.a_, cpu.cy_);
     }
   };
 
@@ -1332,7 +1329,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ana(cpu.b);
+      cpu.ana(cpu.b_);
     }
   };
 
@@ -1342,7 +1339,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ana(cpu.c);
+      cpu.ana(cpu.c_);
     }
   };
 
@@ -1352,7 +1349,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ana(cpu.d);
+      cpu.ana(cpu.d_);
     }
   };
 
@@ -1362,7 +1359,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ana(cpu.e);
+      cpu.ana(cpu.e_);
     }
   };
 
@@ -1372,7 +1369,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ana(cpu.h);
+      cpu.ana(cpu.h_);
     }
   };
 
@@ -1382,7 +1379,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ana(cpu.l);
+      cpu.ana(cpu.l_);
     }
   };
 
@@ -1402,7 +1399,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ana(cpu.a);
+      cpu.ana(cpu.a_);
     }
   };
 
@@ -1412,7 +1409,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.xra(cpu.b);
+      cpu.xra(cpu.b_);
     }
   };
 
@@ -1422,7 +1419,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.xra(cpu.c);
+      cpu.xra(cpu.c_);
     }
   };
 
@@ -1432,7 +1429,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.xra(cpu.d);
+      cpu.xra(cpu.d_);
     }
   };
 
@@ -1442,7 +1439,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.xra(cpu.e);
+      cpu.xra(cpu.e_);
     }
   };
 
@@ -1452,7 +1449,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.xra(cpu.h);
+      cpu.xra(cpu.h_);
     }
   };
 
@@ -1462,7 +1459,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.xra(cpu.l);
+      cpu.xra(cpu.l_);
     }
   };
 
@@ -1482,7 +1479,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.xra(cpu.a);
+      cpu.xra(cpu.a_);
     }
   };
 
@@ -1492,7 +1489,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ora(cpu.b);
+      cpu.ora(cpu.b_);
     }
   };
 
@@ -1502,7 +1499,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ora(cpu.c);
+      cpu.ora(cpu.c_);
     }
   };
 
@@ -1512,7 +1509,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ora(cpu.d);
+      cpu.ora(cpu.d_);
     }
   };
 
@@ -1522,7 +1519,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ora(cpu.e);
+      cpu.ora(cpu.e_);
     }
   };
 
@@ -1532,7 +1529,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ora(cpu.h);
+      cpu.ora(cpu.h_);
     }
   };
 
@@ -1542,7 +1539,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ora(cpu.l);
+      cpu.ora(cpu.l_);
     }
   };
 
@@ -1562,7 +1559,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.ora(cpu.a);
+      cpu.ora(cpu.a_);
     }
   };
 
@@ -1572,7 +1569,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.cmp(cpu.b);
+      cpu.cmp(cpu.b_);
     }
   };
 
@@ -1582,7 +1579,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.cmp(cpu.c);
+      cpu.cmp(cpu.c_);
     }
   };
 
@@ -1592,7 +1589,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.cmp(cpu.d);
+      cpu.cmp(cpu.d_);
     }
   };
 
@@ -1602,7 +1599,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.cmp(cpu.e);
+      cpu.cmp(cpu.e_);
     }
   };
 
@@ -1612,7 +1609,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.cmp(cpu.h);
+      cpu.cmp(cpu.h_);
     }
   };
 
@@ -1622,7 +1619,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.cmp(cpu.l);
+      cpu.cmp(cpu.l_);
     }
   };
 
@@ -1642,7 +1639,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.cmp(cpu.a);
+      cpu.cmp(cpu.a_);
     }
   };
 
@@ -1652,7 +1649,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(not cpu.flags.z);
+      return cpu.conditional_ret(not cpu.z_);
     }
   };
 
@@ -1662,7 +1659,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      std::tie(cpu.b, cpu.c) = cpu.pop();
+      std::tie(cpu.b_, cpu.c_) = cpu.pop();
     }
   };
 
@@ -1672,7 +1669,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.conditional_jump(cpu.operands_word(), not cpu.flags.z);
+      cpu.conditional_jump(cpu.operands_word(), not cpu.z_);
     }
   };
 
@@ -1692,7 +1689,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), not cpu.flags.z);
+      return cpu.conditional_call(cpu.operands_word(), not cpu.z_);
     }
   };
 
@@ -1702,7 +1699,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.push(cpu.b, cpu.c);
+      cpu.push(cpu.b_, cpu.c_);
     }
   };
 
@@ -1732,7 +1729,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(cpu.flags.z);
+      return cpu.conditional_ret(cpu.z_);
     }
   };
 
@@ -1752,7 +1749,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.conditional_jump(cpu.operands_word(), cpu.flags.z);
+      cpu.conditional_jump(cpu.operands_word(), cpu.z_);
     }
   };
 
@@ -1762,7 +1759,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), cpu.flags.z);
+      return cpu.conditional_call(cpu.operands_word(), cpu.z_);
     }
   };
 
@@ -1782,7 +1779,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.adda(cpu.op1(), cpu.flags.cy);
+      cpu.adda(cpu.op1(), cpu.cy_);
     }
   };
 
@@ -1802,7 +1799,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(not cpu.flags.cy);
+      return cpu.conditional_ret(not cpu.cy_);
     }
   };
 
@@ -1812,7 +1809,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      std::tie(cpu.d, cpu.e) = cpu.pop();
+      std::tie(cpu.d_, cpu.e_) = cpu.pop();
     }
   };
 
@@ -1822,7 +1819,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.conditional_jump(cpu.operands_word(), not cpu.flags.cy);
+      cpu.conditional_jump(cpu.operands_word(), not cpu.cy_);
     }
   };
 
@@ -1840,7 +1837,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), not cpu.flags.cy);
+      return cpu.conditional_call(cpu.operands_word(), not cpu.cy_);
     }
   };
 
@@ -1850,7 +1847,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.push(cpu.d, cpu.e);
+      cpu.push(cpu.d_, cpu.e_);
     }
   };
 
@@ -1880,7 +1877,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(cpu.flags.cy);
+      return cpu.conditional_ret(cpu.cy_);
     }
   };
 
@@ -1890,7 +1887,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.conditional_jump(cpu.operands_word(), cpu.flags.cy);
+      cpu.conditional_jump(cpu.operands_word(), cpu.cy_);
     }
   };
 
@@ -1908,7 +1905,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), cpu.flags.cy != 0);
+      return cpu.conditional_call(cpu.operands_word(), cpu.cy_ != 0);
     }
   };
 
@@ -1918,7 +1915,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.suba(cpu.op1(), cpu.flags.cy);
+      cpu.suba(cpu.op1(), cpu.cy_);
     }
   };
 
@@ -1938,7 +1935,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(not cpu.flags.p);
+      return cpu.conditional_ret(not cpu.p_);
     }
   };
 
@@ -1948,7 +1945,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      std::tie(cpu.h, cpu.l) = cpu.pop();
+      std::tie(cpu.h_, cpu.l_) = cpu.pop();
     }
   };
 
@@ -1958,7 +1955,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.conditional_jump(cpu.operands_word(), not cpu.flags.p);
+      cpu.conditional_jump(cpu.operands_word(), not cpu.p_);
     }
   };
 
@@ -1968,12 +1965,12 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      const auto h = cpu.h;
-      const auto l = cpu.l;
-      cpu.l = cpu.memory_read_byte(cpu.sp);
-      cpu.h = cpu.memory_read_byte(cpu.sp + 1);
-      cpu.memory_write_byte(cpu.sp, l);
-      cpu.memory_write_byte(cpu.sp + 1, h);
+      const auto h = cpu.h_;
+      const auto l = cpu.l_;
+      cpu.l_= cpu.memory_read_byte(cpu.sp_);
+      cpu.h_= cpu.memory_read_byte(cpu.sp_ + 1);
+      cpu.memory_write_byte(cpu.sp_, l);
+      cpu.memory_write_byte(cpu.sp_ + 1, h);
     }
   };
 
@@ -1983,7 +1980,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), not cpu.flags.p);
+      return cpu.conditional_call(cpu.operands_word(), not cpu.p_);
     }
   };
 
@@ -1993,7 +1990,7 @@ private:
 
     void operator()(cpu& cpu) const
     {
-      cpu.push(cpu.h, cpu.l);
+      cpu.push(cpu.h_, cpu.l_);
     }
   };
 
@@ -2023,7 +2020,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(cpu.flags.p);
+      return cpu.conditional_ret(cpu.p_);
     }
   };
 
@@ -2043,7 +2040,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.conditional_jump(cpu.operands_word(), cpu.flags.p);
+      cpu.conditional_jump(cpu.operands_word(), cpu.p_);
     }
   };
 
@@ -2053,8 +2050,8 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      std::swap(cpu.d, cpu.h);
-      std::swap(cpu.e, cpu.l);
+      std::swap(cpu.d_, cpu.h_);
+      std::swap(cpu.e_, cpu.l_);
     }
   };
 
@@ -2064,7 +2061,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), cpu.flags.p != 0);
+      return cpu.conditional_call(cpu.operands_word(), cpu.p_ != 0);
     }
   };
 
@@ -2094,7 +2091,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(not cpu.flags.s);
+      return cpu.conditional_ret(not cpu.s_);
     }
   };
 
@@ -2105,13 +2102,13 @@ private:
     void operator()(cpu& cpu) const
     {
       auto flags = std::uint8_t{};
-      std::tie(cpu.a, flags) = cpu.pop();
+      std::tie(cpu.a_, flags) = cpu.pop();
 
-      cpu.flags.s  = flags & 0b10000000 ? true : false;
-      cpu.flags.z  = flags & 0b01000000 ? true : false;
-      cpu.flags.ac = flags & 0b00010000 ? true : false;
-      cpu.flags.p  = flags & 0b00000100 ? true : false;
-      cpu.flags.cy = flags & 0b00000001 ? true : false;
+      cpu.s_  = flags & 0b10000000 ? true : false;
+      cpu.z_  = flags & 0b01000000 ? true : false;
+      cpu.ac_ = flags & 0b00010000 ? true : false;
+      cpu.p_  = flags & 0b00000100 ? true : false;
+      cpu.cy_ = flags & 0b00000001 ? true : false;
     }
   };
 
@@ -2121,7 +2118,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.conditional_jump(cpu.operands_word(), not cpu.flags.s);
+      cpu.conditional_jump(cpu.operands_word(), not cpu.s_);
     }
   };
 
@@ -2141,7 +2138,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), not cpu.flags.s);
+      return cpu.conditional_call(cpu.operands_word(), not cpu.s_);
     }
   };
 
@@ -2153,17 +2150,17 @@ private:
     {
       auto flags = std::uint8_t{0};
 
-      if (cpu.flags.s)  flags |= 0b10000000;
-      if (cpu.flags.z)  flags |= 0b01000000;
-      if (cpu.flags.ac) flags |= 0b00010000;
-      if (cpu.flags.p)  flags |= 0b00000100;
-      if (cpu.flags.cy) flags |= 0b00000001;
+      if (cpu.s_)  flags |= 0b10000000;
+      if (cpu.z_)  flags |= 0b01000000;
+      if (cpu.ac_) flags |= 0b00010000;
+      if (cpu.p_)  flags |= 0b00000100;
+      if (cpu.cy_) flags |= 0b00000001;
 
       flags |=  0b00000010; // bit 1 is always 1
       flags &= ~0b00001000; // bit 3 is always 0
       flags &= ~0b00100000; // bit 5 is always 0
 
-      cpu.push(cpu.a, flags);
+      cpu.push(cpu.a_, flags);
     }
   };
 
@@ -2194,7 +2191,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_ret(cpu.flags.s);
+      return cpu.conditional_ret(cpu.s_);
     }
   };
 
@@ -2204,7 +2201,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.sp = cpu.hl();
+      cpu.sp_ = cpu.hl();
     }
   };
 
@@ -2214,7 +2211,7 @@ private:
 
     void operator()(cpu& cpu) const noexcept
     {
-      cpu.conditional_jump(cpu.operands_word(), cpu.flags.s);
+      cpu.conditional_jump(cpu.operands_word(), cpu.s_);
     }
   };
 
@@ -2234,7 +2231,7 @@ private:
 
     auto operator()(cpu& cpu) const
     {
-      return cpu.conditional_call(cpu.operands_word(), cpu.flags.s != 0);
+      return cpu.conditional_call(cpu.operands_word(), cpu.s_ != 0);
     }
   };
 
@@ -2527,15 +2524,19 @@ private:
 public:
 
   cpu(Machine& machine)
-    : a{0}
-    , b{0}
-    , c{0}
-    , d{0}
-    , e{0}
-    , h{0}
-    , l{0}
-    , sp{0}
-    , flags{}
+    : a_{0}
+    , b_{0}
+    , c_{0}
+    , d_{0}
+    , e_{0}
+    , h_{0}
+    , l_{0}
+    , sp_{0}
+    , cy_{0}
+    , p_{0}
+    , ac_{0}
+    , z_{0}
+    , s_{0}
     , machine_{machine}
     , interrupt_{false}
     , cycles_{0}
@@ -2549,20 +2550,20 @@ public:
     return os
       << std::resetiosflags(std::ios_base::basefield)
       << " "
-      << (cpu.flags.z ? "z" : ".")
-      << (cpu.flags.s ? "s" : ".")
-      << (cpu.flags.p ? "p" : ".")
-      << (cpu.flags.cy ? "c" : ".")
-      << (cpu.flags.ac ? "a" : ".")
+      << (cpu.z_ ? "z" : ".")
+      << (cpu.s_ ? "s" : ".")
+      << (cpu.p_ ? "p" : ".")
+      << (cpu.cy_ ? "c" : ".")
+      << (cpu.ac_ ? "a" : ".")
       << std::hex
-      << "  A $" << std::setfill('0') << std::setw(2) << +cpu.a
-      << " B $"  << std::setfill('0') << std::setw(2) << +cpu.b
-      << " C $"  << std::setfill('0') << std::setw(2) << +cpu.c
-      << " D $"  << std::setfill('0') << std::setw(2) << +cpu.d
-      << " E $"  << std::setfill('0') << std::setw(2) << +cpu.e
-      << " H $"  << std::setfill('0') << std::setw(2) << +cpu.h
-      << " L $"  << std::setfill('0') << std::setw(2) << +cpu.l
-      << " SP "  << std::setfill('0') << std::setw(4) << +cpu.sp
+      << "  A $" << std::setfill('0') << std::setw(2) << +cpu.a__
+      << " B $"  << std::setfill('0') << std::setw(2) << +cpu.b__
+      << " C $"  << std::setfill('0') << std::setw(2) << +cpu.c_
+      << " D $"  << std::setfill('0') << std::setw(2) << +cpu.d_
+      << " E $"  << std::setfill('0') << std::setw(2) << +cpu.e_
+      << " H $"  << std::setfill('0') << std::setw(2) << +cpu.h_
+      << " L $"  << std::setfill('0') << std::setw(2) << +cpu.l_
+      << " SP "  << std::setfill('0') << std::setw(4) << +cpu.sp_
       ;
   }
 
@@ -2617,7 +2618,7 @@ public:
   hl()
   const noexcept
   {
-    return (h << 8) | l;
+    return (h_ << 8) | l_;
   }
 
   [[nodiscard]]
@@ -2625,7 +2626,7 @@ public:
   bc()
   const noexcept
   {
-    return (b << 8) | c;
+    return (b_ << 8) | c_;
   }
 
   [[nodiscard]]
@@ -2633,24 +2634,24 @@ public:
   de()
   const noexcept
   {
-    return (d << 8) | e;
+    return (d_ << 8) | e_;
   }
 
   void
   push(std::uint8_t high, std::uint8_t low)
   {
-    memory_write_byte(sp - 1, high);
-    memory_write_byte(sp - 2, low);
-    sp -= 2;
+    memory_write_byte(sp_ - 1, high);
+    memory_write_byte(sp_ - 2, low);
+    sp_ -= 2;
   }
 
   [[nodiscard]]
   std::tuple<std::uint8_t, std::uint8_t>
   pop()
   {
-    const auto low = memory_read_byte(sp);
-    const auto high = memory_read_byte(sp + 1);
-    sp += 2;
+    const auto low = memory_read_byte(sp_);
+    const auto high = memory_read_byte(sp_ + 1);
+    sp_ += 2;
     return {high, low};
   }
 
@@ -2658,9 +2659,9 @@ public:
   std::uint16_t
   pop_word()
   {
-    const auto low = memory_read_byte(sp);
-    const auto high = memory_read_byte(sp + 1);
-    sp += 2;
+    const auto low = memory_read_byte(sp_);
+    const auto high = memory_read_byte(sp_ + 1);
+    sp_ += 2;
     return low | (high << 8);
   }
 
@@ -2766,6 +2767,38 @@ public:
   }
 
   [[nodiscard]]
+  std::uint8_t
+  a()
+  const noexcept
+  {
+    return a_;
+  }
+
+  [[nodiscard]]
+  std::uint8_t&
+  a()
+  noexcept
+  {
+    return a_;
+  }
+
+  [[nodiscard]]
+  std::uint8_t
+  c()
+  const noexcept
+  {
+    return c_;
+  }
+
+  [[nodiscard]]
+  std::uint8_t
+  e()
+  const noexcept
+  {
+    return e_;
+  }
+
+  [[nodiscard]]
   std::uint16_t
   pc()
   const noexcept
@@ -2822,10 +2855,10 @@ private:
   noexcept
   {
     const std::uint8_t res = value + 1;
-    flags.ac = (res & 0x0f) == 0;
-    flags.z = res == 0;
-    flags.s = (res & 0b10000000) != 0;
-    flags.p = util::parity(res);
+    ac_ = (res & 0x0f) == 0;
+    z_ = res == 0;
+    s_ = (res & 0b10000000) != 0;
+    p_ = util::parity(res);
     return res;
   }
 
@@ -2835,10 +2868,10 @@ private:
   noexcept
   {
     const std::uint8_t res = value - 1;
-    flags.ac = not ((res & 0x0f) == 0x0f);
-    flags.z = res == 0;
-    flags.s = (res & 0b10000000) != 0;
-    flags.p = util::parity(res);
+    ac_ = not ((res & 0x0f) == 0x0f);
+    z_ = res == 0;
+    s_ = (res & 0b10000000) != 0;
+    p_ = util::parity(res);
     return res;
   }
 
@@ -2846,78 +2879,76 @@ private:
   adda(std::uint8_t val, bool carry)
   noexcept
   {
-    const std::uint16_t res = a + val + carry;
-    flags.z  = (res & 0xff) == 0;
-    flags.s  = (res & 0b10000000) != 0;
-    flags.cy = (res & 0b100000000) != 0;
-    flags.ac = (a ^ res ^ val) & 0x10;
-    flags.p  = util::parity(res & 0xff);
-    a = res & 0xff;
+    const std::uint16_t res = a_ + val + carry;
+    z_  = (res & 0xff) == 0;
+    s_  = (res & 0b10000000) != 0;
+    cy_ = (res & 0b100000000) != 0;
+    ac_ = (a_ ^ res ^ val) & 0x10;
+    p_  = util::parity(res & 0xff);
+    a_ = res & 0xff;
   }
 
   void
   suba(std::uint8_t val, bool carry)
   noexcept
   {
-    const std::int16_t res = a - val - carry;
-    flags.z = (res & 0xff) == 0;
-    flags.s = (res & 0b10000000) != 0;
-    flags.cy = (res & 0b100000000) != 0;
-    flags.ac = ~(a ^ res ^ val) & 0x10;
-    flags.p = util::parity(res & 0xff);
-    a = res & 0xff;
+    const std::int16_t res = a_ - val - carry;
+    z_ = (res & 0xff) == 0;
+    s_ = (res & 0b10000000) != 0;
+    cy_ = (res & 0b100000000) != 0;
+    ac_ = ~(a_ ^ res ^ val) & 0x10;
+    p_ = util::parity(res & 0xff);
+    a_ = res & 0xff;
   }
 
   void
   ora(std::uint8_t val)
   noexcept
   {
-    a |= val;
-    flags.cy = false;
-    flags.ac = false;
-    flags.z = a == 0;
-    flags.s = (a & 0x80) != 0;
-    flags.p = util::parity(a);
+    a_ |= val;
+    cy_ = false;
+    ac_ = false;
+    z_ = a_ == 0;
+    s_ = (a_ & 0x80) != 0;
+    p_ = util::parity(a_);
   }
 
   void
   ana(std::uint8_t val)
   noexcept
   {
-    const std::uint8_t res = a & val;
-    flags.cy = false;
-    flags.ac = ((a | val) & 0x08) != 0;
-    flags.z = res == 0;
-    flags.s = (res & 0x80) != 0;
-    flags.p = util::parity(res);
-    a = res;
+    const std::uint8_t res = a_ & val;
+    cy_ = false;
+    ac_ = ((a_ | val) & 0x08) != 0;
+    z_ = res == 0;
+    s_ = (res & 0x80) != 0;
+    p_ = util::parity(res);
+    a_ = res;
   }
 
   void
   xra(std::uint8_t val)
   noexcept
   {
-    a ^= val;
-    flags.cy = false;
-    flags.ac = false;
-    flags.z = a == 0;
-    flags.s = (a & 0x80) != 0;
-    flags.p = util::parity(a);
+    a_ ^= val;
+    cy_ = false;
+    ac_ = false;
+    z_ = a_ == 0;
+    s_ = (a_ & 0x80) != 0;
+    p_ = util::parity(a_);
   }
 
   void
   cmp(std::uint8_t val)
   noexcept
   {
-    const std::int16_t res = a - val;
-    flags.cy = (res & 0b100000000) != 0;
-    flags.ac = ~(a ^ res ^ val) & 0x10;
-    flags.z = (res & 0xff) == 0;
-    flags.s = (res & 0x80) != 0;
-    flags.p = util::parity(res);
+    const std::int16_t res = a_ - val;
+    cy_ = (res & 0b100000000) != 0;
+    ac_ = ~(a_ ^ res ^ val) & 0x10;
+    z_ = (res & 0xff) == 0;
+    s_ = (res & 0x80) != 0;
+    p_ = util::parity(res);
   }
-
-private:
 
   void
   increment_cycles(std::uint64_t nb_cycles)
@@ -2925,13 +2956,6 @@ private:
   {
     cycles_ += nb_cycles;
   }
-
-private:
-
-  Machine& machine_;
-  bool interrupt_;
-  std::uint64_t cycles_;
-  std::uint16_t pc_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

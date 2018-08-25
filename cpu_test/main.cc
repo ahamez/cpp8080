@@ -53,7 +53,7 @@ private:
     {
       if (const auto operands = cpu.operands_word(); operands == 5)
       {
-        if (cpu.c == 9)
+        if (cpu.c() == 9)
         {
           const std::uint16_t offset = cpu.de();
           auto s = std::string{};
@@ -69,9 +69,9 @@ private:
 
           cpu.machine().ostream() << s << '\n';
         }
-        else if (cpu.c == 2)
+        else if (cpu.c() == 2)
         {
-          cpu.machine().ostream() << cpu.e;
+          cpu.machine().ostream() << cpu.e();
         }
       }
       else
