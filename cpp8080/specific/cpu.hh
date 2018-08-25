@@ -42,7 +42,16 @@ private:
 private:
 
   template <std::uint8_t Opcode, auto cpu::* reg>
-  struct idcr : meta::describe_instruction<Opcode, 5, 1>
+  struct i_adda : meta::describe_instruction<Opcode, 4, 1>
+  {
+    void operator()(cpu& cpu) const noexcept
+    {
+      cpu.adda(cpu.*reg, 0);
+    }
+  };
+
+  template <std::uint8_t Opcode, auto cpu::* reg>
+  struct i_dcr : meta::describe_instruction<Opcode, 5, 1>
   {
     void operator()(cpu& cpu) const noexcept
     {
@@ -51,7 +60,7 @@ private:
   };
 
   template <std::uint8_t Opcode, auto cpu::* reg1, auto cpu::* reg2>
-  struct idcx : meta::describe_instruction<Opcode, 5, 1>
+  struct i_dcx : meta::describe_instruction<Opcode, 5, 1>
   {
     void operator()(cpu& cpu) const noexcept
     {
@@ -64,7 +73,7 @@ private:
   };
 
   template <std::uint8_t Opcode, auto cpu::* reg>
-  struct iinr : meta::describe_instruction<Opcode, 5, 1>
+  struct i_inr : meta::describe_instruction<Opcode, 5, 1>
   {
     void operator()(cpu& cpu) const noexcept
     {
@@ -73,7 +82,7 @@ private:
   };
 
   template <std::uint8_t Opcode, auto cpu::* reg1, auto cpu::* reg2>
-  struct inx : meta::describe_instruction<Opcode, 5, 1>
+  struct i_inx : meta::describe_instruction<Opcode, 5, 1>
   {
     void operator()(cpu& cpu) const noexcept
     {
@@ -86,7 +95,7 @@ private:
   };
 
   template <std::uint8_t Opcode, auto cpu::* reg1, auto cpu::* reg2>
-  struct lxi : meta::describe_instruction<Opcode, 10, 3>
+  struct i_lxi : meta::describe_instruction<Opcode, 10, 3>
   {
     void operator()(cpu& cpu) const
     {
@@ -95,7 +104,7 @@ private:
   };
 
   template <std::uint8_t Opcode, auto cpu::* reg1, auto cpu::* reg2>
-  struct mov : meta::describe_instruction<Opcode, 5, 1>
+  struct i_mov : meta::describe_instruction<Opcode, 5, 1>
   {
     void operator()(cpu& cpu) const noexcept
     {
@@ -104,11 +113,20 @@ private:
   };
 
   template <std::uint8_t Opcode, auto cpu::* reg>
-  struct mov_m : meta::describe_instruction<Opcode, 7, 1>
+  struct i_mov_m : meta::describe_instruction<Opcode, 7, 1>
   {
     void operator()(cpu& cpu) const
     {
       cpu.*reg = cpu.read_hl();
+    }
+  };
+
+  template <std::uint8_t Opcode, auto cpu::* reg>
+  struct i_mov_to_m : meta::describe_instruction<Opcode, 7, 1>
+  {
+    void operator()(cpu& cpu) const
+    {
+      cpu.write_hl(cpu.*reg);
     }
   };
 
@@ -117,15 +135,10 @@ private:
   struct nop : meta::describe_instruction<0x00, 4, 1>
   {
     static constexpr auto name = "nop";
-
-    void operator()(cpu&) const noexcept
-    {}
+    void operator()(cpu&) const noexcept {}
   };
 
-  struct lxi_b : lxi<0x01, &cpu::c_, &cpu::b_>
-  {
-    static constexpr auto name = "lxi_b";
-  };
+  struct lxi_b : i_lxi<0x01, &cpu::c_, &cpu::b_> {static constexpr auto name = "lxi_b";};
 
   struct stax_b : meta::describe_instruction<0x02, 7, 1>
   {
@@ -137,21 +150,9 @@ private:
     }
   };
 
-  struct inx_b : inx<0x03, &cpu::c_, &cpu::b_>
-  {
-    static constexpr auto name = "inx_b";
-  };
-
-  struct inr_b : iinr<0x04, &cpu::b_>
-  {
-    static constexpr auto name = "inr_b";
-  };
-
-  struct dcr_b : idcr<0x05, &cpu::b_>
-  {
-    static constexpr auto name = "dcr_b";
-  };
-
+  struct inx_b : i_inx<0x03, &cpu::c_, &cpu::b_> {static constexpr auto name = "inx_b";};
+  struct inr_b : i_inr<0x04, &cpu::b_> {static constexpr auto name = "inr_b";};
+  struct dcr_b : i_dcr<0x05, &cpu::b_> {static constexpr auto name = "dcr_b";};
   struct mvi_b : meta::describe_instruction<0x06, 7, 2>
   {
     static constexpr auto name = "mvi_b";
@@ -197,21 +198,9 @@ private:
     }
   };
 
-  struct dcx_b : idcx<0x0b, &cpu::c_, &cpu::b_>
-  {
-    static constexpr auto name = "dcx_b";
-  };
-
-  struct inr_c : iinr<0x0c, &cpu::c_>
-  {
-    static constexpr auto name = "inr_c";
-  };
-
-  struct dcr_c : idcr<0x0d, &cpu::c_>
-  {
-    static constexpr auto name = "dcr_b";
-  };
-
+  struct dcx_b : i_dcx<0x0b, &cpu::c_, &cpu::b_> {static constexpr auto name = "dcx_b";};
+  struct inr_c : i_inr<0x0c, &cpu::c_> {static constexpr auto name = "inr_c";};
+  struct dcr_c : i_dcr<0x0d, &cpu::c_> {static constexpr auto name = "dcr_b";};
   struct mvi_c : meta::describe_instruction<0x0e, 7, 2>
   {
     static constexpr auto name = "mvi_c";
@@ -234,10 +223,7 @@ private:
     }
   };
 
-  struct lxi_d : lxi<0x11, &cpu::e_, &cpu::d_>
-  {
-    static constexpr auto name = "lxi_d";
-  };
+  struct lxi_d : i_lxi<0x11, &cpu::e_, &cpu::d_> {static constexpr auto name = "lxi_d";};
 
   struct stax_d : meta::describe_instruction<0x12, 7, 1>
   {
@@ -249,20 +235,9 @@ private:
     }
   };
 
-  struct inx_d : inx<0x13, &cpu::e_, &cpu::d_>
-  {
-    static constexpr auto name = "inx_b";
-  };
-
-  struct inr_d : iinr<0x14, &cpu::d_>
-  {
-    static constexpr auto name = "inr_d";
-  };
-
-  struct dcr_d : idcr<0x15, &cpu::d_>
-  {
-    static constexpr auto name = "dcr_b";
-  };
+  struct inx_d : i_inx<0x13, &cpu::e_, &cpu::d_> {static constexpr auto name = "inx_b";};
+  struct inr_d : i_inr<0x14, &cpu::d_> {static constexpr auto name = "inr_d";};
+  struct dcr_d : i_dcr<0x15, &cpu::d_> {static constexpr auto name = "dcr_b";};
 
   struct mvi_d : meta::describe_instruction<0x16, 7, 2>
   {
@@ -309,21 +284,10 @@ private:
     }
   };
 
-  struct dcx_d : idcx<0x1b, &cpu::e_, &cpu::d_>
-  {
-    static constexpr auto name = "dcx_d";
-  };
+  struct dcx_d : i_dcx<0x1b, &cpu::e_, &cpu::d_> {static constexpr auto name = "dcx_d";};
 
-  struct inr_e : iinr<0x1c, &cpu::e_>
-  {
-    static constexpr auto name = "inr_e";
-  };
-
-  struct dcr_e : idcr<0x1d, &cpu::e_>
-  {
-    static constexpr auto name = "dcr_b";
-  };
-
+  struct inr_e : i_inr<0x1c, &cpu::e_> {static constexpr auto name = "inr_e";};
+  struct dcr_e : i_dcr<0x1d, &cpu::e_> {static constexpr auto name = "dcr_e";};
   struct mvi_e : meta::describe_instruction<0x1e, 7, 2>
   {
     static constexpr auto name = "mvi_e";
@@ -346,10 +310,7 @@ private:
     }
   };
 
-  struct lxi_h : lxi<0x21, &cpu::l_, &cpu::h_>
-  {
-    static constexpr auto name = "lxi_b";
-  };
+  struct lxi_h : i_lxi<0x21, &cpu::l_, &cpu::h_> {static constexpr auto name = "lxi_b";};
 
   struct shld : meta::describe_instruction<0x22, 16, 3>
   {
@@ -363,20 +324,9 @@ private:
     }
   };
 
-  struct inx_h : inx<0x23, &cpu::l_, &cpu::h_>
-  {
-    static constexpr auto name = "inx_h";
-  };
-
-  struct inr_h : iinr<0x24, &cpu::h_>
-  {
-    static constexpr auto name = "inr_h";
-  };
-
-  struct dcr_h : idcr<0x25, &cpu::h_>
-  {
-    static constexpr auto name = "dcr_h";
-  };
+  struct inx_h : i_inx<0x23, &cpu::l_, &cpu::h_> {static constexpr auto name = "inx_h";};
+  struct inr_h : i_inr<0x24, &cpu::h_> {static constexpr auto name = "inr_h";};
+  struct dcr_h : i_dcr<0x25, &cpu::h_> {static constexpr auto name = "dcr_h";};
 
   struct mvi_h : meta::describe_instruction<0x26, 7, 2>
   {
@@ -441,20 +391,10 @@ private:
     }
   };
 
-  struct dcx_h : idcx<0x2b, &cpu::l_, &cpu::h_>
-  {
-    static constexpr auto name = "dcx_b";
-  };
+  struct dcx_h : i_dcx<0x2b, &cpu::l_, &cpu::h_> {static constexpr auto name = "dcx_b";};
 
-  struct inr_l : iinr<0x2c, &cpu::l_>
-  {
-    static constexpr auto name = "inr_l";
-  };
-
-  struct dcr_l : idcr<0x2d, &cpu::l_>
-  {
-    static constexpr auto name = "dcr_l";
-  };
+  struct inr_l : i_inr<0x2c, &cpu::l_> {static constexpr auto name = "inr_l";};
+  struct dcr_l : i_dcr<0x2d, &cpu::l_> {static constexpr auto name = "dcr_l";};
 
   struct mvi_l_d8 : meta::describe_instruction<0x2e, 7, 2>
   {
@@ -582,21 +522,8 @@ private:
     }
   };
 
-  struct inr_a : meta::describe_instruction<0x3c, 5, 1>
-  {
-    static constexpr auto name = "inr_a";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.a_ = cpu.inr(cpu.a_);
-    }
-  };
-
-  struct dcr_a : idcr<0x3d, &cpu::a_>
-  {
-    static constexpr auto name = "dcr_a";
-  };
-
+  struct inr_a : i_inr<0x3c, &cpu::a_> {static constexpr auto name = "inr_a";};
+  struct dcr_a : i_dcr<0x3d, &cpu::a_> {static constexpr auto name = "dcr_a";};
   struct mvi_a : meta::describe_instruction<0x3e, 7, 2>
   {
     static constexpr auto name = "mvi_a";
@@ -617,105 +544,59 @@ private:
     }
   };
 
-  struct mov_b_b : mov<0x40, &cpu::b_, &cpu::b_> {static constexpr auto name = "mov_b_b";};
-  struct mov_b_c : mov<0x41, &cpu::b_, &cpu::c_> {static constexpr auto name = "mov_b_c";};
-  struct mov_b_d : mov<0x42, &cpu::b_, &cpu::d_> {static constexpr auto name = "mov_b_d";};
-  struct mov_b_e : mov<0x43, &cpu::b_, &cpu::e_> {static constexpr auto name = "mov_b_e";};
-  struct mov_b_h : mov<0x44, &cpu::b_, &cpu::h_> {static constexpr auto name = "mov_b_h";};
-  struct mov_b_l : mov<0x45, &cpu::b_, &cpu::l_> {static constexpr auto name = "mov_b_l";};
-  struct mov_b_m : mov_m<0x46, &cpu::b_> {static constexpr auto name = "mov_b_m";};
-  struct mov_b_a : mov<0x47, &cpu::b_, &cpu::a_> {static constexpr auto name = "mov_b_a";};
-  struct mov_c_b : mov<0x48, &cpu::c_, &cpu::b_> {static constexpr auto name = "mov_c_b";};
-  struct mov_c_c : mov<0x49, &cpu::c_, &cpu::c_> {static constexpr auto name = "mov_c_c";};
-  struct mov_c_d : mov<0x4a, &cpu::c_, &cpu::d_> {static constexpr auto name = "mov_c_d";};
-  struct mov_c_e : mov<0x4b, &cpu::c_, &cpu::e_> {static constexpr auto name = "mov_c_e";};
-  struct mov_c_h : mov<0x4c, &cpu::c_, &cpu::h_> {static constexpr auto name = "mov_c_h";};
-  struct mov_c_l : mov<0x4d, &cpu::c_, &cpu::l_> {static constexpr auto name = "mov_c_l";};
-  struct mov_c_m : mov_m<0x4e, &cpu::c_> {static constexpr auto name = "mov_c_m";};
-  struct mov_c_a : mov<0x4f, &cpu::c_, &cpu::a_> {static constexpr auto name = "mov_c_a";};
-  struct mov_d_b : mov<0x50, &cpu::d_, &cpu::b_> {static constexpr auto name = "mov_d_b";};
-  struct mov_d_c : mov<0x51, &cpu::d_, &cpu::c_> {static constexpr auto name = "mov_d_c";};
-  struct mov_d_d : mov<0x52, &cpu::b_, &cpu::b_> {static constexpr auto name = "mov_d_d";};
-  struct mov_d_e : mov<0x53, &cpu::d_, &cpu::e_> {static constexpr auto name = "mov_d_e";};
-  struct mov_d_h : mov<0x54, &cpu::d_, &cpu::h_> {static constexpr auto name = "mov_d_h";};
-  struct mov_d_l : mov<0x55, &cpu::d_, &cpu::l_> {static constexpr auto name = "mov_d_l";};
-  struct mov_d_m : mov_m<0x56, &cpu::d_> {static constexpr auto name = "mov_d_m";};
-  struct mov_d_a : mov<0x57, &cpu::d_, &cpu::a_> {static constexpr auto name = "mov_d_a";};
-  struct mov_e_b : mov<0x58, &cpu::e_, &cpu::b_> {static constexpr auto name = "mov_e_b";};
-  struct mov_e_c : mov<0x59, &cpu::e_, &cpu::c_> {static constexpr auto name = "mov_e_c";};
-  struct mov_e_d : mov<0x5a, &cpu::e_, &cpu::d_> {static constexpr auto name = "mov_e_d";};
-  struct mov_e_e : mov<0x5b, &cpu::e_, &cpu::e_> {static constexpr auto name = "mov_e_e";};
-  struct mov_e_h : mov<0x5c, &cpu::e_, &cpu::h_> {static constexpr auto name = "mov_e_h";};
-  struct mov_e_l : mov<0x5d, &cpu::e_, &cpu::l_> {static constexpr auto name = "mov_e_l";};
-  struct mov_e_m : mov_m<0x5e, &cpu::e_> {static constexpr auto name = "mov_e_m";};
-  struct mov_e_a : mov<0x5f, &cpu::e_, &cpu::a_> {static constexpr auto name = "mov_e_a";};
-  struct mov_h_b : mov<0x60, &cpu::h_, &cpu::b_> {static constexpr auto name = "mov_h_b";};
-  struct mov_h_c : mov<0x61, &cpu::h_, &cpu::c_> {static constexpr auto name = "mov_h_c";};
-  struct mov_h_d : mov<0x62, &cpu::h_, &cpu::d_> {static constexpr auto name = "mov_h_d";};
-  struct mov_h_e : mov<0x63, &cpu::h_, &cpu::e_> {static constexpr auto name = "mov_h_e";};
-  struct mov_h_h : mov<0x64, &cpu::h_, &cpu::h_> {static constexpr auto name = "mov_h_h";};
-  struct mov_h_l : mov<0x65, &cpu::h_, &cpu::l_> {static constexpr auto name = "mov_h_l";};
-  struct mov_h_m : mov_m<0x66, &cpu::h_> {static constexpr auto name = "mov_h_m";};
-  struct mov_h_a : mov<0x67, &cpu::h_, &cpu::a_> {static constexpr auto name = "mov_h_a";};
-  struct mov_l_b : mov<0x68, &cpu::l_, &cpu::b_> {static constexpr auto name = "mov_l_b";};
-  struct mov_l_c : mov<0x69, &cpu::l_, &cpu::c_> {static constexpr auto name = "mov_l_c";};
-  struct mov_l_d : mov<0x6a, &cpu::l_, &cpu::d_> {static constexpr auto name = "mov_l_d";};
-  struct mov_l_e : mov<0x6b, &cpu::l_, &cpu::e_> {static constexpr auto name = "mov_l_e";};
-  struct mov_l_h : mov<0x6c, &cpu::l_, &cpu::h_> {static constexpr auto name = "mov_l_h";};
-  struct mov_l_l : mov<0x40, &cpu::l_, &cpu::l_> {static constexpr auto name = "mov_l_l";};
-  struct mov_l_m : mov_m<0x6e, &cpu::l_> {static constexpr auto name = "mov_l_m";};
-  struct mov_l_a : mov<0x6f, &cpu::l_, &cpu::a_> {static constexpr auto name = "mov_l_a";};
-
-  struct mov_m_b : meta::describe_instruction<0x70, 7, 1>
-  {
-    static constexpr auto name = "mov_m_b";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.write_hl(cpu.b_);
-    }
-  };
-
-  struct mov_m_c : meta::describe_instruction<0x71, 7, 1>
-  {
-    static constexpr auto name = "mov_m_c";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.write_hl(cpu.c_);
-    }
-  };
-
-  struct mov_m_d : meta::describe_instruction<0x72, 7, 1>
-  {
-    static constexpr auto name = "mov_m_d";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.write_hl(cpu.d_);
-    }
-  };
-
-  struct mov_m_e : meta::describe_instruction<0x73, 7, 1>
-  {
-    static constexpr auto name = "mov_m_e";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.write_hl(cpu.e_);
-    }
-  };
-
-  struct mov_m_h : meta::describe_instruction<0x74, 7, 1>
-  {
-    static constexpr auto name = "mov_m_h";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.write_hl(cpu.h_);
-    }
-  };
-
+  struct mov_b_b : i_mov<0x40, &cpu::b_, &cpu::b_> {static constexpr auto name = "mov_b_b";};
+  struct mov_b_c : i_mov<0x41, &cpu::b_, &cpu::c_> {static constexpr auto name = "mov_b_c";};
+  struct mov_b_d : i_mov<0x42, &cpu::b_, &cpu::d_> {static constexpr auto name = "mov_b_d";};
+  struct mov_b_e : i_mov<0x43, &cpu::b_, &cpu::e_> {static constexpr auto name = "mov_b_e";};
+  struct mov_b_h : i_mov<0x44, &cpu::b_, &cpu::h_> {static constexpr auto name = "mov_b_h";};
+  struct mov_b_l : i_mov<0x45, &cpu::b_, &cpu::l_> {static constexpr auto name = "mov_b_l";};
+  struct mov_b_m : i_mov_m<0x46, &cpu::b_> {static constexpr auto name = "mov_b_m";};
+  struct mov_b_a : i_mov<0x47, &cpu::b_, &cpu::a_> {static constexpr auto name = "mov_b_a";};
+  struct mov_c_b : i_mov<0x48, &cpu::c_, &cpu::b_> {static constexpr auto name = "mov_c_b";};
+  struct mov_c_c : i_mov<0x49, &cpu::c_, &cpu::c_> {static constexpr auto name = "mov_c_c";};
+  struct mov_c_d : i_mov<0x4a, &cpu::c_, &cpu::d_> {static constexpr auto name = "mov_c_d";};
+  struct mov_c_e : i_mov<0x4b, &cpu::c_, &cpu::e_> {static constexpr auto name = "mov_c_e";};
+  struct mov_c_h : i_mov<0x4c, &cpu::c_, &cpu::h_> {static constexpr auto name = "mov_c_h";};
+  struct mov_c_l : i_mov<0x4d, &cpu::c_, &cpu::l_> {static constexpr auto name = "mov_c_l";};
+  struct mov_c_m : i_mov_m<0x4e, &cpu::c_> {static constexpr auto name = "mov_c_m";};
+  struct mov_c_a : i_mov<0x4f, &cpu::c_, &cpu::a_> {static constexpr auto name = "mov_c_a";};
+  struct mov_d_b : i_mov<0x50, &cpu::d_, &cpu::b_> {static constexpr auto name = "mov_d_b";};
+  struct mov_d_c : i_mov<0x51, &cpu::d_, &cpu::c_> {static constexpr auto name = "mov_d_c";};
+  struct mov_d_d : i_mov<0x52, &cpu::b_, &cpu::b_> {static constexpr auto name = "mov_d_d";};
+  struct mov_d_e : i_mov<0x53, &cpu::d_, &cpu::e_> {static constexpr auto name = "mov_d_e";};
+  struct mov_d_h : i_mov<0x54, &cpu::d_, &cpu::h_> {static constexpr auto name = "mov_d_h";};
+  struct mov_d_l : i_mov<0x55, &cpu::d_, &cpu::l_> {static constexpr auto name = "mov_d_l";};
+  struct mov_d_m : i_mov_m<0x56, &cpu::d_> {static constexpr auto name = "mov_d_m";};
+  struct mov_d_a : i_mov<0x57, &cpu::d_, &cpu::a_> {static constexpr auto name = "mov_d_a";};
+  struct mov_e_b : i_mov<0x58, &cpu::e_, &cpu::b_> {static constexpr auto name = "mov_e_b";};
+  struct mov_e_c : i_mov<0x59, &cpu::e_, &cpu::c_> {static constexpr auto name = "mov_e_c";};
+  struct mov_e_d : i_mov<0x5a, &cpu::e_, &cpu::d_> {static constexpr auto name = "mov_e_d";};
+  struct mov_e_e : i_mov<0x5b, &cpu::e_, &cpu::e_> {static constexpr auto name = "mov_e_e";};
+  struct mov_e_h : i_mov<0x5c, &cpu::e_, &cpu::h_> {static constexpr auto name = "mov_e_h";};
+  struct mov_e_l : i_mov<0x5d, &cpu::e_, &cpu::l_> {static constexpr auto name = "mov_e_l";};
+  struct mov_e_m : i_mov_m<0x5e, &cpu::e_> {static constexpr auto name = "mov_e_m";};
+  struct mov_e_a : i_mov<0x5f, &cpu::e_, &cpu::a_> {static constexpr auto name = "mov_e_a";};
+  struct mov_h_b : i_mov<0x60, &cpu::h_, &cpu::b_> {static constexpr auto name = "mov_h_b";};
+  struct mov_h_c : i_mov<0x61, &cpu::h_, &cpu::c_> {static constexpr auto name = "mov_h_c";};
+  struct mov_h_d : i_mov<0x62, &cpu::h_, &cpu::d_> {static constexpr auto name = "mov_h_d";};
+  struct mov_h_e : i_mov<0x63, &cpu::h_, &cpu::e_> {static constexpr auto name = "mov_h_e";};
+  struct mov_h_h : i_mov<0x64, &cpu::h_, &cpu::h_> {static constexpr auto name = "mov_h_h";};
+  struct mov_h_l : i_mov<0x65, &cpu::h_, &cpu::l_> {static constexpr auto name = "mov_h_l";};
+  struct mov_h_m : i_mov_m<0x66, &cpu::h_> {static constexpr auto name = "mov_h_m";};
+  struct mov_h_a : i_mov<0x67, &cpu::h_, &cpu::a_> {static constexpr auto name = "mov_h_a";};
+  struct mov_l_b : i_mov<0x68, &cpu::l_, &cpu::b_> {static constexpr auto name = "mov_l_b";};
+  struct mov_l_c : i_mov<0x69, &cpu::l_, &cpu::c_> {static constexpr auto name = "mov_l_c";};
+  struct mov_l_d : i_mov<0x6a, &cpu::l_, &cpu::d_> {static constexpr auto name = "mov_l_d";};
+  struct mov_l_e : i_mov<0x6b, &cpu::l_, &cpu::e_> {static constexpr auto name = "mov_l_e";};
+  struct mov_l_h : i_mov<0x6c, &cpu::l_, &cpu::h_> {static constexpr auto name = "mov_l_h";};
+  struct mov_l_l : i_mov<0x40, &cpu::l_, &cpu::l_> {static constexpr auto name = "mov_l_l";};
+  struct mov_l_m : i_mov_m<0x6e, &cpu::l_> {static constexpr auto name = "mov_l_m";};
+  struct mov_l_a : i_mov<0x6f, &cpu::l_, &cpu::a_> {static constexpr auto name = "mov_l_a";};
+  struct mov_m_b : i_mov_to_m<0x70, &cpu::b_> {static constexpr auto name = "mov_m_b";};
+  struct mov_m_c : i_mov_to_m<0x71, &cpu::c_> {static constexpr auto name = "mov_m_c";};
+  struct mov_m_d : i_mov_to_m<0x72, &cpu::d_> {static constexpr auto name = "mov_m_d";};
+  struct mov_m_e : i_mov_to_m<0x73, &cpu::e_> {static constexpr auto name = "mov_m_e";};
+  struct mov_m_h : i_mov_to_m<0x74, &cpu::h_> {static constexpr auto name = "mov_m_h";};
   struct mov_m_l : meta::describe_instruction<0x75, 7, 1>
   {
     static constexpr auto name = "mov_m_l";
@@ -745,95 +626,27 @@ private:
       cpu.write_hl(cpu.a_);
     }
   };
+  struct mov_a_b : i_mov<0x78, &cpu::a_, &cpu::b_> {static constexpr auto name = "mov_a_b";};
+  struct mov_a_c : i_mov<0x79, &cpu::a_, &cpu::c_> {static constexpr auto name = "mov_a_c";};
+  struct mov_a_d : i_mov<0x7a, &cpu::a_, &cpu::d_> {static constexpr auto name = "mov_a_d";};
+  struct mov_a_e : i_mov<0x7b, &cpu::a_, &cpu::e_> {static constexpr auto name = "mov_a_e";};
+  struct mov_a_h : i_mov<0x7c, &cpu::a_, &cpu::h_> {static constexpr auto name = "mov_a_h";};
+  struct mov_a_l : i_mov<0x7d, &cpu::a_, &cpu::l_> {static constexpr auto name = "mov_a_l";};
+  struct mov_a_m : i_mov_m<0x7e, &cpu::a_> {static constexpr auto name = "mov_a_m";};
+  struct mov_a_a : i_mov<0x7f, &cpu::a_, &cpu::a_> {static constexpr auto name = "mov_a_a";};
 
-  struct mov_a_b : mov<0x78, &cpu::a_, &cpu::b_> {static constexpr auto name = "mov_a_b";};
-  struct mov_a_c : mov<0x79, &cpu::a_, &cpu::c_> {static constexpr auto name = "mov_a_c";};
-  struct mov_a_d : mov<0x7a, &cpu::a_, &cpu::d_> {static constexpr auto name = "mov_a_d";};
-  struct mov_a_e : mov<0x7b, &cpu::a_, &cpu::e_> {static constexpr auto name = "mov_a_e";};
-  struct mov_a_h : mov<0x7c, &cpu::a_, &cpu::h_> {static constexpr auto name = "mov_a_h";};
-  struct mov_a_l : mov<0x7d, &cpu::a_, &cpu::l_> {static constexpr auto name = "mov_a_l";};
-  struct mov_a_m : mov_m<0x7e, &cpu::a_> {static constexpr auto name = "mov_a_m";};
-  struct mov_a_a : mov<0x7f, &cpu::a_, &cpu::a_> {static constexpr auto name = "mov_a_a";};
-
-  struct add_b : meta::describe_instruction<0x80, 4, 1>
-  {
-    static constexpr auto name = "add_b";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.adda(cpu.b_, 0);
-    }
-  };
-
-  struct add_c : meta::describe_instruction<0x81, 4, 1>
-  {
-    static constexpr auto name = "add_c";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.adda(cpu.c_, 0);
-    }
-  };
-
-  struct add_d : meta::describe_instruction<0x82, 4, 1>
-  {
-    static constexpr auto name = "add_d";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.adda(cpu.d_, 0);
-    }
-  };
-
-  struct add_e : meta::describe_instruction<0x83, 4, 1>
-  {
-    static constexpr auto name = "add_e";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.adda(cpu.e_, 0);
-    }
-  };
-
-  struct add_h : meta::describe_instruction<0x84, 4, 1>
-  {
-    static constexpr auto name = "add_h";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.adda(cpu.h_, 0);
-    }
-  };
-
-  struct add_l : meta::describe_instruction<0x85, 4, 1>
-  {
-    static constexpr auto name = "add_l";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.adda(cpu.l_, 0);
-    }
-  };
-
+  struct add_b : i_adda<0x80, &cpu::b_>{static constexpr auto name = "add_b";};
+  struct add_c : i_adda<0x81, &cpu::c_>{static constexpr auto name = "add_c";};
+  struct add_d : i_adda<0x82, &cpu::d_>{static constexpr auto name = "add_d";};
+  struct add_e : i_adda<0x83, &cpu::e_>{static constexpr auto name = "add_e";};
+  struct add_h : i_adda<0x84, &cpu::h_>{static constexpr auto name = "add_h";};
+  struct add_l : i_adda<0x85, &cpu::l_>{static constexpr auto name = "add_l";};
   struct add_m : meta::describe_instruction<0x86, 7, 1>
   {
     static constexpr auto name = "add_m";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.adda(cpu.read_hl(), 0);
-    }
+    void operator()(cpu& cpu) const {cpu.adda(cpu.read_hl(), 0);}
   };
-
-  struct add_a : meta::describe_instruction<0x87, 4, 1>
-  {
-    static constexpr auto name = "add_a";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.adda(cpu.a_, 0);
-    }
-  };
+  struct add_a : i_adda<0x87, &cpu::a_>{static constexpr auto name = "add_a";};
 
   struct adc_b : meta::describe_instruction<0x88, 4, 1>
   {
