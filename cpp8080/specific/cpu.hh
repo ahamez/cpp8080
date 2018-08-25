@@ -6,9 +6,9 @@
 #include <tuple>
 
 #include "cpp8080/meta/make_instructions.hh"
-#include "cpp8080/meta/unimplemented.hh"
 #include "cpp8080/specific/cpu_fwd.hh"
 #include "cpp8080/specific/halt.hh"
+#include "cpp8080/util/concat.hh"
 #include "cpp8080/util/hooks.hh"
 #include "cpp8080/util/parity.hh"
 
@@ -127,6 +127,17 @@ private:
     void operator()(cpu& cpu) const
     {
       cpu.write_hl(cpu.*reg);
+    }
+  };
+
+  template <std::uint8_t Opcode>
+  struct unimplemented : meta::describe_instruction<Opcode, 255, 1>
+  {
+    static constexpr auto name = "unimplemented";
+
+    void operator()(const cpu&) const
+    {
+      throw std::runtime_error{util::concat("Unimplemented instruction ", std::hex, +Opcode)};
     }
   };
 
@@ -1829,7 +1840,7 @@ private:
     dcr_b,
     mvi_b,
     rlc,
-    meta::unimplemented<0x08>,
+    unimplemented<0x08>,
     dad_b,
     ldax_b,
     dcx_b,
@@ -1837,7 +1848,7 @@ private:
     dcr_c,
     mvi_c,
     rrc,
-    meta::unimplemented<0x10>,
+    unimplemented<0x10>,
     lxi_d,
     stax_d,
     inx_d,
@@ -1845,7 +1856,7 @@ private:
     dcr_d,
     mvi_d,
     ral,
-    meta::unimplemented<0x18>,
+    unimplemented<0x18>,
     dad_d,
     ldax_d,
     dcx_d,
@@ -1853,7 +1864,7 @@ private:
     dcr_e,
     mvi_e,
     rar,
-    meta::unimplemented<0x20>,
+    unimplemented<0x20>,
     lxi_h,
     shld,
     inx_h,
@@ -1861,7 +1872,7 @@ private:
     dcr_h,
     mvi_h,
     daa,
-    meta::unimplemented<0x28>,
+    unimplemented<0x28>,
     dad_h,
     lhld,
     dcx_h,
@@ -1869,7 +1880,7 @@ private:
     dcr_l,
     mvi_l_d8,
     cma,
-    meta::unimplemented<0x30>,
+    unimplemented<0x30>,
     lxi_sp,
     sta,
     inx_sp,
@@ -1877,7 +1888,7 @@ private:
     dcr_m,
     mvi_m,
     stc,
-    meta::unimplemented<0x38>,
+    unimplemented<0x38>,
     dad_sp,
     lda,
     dcx_sp,
@@ -2024,7 +2035,7 @@ private:
     rz,
     ret,
     jz,
-    meta::unimplemented<0xcb>,
+    unimplemented<0xcb>,
     cz,
     call,
     aci,
@@ -2038,11 +2049,11 @@ private:
     sui,
     rst_2,
     rc,
-    meta::unimplemented<0xd9>,
+    unimplemented<0xd9>,
     jc,
     in,
     cc,
-    meta::unimplemented<0xdd>,
+    unimplemented<0xdd>,
     sbi,
     rst_3,
     rpo,
@@ -2058,7 +2069,7 @@ private:
     jpe,
     xchg,
     cpe,
-    meta::unimplemented<0xed>,
+    unimplemented<0xed>,
     xri,
     rst_5,
     rp,
@@ -2074,7 +2085,7 @@ private:
     jm,
     ei,
     cm,
-    meta::unimplemented<0xfd>,
+    unimplemented<0xfd>,
     cpi,
     rst_7
   >;
