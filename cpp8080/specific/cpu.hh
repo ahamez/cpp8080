@@ -51,6 +51,15 @@ private:
   };
 
   template <std::uint8_t Opcode, auto cpu::* reg>
+  struct i_ana : meta::describe_instruction<Opcode, 4, 1>
+  {
+    void operator()(cpu& cpu) const noexcept
+    {
+      cpu.ana(cpu.*reg);
+    }
+  };
+
+  template <std::uint8_t Opcode, auto cpu::* reg>
   struct i_dcr : meta::describe_instruction<Opcode, 5, 1>
   {
     void operator()(cpu& cpu) const noexcept
@@ -130,6 +139,15 @@ private:
     }
   };
 
+  template <std::uint8_t Opcode, auto cpu::* reg>
+  struct i_mvi : meta::describe_instruction<Opcode, 7, 2>
+  {
+    void operator()(cpu& cpu) const noexcept
+    {
+      cpu.*reg = cpu.op1();
+    }
+  };
+
   template <std::uint8_t Opcode>
   struct unimplemented : meta::describe_instruction<Opcode, 255, 1>
   {
@@ -149,6 +167,16 @@ private:
     void operator()(cpu&) const noexcept {}
   };
 
+  struct hlt : meta::describe_instruction<0x76, 7, 1>
+  {
+    static constexpr auto name = "hlt";
+
+    void operator()(cpu&) const
+    {
+      throw halt{"HLT"};
+    }
+  };
+
   struct lxi_b : i_lxi<0x01, &cpu::c_, &cpu::b_> {static constexpr auto name = "lxi_b";};
 
   struct stax_b : meta::describe_instruction<0x02, 7, 1>
@@ -164,15 +192,7 @@ private:
   struct inx_b : i_inx<0x03, &cpu::c_, &cpu::b_> {static constexpr auto name = "inx_b";};
   struct inr_b : i_inr<0x04, &cpu::b_> {static constexpr auto name = "inr_b";};
   struct dcr_b : i_dcr<0x05, &cpu::b_> {static constexpr auto name = "dcr_b";};
-  struct mvi_b : meta::describe_instruction<0x06, 7, 2>
-  {
-    static constexpr auto name = "mvi_b";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.b_ = cpu.op1();
-    }
-  };
+  struct mvi_b : i_mvi<0x06, &cpu::b_> {static constexpr auto name = "mvi_b";};
 
   struct rlc : meta::describe_instruction<0x07, 4, 1>
   {
@@ -212,15 +232,7 @@ private:
   struct dcx_b : i_dcx<0x0b, &cpu::c_, &cpu::b_> {static constexpr auto name = "dcx_b";};
   struct inr_c : i_inr<0x0c, &cpu::c_> {static constexpr auto name = "inr_c";};
   struct dcr_c : i_dcr<0x0d, &cpu::c_> {static constexpr auto name = "dcr_b";};
-  struct mvi_c : meta::describe_instruction<0x0e, 7, 2>
-  {
-    static constexpr auto name = "mvi_c";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.c_= cpu.op1();
-    }
-  };
+  struct mvi_c : i_mvi<0x0e, &cpu::c_> {static constexpr auto name = "mvi_c";};
 
   struct rrc : meta::describe_instruction<0x0f, 4, 1>
   {
@@ -249,16 +261,7 @@ private:
   struct inx_d : i_inx<0x13, &cpu::e_, &cpu::d_> {static constexpr auto name = "inx_b";};
   struct inr_d : i_inr<0x14, &cpu::d_> {static constexpr auto name = "inr_d";};
   struct dcr_d : i_dcr<0x15, &cpu::d_> {static constexpr auto name = "dcr_b";};
-
-  struct mvi_d : meta::describe_instruction<0x16, 7, 2>
-  {
-    static constexpr auto name = "mvi_d";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.d_= cpu.op1();
-    }
-  };
+  struct mvi_d : i_mvi<0x16, &cpu::d_> {static constexpr auto name = "mvi_d";};
 
   struct ral : meta::describe_instruction<0x17, 4, 1>
   {
@@ -299,15 +302,7 @@ private:
 
   struct inr_e : i_inr<0x1c, &cpu::e_> {static constexpr auto name = "inr_e";};
   struct dcr_e : i_dcr<0x1d, &cpu::e_> {static constexpr auto name = "dcr_e";};
-  struct mvi_e : meta::describe_instruction<0x1e, 7, 2>
-  {
-    static constexpr auto name = "mvi_e";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.e_= cpu.op1();
-    }
-  };
+  struct mvi_e : i_mvi<0x1e, &cpu::e_> {static constexpr auto name = "mvi_e";};
 
   struct rar : meta::describe_instruction<0x1f, 4, 1>
   {
@@ -338,16 +333,7 @@ private:
   struct inx_h : i_inx<0x23, &cpu::l_, &cpu::h_> {static constexpr auto name = "inx_h";};
   struct inr_h : i_inr<0x24, &cpu::h_> {static constexpr auto name = "inr_h";};
   struct dcr_h : i_dcr<0x25, &cpu::h_> {static constexpr auto name = "dcr_h";};
-
-  struct mvi_h : meta::describe_instruction<0x26, 7, 2>
-  {
-    static constexpr auto name = "mvi_h";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.h_= cpu.op1();
-    }
-  };
+  struct mvi_h : i_mvi<0x26, &cpu::h_> {static constexpr auto name = "mvi_h";};
 
   struct daa : meta::describe_instruction<0x27, 4, 1>
   {
@@ -406,16 +392,7 @@ private:
 
   struct inr_l : i_inr<0x2c, &cpu::l_> {static constexpr auto name = "inr_l";};
   struct dcr_l : i_dcr<0x2d, &cpu::l_> {static constexpr auto name = "dcr_l";};
-
-  struct mvi_l_d8 : meta::describe_instruction<0x2e, 7, 2>
-  {
-    static constexpr auto name = "mvi_l";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.l_= cpu.op1();
-    }
-  };
+  struct mvi_l : i_mvi<0x2e, &cpu::l_> {static constexpr auto name = "mvi_l";};
 
   struct cma : meta::describe_instruction<0x2f, 4, 1>
   {
@@ -535,15 +512,7 @@ private:
 
   struct inr_a : i_inr<0x3c, &cpu::a_> {static constexpr auto name = "inr_a";};
   struct dcr_a : i_dcr<0x3d, &cpu::a_> {static constexpr auto name = "dcr_a";};
-  struct mvi_a : meta::describe_instruction<0x3e, 7, 2>
-  {
-    static constexpr auto name = "mvi_a";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.a_ = cpu.op1();
-    }
-  };
+  struct mvi_a : i_mvi<0x3e, &cpu::a_> {static constexpr auto name = "mvi_a";};
 
   struct cmc : meta::describe_instruction<0x3f, 4, 1>
   {
@@ -608,35 +577,8 @@ private:
   struct mov_m_d : i_mov_to_m<0x72, &cpu::d_> {static constexpr auto name = "mov_m_d";};
   struct mov_m_e : i_mov_to_m<0x73, &cpu::e_> {static constexpr auto name = "mov_m_e";};
   struct mov_m_h : i_mov_to_m<0x74, &cpu::h_> {static constexpr auto name = "mov_m_h";};
-  struct mov_m_l : meta::describe_instruction<0x75, 7, 1>
-  {
-    static constexpr auto name = "mov_m_l";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.write_hl(cpu.l_);
-    }
-  };
-
-  struct hlt : meta::describe_instruction<0x76, 7, 1>
-  {
-    static constexpr auto name = "hlt";
-
-    void operator()(cpu&) const
-    {
-      throw halt{"HLT"};
-    }
-  };
-
-  struct mov_m_a : meta::describe_instruction<0x77, 7, 1>
-  {
-    static constexpr auto name = "mov_m_a";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.write_hl(cpu.a_);
-    }
-  };
+  struct mov_m_l : i_mov_to_m<0x75, &cpu::l_> {static constexpr auto name = "mov_m_l";};
+  struct mov_m_a : i_mov_to_m<0x77, &cpu::a_> {static constexpr auto name = "mov_m_a";};
   struct mov_a_b : i_mov<0x78, &cpu::a_, &cpu::b_> {static constexpr auto name = "mov_a_b";};
   struct mov_a_c : i_mov<0x79, &cpu::a_, &cpu::c_> {static constexpr auto name = "mov_a_c";};
   struct mov_a_d : i_mov<0x7a, &cpu::a_, &cpu::d_> {static constexpr auto name = "mov_a_d";};
@@ -899,85 +841,18 @@ private:
     }
   };
 
-  struct ana_b : meta::describe_instruction<0xa0, 4, 1>
-  {
-    static constexpr auto name = "ana_b";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.ana(cpu.b_);
-    }
-  };
-
-  struct ana_c : meta::describe_instruction<0xa1, 4, 1>
-  {
-    static constexpr auto name = "ana_c";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.ana(cpu.c_);
-    }
-  };
-
-  struct ana_d : meta::describe_instruction<0xa2, 4, 1>
-  {
-    static constexpr auto name = "ana_d";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.ana(cpu.d_);
-    }
-  };
-
-  struct ana_e : meta::describe_instruction<0xa3, 4, 1>
-  {
-    static constexpr auto name = "ana_e";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.ana(cpu.e_);
-    }
-  };
-
-  struct ana_h : meta::describe_instruction<0xa4, 4, 1>
-  {
-    static constexpr auto name = "ana_h";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.ana(cpu.h_);
-    }
-  };
-
-  struct ana_l : meta::describe_instruction<0xa5, 4, 1>
-  {
-    static constexpr auto name = "ana_l";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.ana(cpu.l_);
-    }
-  };
-
+  struct ana_b : i_ana<0xa0, &cpu::b_> {static constexpr auto name = "ana_b";};
+  struct ana_c : i_ana<0xa1, &cpu::c_> {static constexpr auto name = "ana_c";};
+  struct ana_d : i_ana<0xa2, &cpu::d_> {static constexpr auto name = "ana_d";};
+  struct ana_e : i_ana<0xa3, &cpu::e_> {static constexpr auto name = "ana_e";};
+  struct ana_h : i_ana<0xa4, &cpu::h_> {static constexpr auto name = "ana_h";};
+  struct ana_l : i_ana<0xa5, &cpu::l_> {static constexpr auto name = "ana_l";};
   struct ana_m : meta::describe_instruction<0xa6, 7, 1>
   {
     static constexpr auto name = "ana_m";
-
-    void operator()(cpu& cpu) const
-    {
-      cpu.ana(cpu.read_hl());
-    }
+    void operator()(cpu& cpu) const {cpu.ana(cpu.read_hl());}
   };
-
-  struct ana_a : meta::describe_instruction<0xa7, 4, 1>
-  {
-    static constexpr auto name = "ana_a";
-
-    void operator()(cpu& cpu) const noexcept
-    {
-      cpu.ana(cpu.a_);
-    }
-  };
+  struct ana_a : i_ana<0xa7, &cpu::a_> {static constexpr auto name = "ana_a";};
 
   struct xra_b : meta::describe_instruction<0xa8, 4, 1>
   {
@@ -1878,7 +1753,7 @@ private:
     dcx_h,
     inr_l,
     dcr_l,
-    mvi_l_d8,
+    mvi_l,
     cma,
     unimplemented<0x30>,
     lxi_sp,
