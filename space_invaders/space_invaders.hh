@@ -64,11 +64,10 @@ public:
   [[nodiscard]]
   std::uint8_t
   in(std::uint8_t port)
-  const noexcept;
+  const;
 
   void
-  out(std::uint8_t port, std::uint8_t value)
-  noexcept;
+  out(std::uint8_t port, std::uint8_t value);
 
   void
   memory_write_byte(std::uint16_t address, std::uint8_t value);

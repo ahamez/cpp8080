@@ -16,7 +16,7 @@ static constexpr auto cycles_per_frame = cycles_per_second / fps;
 [[nodiscard]]
 std::uint8_t
 space_invaders::in(std::uint8_t port)
-const noexcept
+const
 {
   switch (port)
   {
@@ -41,7 +41,6 @@ const noexcept
 
 void
 space_invaders::out(std::uint8_t port, std::uint8_t value)
-noexcept
 {
   switch (port)
   {
