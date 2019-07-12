@@ -27,7 +27,7 @@ private:
 
 private:
 
-	std::uint_fast32_t a_;
+  std::uint_fast32_t a_;
   std::uint_fast32_t b_;
   std::uint_fast32_t c_;
   std::uint_fast32_t d_;
