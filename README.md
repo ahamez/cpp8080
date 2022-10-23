@@ -20,20 +20,11 @@ I could not have written `cpp8080` without those ressources:
 
 ## Build
 
-### Xcode
-Requires [homebrew](https://brew.sh).
-```
-brew install sdl2
-xcodebuild
-```
-
-### Cmake
 Requires [conan](https://conan.io).
 ```
 mkdir build && cd build
-conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-conan install ..
-cmake ..
-make -j
-make test
+conan install .. --build=missing
+cmake .. -G Ninja
+ninja
+ninja test
 ```
